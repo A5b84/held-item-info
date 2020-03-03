@@ -5,7 +5,7 @@
     "version": "${version}",
 
     "name": "Held Item Info",
-    "description": "Shows additional information about the held item under its name",
+    "description": "Shows information about the held item under its name",
     "icon": "assets/held-item-info/icon.png",
     "authors": ["Neecko"],
     "contact": {  

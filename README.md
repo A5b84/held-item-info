@@ -1,6 +1,6 @@
 # Held Item Info
 
-A mod that shows additional information (like enchantments!) about the held item under its name.
+A mod that shows information (like enchantments!) about the held item under its name.
 
 * Stuff only shows up on the HUD when changing item in main hand (just like in Bedrock Edition)
 
