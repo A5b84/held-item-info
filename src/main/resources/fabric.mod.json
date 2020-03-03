@@ -1,0 +1,31 @@
+{
+    "schemaVersion": 1,
+
+    "id": "held-item-info",
+    "version": "${version}",
+
+    "name": "Held Item Info",
+    "description": "Shows additional information about the held item under its name",
+    "icon": "assets/held-item-info/icon.png",
+    "authors": ["Neecko"],
+    "contact": {  
+        "homepage": "https://github.com/A5b84/held-item-info",
+        "issues": "https://github.com/A5b84/held-item-info/issues",
+        "sources": "https://github.com/A5b84/held-item-info"
+    },
+    "license": "MIT",
+    
+    "environment": "client",
+    "entrypoints": {
+        "client": ["io.github.a5b84.helditeminfo.HeldItemInfoMod"]
+    },
+    "mixins": ["held-item-info.mixins.json"],
+
+    "depends": {
+        "minecraft": ">=1.15"
+    },
+
+    "custom": {
+        "modmenu:clientsideOnly": true
+    }
+}
