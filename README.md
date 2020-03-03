@@ -21,4 +21,4 @@ A mod that shows information (like enchantments!) about the held item under its 
 * Authors of written books
 * `Unbreakable` tag
 * Banner pattern type (only for `Banner Pattern` items, not for actual banners)
-* Type of tropical fish inside a bucket
+* Type of tropical fish inside of a bucket
