@@ -2,7 +2,7 @@ package io.github.a5b84.helditeminfo.mixin;
 
 import java.util.List;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -76,9 +76,9 @@ public abstract class HeldItemTooltipMixin extends DrawableHelper {
         if (!this.client.interactionManager.hasStatusBars()) y += 14;
 
         // C'est parti
-        RenderSystem.pushMatrix();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
+        GlStateManager.pushMatrix();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 
         // Arrière-plan
         final int bgColor = client.options.getTextBackgroundColor(0);
@@ -106,8 +106,8 @@ public abstract class HeldItemTooltipMixin extends DrawableHelper {
         }
 
         // C'est fini
-        RenderSystem.disableBlend();
-        RenderSystem.popMatrix();
+        GlStateManager.disableBlend();
+        GlStateManager.popMatrix();
         client.getProfiler().pop();
     }
 

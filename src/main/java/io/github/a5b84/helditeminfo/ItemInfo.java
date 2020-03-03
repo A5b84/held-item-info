@@ -70,7 +70,6 @@ public final class ItemInfo {
             // Trucs qui dépendent de l'item
             do {
                 // Trucs spécifiques
-                if (appendBeehiveContent(texts, stack)) break;
                 if (appendCommandBlockInfo(texts, stack)) break;
                 if (appendPotionEffects(texts, stack)) break;
                 if (appendSignText(texts, stack)) break;
@@ -151,36 +150,6 @@ public final class ItemInfo {
         final List<Text> tooltip = new ArrayList<>();
         stack.getItem().appendTooltip(stack, null, tooltip, TooltipContext.Default.NORMAL);
         return appendToInfo(info, tooltip);
-    }
-
-    /**
-     * Ajoute la commande d'un commande block aux infos.
-     * @param info Infos
-     * @param stack Stack de l'item (avec un tag)
-     * @return `true` si un truc a été ajouté
-     */
-    protected static boolean appendBeehiveContent(List<Text> info, ItemStack stack) {
-        // Cas où on quitte direct
-        if (info.size() >= MAX_LINES
-                || !(stack.getItem() == Items.BEE_NEST
-                        || stack.getItem() == Items.BEEHIVE)) {
-            return false;
-        }
-
-        // Récupération
-        final CompoundTag blockEntityTag = stack.getSubTag("BlockEntityTag");
-        if (blockEntityTag == null) return false;
-
-        final int beeCount = blockEntityTag.getList("Bees", 10).size(); // 10: CompoundTag
-        if (beeCount == 0) return false;
-
-        // Ajout
-        info.add(
-            new TranslatableText("entity.minecraft.bee")
-            .append(" x" + beeCount)
-            .formatted(Formatting.GRAY)
-        );
-        return true;
     }
 
     /**
