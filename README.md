@@ -8,6 +8,10 @@ A mod that shows information (like enchantments!) about the held item under its 
 
 
 
+Requires the [Fabric Mod Loader](https://fabricmc.net)
+
+
+
 ## Full list of things that can be shown when holding stuff
 
 * Enchantments
