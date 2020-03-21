@@ -9,11 +9,11 @@
     "icon": "assets/held-item-info/icon.png",
     "authors": ["Neecko"],
     "contact": {  
-        "homepage": "https://github.com/A5b84/held-item-info",
+        "homepage": "https://www.curseforge.com/minecraft/mc-mods/held-item-info",
         "issues": "https://github.com/A5b84/held-item-info/issues",
         "sources": "https://github.com/A5b84/held-item-info"
     },
-    "license": "MIT",
+    "license": "CC-BY-NC-4.0",
     
     "environment": "client",
     "entrypoints": {
