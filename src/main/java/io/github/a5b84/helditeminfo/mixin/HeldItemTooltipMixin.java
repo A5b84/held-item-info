@@ -1,14 +1,14 @@
 package io.github.a5b84.helditeminfo.mixin;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import io.github.a5b84.helditeminfo.ItemInfo;
@@ -18,9 +18,10 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 
 /**
- * Mixin qui affiche le widget du mod après les autres overlays.
+ * Mixin qui affiche plus d'infos sur l'item tenu
  */
 @Mixin(InGameHud.class)
 public abstract class HeldItemTooltipMixin extends DrawableHelper {
@@ -32,89 +33,90 @@ public abstract class HeldItemTooltipMixin extends DrawableHelper {
     @Shadow private int scaledWidth;
     @Shadow private int scaledHeight;
 
+    /** @see  */
     @Shadow
     public TextRenderer getFontRenderer() { return null; }
 
-
-
-    protected List<InfoLine> info = null;
-
-    protected ItemStack stackBeforeTick;
+    private final float OFFSET_PER_LINE = 6.5f; // Décalage en y par ligne
+    private final int LINE_HEIGHT = 8;
 
 
 
-    /**
-     * Affiche le tooltip de l'item avec des informations en plus
-     * (ou laisse la méthode de base faire son truc si y a rien à ajouter).
-     * @see InGameHud#renderHeldItemTooltip
-     * @see ItemInfo#buildInfo
-     */
-    @Inject(method = "renderHeldItemTooltip", at = @At("HEAD"), cancellable = true)
-    public void onRenderHeldItemTooltip(CallbackInfo ci) {
-        client.getProfiler().push("selectedItemName");
+    private List<InfoLine> info = new ArrayList<>(0);
 
-        // if () {} -> if (!) return;
-        if (heldItemTooltipFade <= 0 || currentStack.isEmpty()) return;
+    private int y;
 
-        // Texte du tooltip modifié dans #onAfterTick
+    /** Largeur de la ligne la plus large (pour l'arrière-plan),
+     * ou `Integer.MIN_VALUE` si pas encore calculée */
+    private int maxWidth = Integer.MIN_VALUE;
 
-        // On laisse le jeu vanilla faire si on a rien à ajouter
-        if (info == null) return;
-        ci.cancel(); // Sinon on va le faire nous même
+    private ItemStack stackBeforeTick;
 
-        // Ajouté pour simplifier
-        final TextRenderer fontRenderer = getFontRenderer();
 
-        // Valeurs communes (déplacées de plus loin)
-        int alpha = (int) (heldItemTooltipFade * 25.6f);
-        if (alpha <= 0) return;
-        if (alpha > 255) alpha = 255;
 
-        final int color = 0xffffff + (alpha << 24);
-        int y = scaledHeight - 50 - (int) ((fontRenderer.fontHeight - 2.5) * info.size());
-        //  (fontHeight - .) pour pas que ça prenne trop de place
+    /** Met à jour les variables utilisées pour l'affichage.
+     * @see InGameHud#renderHeldItemTooltip */
+    @Inject(
+        method = "renderHeldItemTooltip",
+        at = @At(value = "INVOKE", target = "net/minecraft/text/Text.asFormattedString()Ljava/lang/String;")
+        //      Pas HEAD pour faire des trucs que si ça va afficher
+    )
+    public void onBeforeRenderHeldItemTooltip(CallbackInfo ci) {
+        // 50 = 32 (hotbar) + 14 (vie + xp) + 4 (espaces) (je crois)
+        y = scaledHeight - 50 - (int) (OFFSET_PER_LINE * info.size());
         if (!this.client.interactionManager.hasStatusBars()) y += 14;
+    }
 
-        // C'est parti
-        RenderSystem.pushMatrix();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
 
-        // Arrière-plan
-        final int bgColor = client.options.getTextBackgroundColor(0);
 
-        if ((bgColor & 0xff000000) != 0) {
-            // On récupèrel la largeur max
-            int maxWidth = info.get(0).width;
-            for (int i = 1; i < info.size(); i++) {
-                if (info.get(i).width > maxWidth) maxWidth = info.get(i).width;
+    /** Affiche l'arrière-plan (si activé) avec la bonne taille.
+     * @see InGameHud#renderHeldItemTooltip */
+    @Redirect(
+        method = "renderHeldItemTooltip",
+        at = @At(value = "INVOKE", target = "net/minecraft/client/gui/hud/InGameHud.fill(IIIII)V")
+    )
+    private void fillBackgroundProxy(int x1, int y1, int x2, int y2, int color) {
+        // On quitte si le fond est transparent
+        if ((color & 0xff000000) == 0) return;
+
+        // On récupère la largeur max si pas encore calculée
+        if (maxWidth == Integer.MIN_VALUE) {
+            for (InfoLine line : info) {
+                if (line.width > maxWidth) maxWidth = line.width;
             }
-            
-            // On fait un gros carré
-            fill(
-                (scaledWidth - maxWidth) / 2 - 2, y - 2,
-                (scaledWidth + maxWidth) / 2 + 2, y + (fontRenderer.fontHeight - 1) * info.size() + 2,
-                bgColor
-            );
         }
 
+        // On fait le gros carré
+        fill(
+            (scaledWidth - maxWidth) / 2 - 2, y - 2,
+            (scaledWidth + maxWidth) / 2 + 2, y + (int) (LINE_HEIGHT * info.size()) + 2,
+            color
+        );
+    }
+
+
+
+    /** Affiche le nom de l'item avec des infos en plus
+     * @see InGameHud#renderHeldItemTooltip */
+    @Redirect(
+        method = "renderHeldItemTooltip",
+        at = @At(value = "INVOKE", target = "net/minecraft/client/font/TextRenderer.drawWithShadow(Ljava/lang/String;FFI)I")
+    )
+    private int drawTextProxy(TextRenderer fontRenderer, String text, float _x, float _y, int color) {
         // Texte
         for (final InfoLine line : info) {
             final int x = (scaledWidth - line.width) / 2;
             fontRenderer.drawWithShadow(line.formatted, x, y, color);
-            y += fontRenderer.fontHeight - 1;
+            y += LINE_HEIGHT;
         }
 
-        // C'est fini
-        RenderSystem.disableBlend();
-        RenderSystem.popMatrix();
-        client.getProfiler().pop();
+        return 0;
     }
 
-    /**
-     * Récupère le stack avant le tick pour gérer l'apparition du tooltip.
-     * @see InGameHud#tick
-     */
+
+
+    /** Récupère le stack avant le tick pour gérer l'apparition du tooltip.
+     * @see InGameHud#tick */
     @Inject(method = "tick", at = @At("HEAD"))
     public void onBeforeTick(CallbackInfo ci) {
         if (this.client.player != null) {
@@ -122,13 +124,11 @@ public abstract class HeldItemTooltipMixin extends DrawableHelper {
         }
     }
 
-    /**
-     * Gère la création et l'apparition du tooltip.
-     * @see InGameHud#tick
-     */
+    /** Gère la création et l'apparition du tooltip.
+     * @see InGameHud#tick */
     @Inject(method = "tick", at = @At("RETURN"))
     public void onAfterTick(CallbackInfo ci) {
-        // Cas où y a rienn à faire
+        // Cas où y a rien à faire
         if (this.client.player == null
                 || currentStack == stackBeforeTick
                 || currentStack.isEmpty()) {
@@ -136,17 +136,15 @@ public abstract class HeldItemTooltipMixin extends DrawableHelper {
         }
 
         // Nouveau tooltip
-        List<InfoLine> newInfo = ItemInfo.buildInfo(currentStack);
-        if (newInfo.size() <= 1) newInfo = null; // null si y a que le nom
+        List<Text> newInfo = ItemInfo.buildInfo(currentStack);
 
-        // On laisse le jeu gérer si on a rien à faire
-        if (info == null && newInfo == null) return;
+        // On quitte si c'est pareil
+        if (ItemInfo.areEqual(info, newInfo)) return;
 
-        // Le stack a changé + on avait un tooltip et on en a encore un
-        //  => le tooltip a (sûrement) changé
-        //  => on reset le timer
-        info = newInfo;
-        heldItemTooltipFade = 40 + 4 * (info == null ? 0 : info.size() - 1);
+        // Sinon on reset
+        info = ItemInfo.toInfoLines(newInfo);
+        maxWidth = Integer.MIN_VALUE;
+        heldItemTooltipFade = 40 + 4 * (info.size() - 1);
     }
 
 }

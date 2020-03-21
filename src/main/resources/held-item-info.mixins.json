@@ -2,8 +2,5 @@
     "required": true,
     "package": "io.github.a5b84.helditeminfo.mixin",
     "compatibilityLevel": "JAVA_8",
-    "client": ["HeldItemTooltipMixin"],
-    "injectors": {
-        "defaultRequire": 1
-    }
+    "client": ["HeldItemTooltipMixin"]
 }

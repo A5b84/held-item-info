@@ -1,6 +1,7 @@
 package io.github.a5b84.helditeminfo;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.gson.JsonParseException;
@@ -55,8 +56,8 @@ public final class ItemInfo {
 
 
 
-    /** Crée la liste d'infos de l'item (nom inclu) */
-    public static List<InfoLine> buildInfo(final ItemStack stack) {
+    /** Crée la liste d'infos de l'item (nom inclu). */
+    public static List<Text> buildInfo(ItemStack stack) {
         // Nom de l'item
         final Text stackName = new LiteralText("") // Pour pas remplacer les styles
                 .append(stack.getName())
@@ -92,10 +93,28 @@ public final class ItemInfo {
             appendUnbreakable(texts, stack);
         } while (false);
 
-        // Presque fini
+        // Fini
+        return texts;
+    }
+
+    /** Compare une liste d'infos et une liste de textes. */
+    public static boolean areEqual(List<InfoLine> oldInfo, List<Text> newInfo) {
+        if (oldInfo.size() != newInfo.size()) return false;
+        
+        final Iterator<InfoLine> oldIt = oldInfo.iterator();
+        final Iterator<Text> newIt = newInfo.iterator();
+
+        while (oldIt.hasNext()) { // Même longueur -> on peut en vérifier qu'un
+            if (!oldIt.next().text.equals(newIt.next())) return false;
+        }
+
+        return true;
+    }
+
+    /** Convertit une liste de `Text` en liste d'`InfoLines`. */
+    public static List<InfoLine> toInfoLines(List<Text> texts) {
         final List<InfoLine> info = new ArrayList<>(texts.size());
         for (Text text : texts) info.add(new InfoLine(text));
-
         return info;
     }
 
@@ -161,9 +180,14 @@ public final class ItemInfo {
      */
     protected static boolean appendBeehiveContent(List<Text> info, ItemStack stack) {
         // Cas où on quitte direct
-        if (info.size() >= MAX_LINES
-                || !(stack.getItem() == Items.BEE_NEST
-                        || stack.getItem() == Items.BEEHIVE)) {
+        try {
+            if (info.size() >= MAX_LINES
+                    || !(stack.getItem() == Items.BEE_NEST
+                            || stack.getItem() == Items.BEEHIVE)) {
+                return false;
+            }
+        } catch (NoSuchFieldError e) {
+            // Compatibilité 1.14
             return false;
         }
 
@@ -419,10 +443,12 @@ public final class ItemInfo {
      * de calculer les même trucs plusieurs fois */
     public static class InfoLine {
 
+        public final Text text; // juste pour la comparaison
         public final String formatted;
         public final int width;
 
         InfoLine(Text text) {
+            this.text = text;
             formatted = text.asFormattedString();
             width = textRenderer.getStringWidth(formatted);
         }
