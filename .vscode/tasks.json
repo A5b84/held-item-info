@@ -17,6 +17,6 @@
             "type": "shell",
             "command": "./gradlew.bat build",
             "group": "build"
-        },
+        }
     ]
 }
