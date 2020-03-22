@@ -37,8 +37,9 @@ public abstract class HeldItemTooltipMixin extends DrawableHelper {
     @Shadow
     public TextRenderer getFontRenderer() { return null; }
 
-    private final float OFFSET_PER_LINE = 6.5f; // Décalage en y par ligne
-    private final int LINE_HEIGHT = 8;
+    private static final int FONT_HEIGHT = 9;
+    private static final int LINE_HEIGHT = FONT_HEIGHT - 1;
+    private static final float OFFSET_PER_EXTRA_LINE = LINE_HEIGHT - .334f; // Décalage par ligne en plus
 
 
 
@@ -63,7 +64,7 @@ public abstract class HeldItemTooltipMixin extends DrawableHelper {
     )
     public void onBeforeRenderHeldItemTooltip(CallbackInfo ci) {
         // 50 = 32 (hotbar) + 14 (vie + xp) + 4 (espaces) (je crois)
-        y = scaledHeight - 50 - (int) (OFFSET_PER_LINE * info.size());
+        y = scaledHeight - 50 - FONT_HEIGHT - (int) (OFFSET_PER_EXTRA_LINE * (info.size() - 1));
         if (!this.client.interactionManager.hasStatusBars()) y += 14;
     }
 
