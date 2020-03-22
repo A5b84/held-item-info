@@ -11,6 +11,12 @@
                 "kind": "build",
                 "isDefault": true
             }
-        }
+        },
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "./gradlew.bat build",
+            "group": "build"
+        },
     ]
 }
