@@ -4,19 +4,29 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Build",
+            "type": "shell",
+            "command": "./gradlew.bat build",
+            "group": "build"
+        },
+        {
             "label": "Build + copie",
             "type": "shell",
-            "command": "./gradlew.bat build; scp ./build/libs/held-item-info-1.1.1.jar C:/Users/Nicolas/AppData/Roaming/.minecraft/mods/",
+            "command": "./gradlew.bat build; scp ./build/libs/held-item-info-1.1.2.jar C:/Users/Nicolas/AppData/Roaming/.minecraft/mods/",
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
         },
         {
-            "label": "Build",
+            "label": "Clean",
             "type": "shell",
-            "command": "./gradlew.bat build",
-            "group": "build"
+            "command": "./gradlew.bat clean"
+        },
+        {
+            "label": "genSources",
+            "type": "shell",
+            "command": "./gradlew.bat genSources"
         }
     ]
 }

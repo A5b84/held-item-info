@@ -9,7 +9,6 @@ import com.google.gson.JsonParseException;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.client.util.Texts;
 import net.minecraft.item.BannerPatternItem;
 import net.minecraft.item.CommandBlockItem;
 import net.minecraft.item.EnchantedBookItem;
@@ -27,6 +26,8 @@ import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -59,7 +60,7 @@ public final class ItemInfo {
     /** Crée la liste d'infos de l'item (nom inclu). */
     public static List<Text> buildInfo(ItemStack stack) {
         // Nom de l'item
-        final Text stackName = new LiteralText("") // Pour pas remplacer les styles
+        final MutableText stackName = new LiteralText("") // Pour pas remplacer les styles (nom en couleur)
                 .append(stack.getName())
                 .formatted(stack.getRarity().formatting);
         if (stack.hasCustomName()) stackName.formatted(Formatting.ITALIC);
@@ -126,7 +127,7 @@ public final class ItemInfo {
      * @param list Trucs à ajouter
      * @return `true` si un truc a été ajouté
      */
-    protected static boolean appendToInfo(List<Text> info, List<Text> list) {
+    protected static boolean appendToInfo(List<Text> info, List<? extends Text> list) {
         if (info.size() >= MAX_LINES) {
             // Cas infos déjà pleines
             return false;
@@ -227,21 +228,26 @@ public final class ItemInfo {
         String command = blockEntityTag.getString("Command").trim();
         if (command.isEmpty()) return false;
 
-        // Troncage
+        // Pré-troncage (pour pas faire trop de trucs pour rien)
         final int maxLines = Math.min(MAX_LINES - info.size(), MAX_COMMAND_LINES);
-        final int maxLength = (int) (maxLines * MAX_COMMAND_LINE_LENGTH * 1.125);
+        final int maxLength = (int) (maxLines * MAX_COMMAND_LINE_LENGTH * 1.25); // (pour avoir de la marge)
         final boolean shouldCut = command.length() > maxLength;
-        if (shouldCut) {
-            command = command.substring(0, maxLength);
-        }
+        if (shouldCut) command = command.substring(0, maxLength);
 
         // Découpage en morceaux
-        List<Text> lines = Texts.wrapLines(
-            new LiteralText(command),
-            MAX_COMMAND_LINE_LENGTH * 6,
-            textRenderer,
-            false, false
+        // Inspiré de ChatMessages#breakRenderedChatMessageLines
+        // et TextHandler#wrapLines(String, int maxWidth, Style)
+        final List<MutableText> fLines = new ArrayList<>(maxLines);
+        final String fCommand = command; // final pour pouvoir l'utiliser après
+        textRenderer.getTextHandler().wrapLines(
+            command,
+            MAX_COMMAND_LINE_LENGTH * 6, // Largeur
+            Style.EMPTY, false,
+            (style, start, end) -> {
+                fLines.add(new LiteralText(fCommand.substring(start, end)));
+            }
         );
+        List<MutableText> lines = fLines; // Pcq l'autre doit être final
 
         // Retroncage
         if (shouldCut || lines.size() > maxLines) {
@@ -250,7 +256,7 @@ public final class ItemInfo {
         }
 
         // Formattage
-        for (Text text : lines) text.formatted(Formatting.GRAY);
+        for (final MutableText text : lines) text.formatted(Formatting.GRAY);
 
         // Ajout
         return appendToInfo(info, lines);
@@ -273,7 +279,7 @@ public final class ItemInfo {
         final CompoundTag tag = stack.getSubTag("BlockEntityTag");
         if (tag == null) return false;
 
-        final ListTag items = tag.getList("Items", 10); // 10: CompoundTag
+        final ListTag items = tag.getList("Items", 10); // 10 = CompoundTag
 
         List<Text> newInfo = new ArrayList<>(MAX_LINES - info.size());
 
@@ -293,6 +299,7 @@ public final class ItemInfo {
                     // Ajout du nom si pas encore plein
                     newInfo.add(
                         iStack.getName()
+                        .shallowCopy() // Pour avoir un MutableText
                         .append(" x" + iStack.getCount())
                         .formatted(Formatting.GRAY)
                     );
@@ -377,25 +384,22 @@ public final class ItemInfo {
         final CompoundTag blockEntityTag = stack.getSubTag("BlockEntityTag");
         if (blockEntityTag == null) return false;
 
-        final List<Text> lines = new ArrayList<>(4);
+        final List<MutableText> lines = new ArrayList<>(4);
 
         // Ajout
         for (int i = 0; i < 4; i++) {
-            Text text;
+            MutableText text;
 
             try {
-                text = Text.Serializer.fromJson(
+                text = MutableText.Serializer.fromJson(
                     blockEntityTag.getString("Text" + (i + 1))
                 );
             } catch (JsonParseException e) {
                 continue;
             }
 
-            System.out.println("yyyy" + text);
-
             if (text == null) continue;
             final String str = text.asString();
-            System.out.println("yyyy" + str);
             if (str.trim().isEmpty()) continue;
 
             // Remplissage des lignes d'avant (si vides) + ajout
@@ -403,7 +407,7 @@ public final class ItemInfo {
             lines.add(new LiteralText(str));
         }
 
-        for (Text text : lines) text.formatted(Formatting.GRAY);
+        for (MutableText text : lines) text.formatted(Formatting.GRAY);
 
         return appendToInfo(info, lines);
     }
@@ -443,14 +447,12 @@ public final class ItemInfo {
      * de calculer les même trucs plusieurs fois */
     public static class InfoLine {
 
-        public final Text text; // juste pour la comparaison
-        public final String formatted;
+        public final Text text;
         public final int width;
 
         InfoLine(Text text) {
             this.text = text;
-            formatted = text.asFormattedString();
-            width = textRenderer.getStringWidth(formatted);
+            width = textRenderer.getWidth(text);
         }
     }
 
