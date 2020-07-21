@@ -8,13 +8,13 @@
     "description": "Shows information about the held item under its name",
     "icon": "assets/held-item-info/icon.png",
     "authors": ["Neecko"],
-    "contact": {  
+    "contact": {
         "homepage": "https://www.curseforge.com/minecraft/mc-mods/held-item-info",
         "issues": "https://github.com/A5b84/held-item-info/issues",
         "sources": "https://github.com/A5b84/held-item-info"
     },
-    "license": "CC-BY-NC-4.0",
-    
+    "license": "CC-BY-NC-SA-4.0",
+
     "environment": "client",
     "entrypoints": {
         "client": ["io.github.a5b84.helditeminfo.HeldItemInfoMod"]
