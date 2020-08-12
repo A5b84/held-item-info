@@ -20,7 +20,6 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 
 /**
@@ -60,7 +59,7 @@ public abstract class HeldItemTooltipMixin extends DrawableHelper {
      * @see InGameHud#renderHeldItemTooltip */
     @Inject(
         method = "renderHeldItemTooltip",
-        at = @At(value = "INVOKE", target = "net/minecraft/client/font/TextRenderer.getWidth(Lnet/minecraft/text/StringRenderable;)I")
+        at = @At(value = "INVOKE", target = "net/minecraft/client/font/TextRenderer.getWidth(Lnet/minecraft/text/StringVisitable;)I")
         //      Pas HEAD pour faire des trucs que si ça va afficher
     )
     public void onBeforeRenderHeldItemTooltip(CallbackInfo ci) {
@@ -104,9 +103,9 @@ public abstract class HeldItemTooltipMixin extends DrawableHelper {
      * @see InGameHud#renderHeldItemTooltip */
     @Redirect(
         method = "renderHeldItemTooltip",
-        at = @At(value = "INVOKE", target = "net/minecraft/client/font/TextRenderer.drawWithShadow(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/text/StringRenderable;FFI)I")
+        at = @At(value = "INVOKE", target = "net/minecraft/client/font/TextRenderer.drawWithShadow(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/text/Text;FFI)I")
     )
-    private int drawTextProxy(TextRenderer fontRenderer, MatrixStack stack, StringRenderable name, float _x, float _y, int color) {
+    private int drawTextProxy(TextRenderer fontRenderer, MatrixStack stack, Text name, float _x, float _y, int color) {
         for (final InfoLine line : info) {
             final int x = (scaledWidth - line.width) / 2;
             fontRenderer.drawWithShadow(stack, line.text, x, y, color);

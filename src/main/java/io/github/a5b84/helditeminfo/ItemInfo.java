@@ -101,7 +101,7 @@ public final class ItemInfo {
     /** Compare une liste d'infos et une liste de textes. */
     public static boolean areEqual(List<InfoLine> oldInfo, List<Text> newInfo) {
         if (oldInfo.size() != newInfo.size()) return false;
-        
+
         final Iterator<InfoLine> oldIt = oldInfo.iterator();
         final Iterator<Text> newIt = newInfo.iterator();
 
