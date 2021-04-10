@@ -8,4 +8,5 @@ public class HeldItemInfoMod implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {}
+
 }

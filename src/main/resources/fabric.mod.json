@@ -1,19 +1,19 @@
 {
     "schemaVersion": 1,
-
     "id": "held-item-info",
     "version": "${version}",
 
     "name": "Held Item Info",
     "description": "Shows information about the held item under its name",
-    "icon": "assets/held-item-info/icon.png",
-    "authors": ["Neecko"],
+    "authors": ["Neecko5b84"],
     "contact": {
         "homepage": "https://www.curseforge.com/minecraft/mc-mods/held-item-info",
         "issues": "https://github.com/A5b84/held-item-info/issues",
         "sources": "https://github.com/A5b84/held-item-info"
     },
+
     "license": "LGPL-3.0-or-later",
+    "icon": "assets/held-item-info/icon.png",
 
     "environment": "client",
     "entrypoints": {
@@ -22,6 +22,7 @@
     "mixins": ["held-item-info.mixins.json"],
 
     "depends": {
-        "minecraft": ">=1.16.2"
+        "minecraft": ">=1.16.2",
+        "fabric-api-base": "*"
     }
 }
