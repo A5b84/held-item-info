@@ -34,25 +34,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static io.github.a5b84.helditeminfo.Mod.config;
+
 /** Creates additional lines for an item's tooltip using {@link #buildInfo(ItemStack)} */
 public final class InfoBuilder {
 
     private InfoBuilder() {}
 
-
-
-    /** Max number of lines including the name */
-    public static final int MAX_LINES = 6;
-
-    /** Max number of lines for the command of command blocks */
-    public static final int MAX_COMMAND_LINES = 2;
-
-    /** Max length of each line of a command */
-    public static final int MAX_COMMAND_LINE_LENGTH = 32;
-    
     private static final Formatting COLOR = Formatting.GRAY;
-
-
 
     private static final TextRenderer TEXT_RENDERER = MinecraftClient.getInstance().textRenderer;
 
@@ -66,7 +55,7 @@ public final class InfoBuilder {
                 .formatted(stack.getRarity().formatting);
         if (stack.hasCustomName()) stackName.formatted(Formatting.ITALIC);
 
-        final List<Text> lines = new ArrayList<>(MAX_LINES);
+        final List<Text> lines = new ArrayList<>(config.maxLines());
         lines.add(stackName);
 
         // Item-related lines
@@ -129,14 +118,14 @@ public final class InfoBuilder {
     /** Adds the content of {@code newInfo} to {@code info} and handles truncating
      * @return {@code true} if something changed */
     private static boolean appendToInfo(List<Text> info, List<? extends Text> newInfo) {
-        if (info.size() >= MAX_LINES) {
+        if (info.size() >= config.maxLines()) {
             // Already full
             return false;
         }
 
-        if (MAX_LINES - info.size() < newInfo.size()) {
+        if (config.maxLines() - info.size() < newInfo.size()) {
             // Some room left but not enough
-            final int addedLength = MAX_LINES - info.size() - 1;
+            final int addedLength = config.maxLines() - info.size() - 1;
             info.addAll(newInfo.subList(0, addedLength));
 
             info.add(
@@ -161,7 +150,7 @@ public final class InfoBuilder {
     private static boolean appendUsualTooltip(
             List<Text> info, ItemStack stack, Class<? extends Item> clazz
     ) {
-        if (info.size() >= MAX_LINES
+        if (info.size() >= config.maxLines()
                 || !clazz.isInstance(stack.getItem())) {
             return false;
         }
@@ -175,7 +164,7 @@ public final class InfoBuilder {
     /** Adds the number of bees inside
      * @return {@code true} if something changed */
     private static boolean appendBeehiveContent(List<Text> info, ItemStack stack) {
-        if (info.size() >= MAX_LINES
+        if (info.size() >= config.maxLines()
                 || !(stack.getItem() == Items.BEE_NEST || stack.getItem() == Items.BEEHIVE)) {
             return false;
         }
@@ -202,7 +191,7 @@ public final class InfoBuilder {
      * @see TextHandler#wrapLines(String, int, Style)
      */
     private static boolean appendCommandBlockInfo(List<Text> info, ItemStack stack) {
-        if (info.size() >= MAX_LINES || !(stack.getItem() instanceof CommandBlockItem)) {
+        if (info.size() >= config.maxLines() || !(stack.getItem() instanceof CommandBlockItem)) {
             return false;
         }
 
@@ -214,8 +203,8 @@ public final class InfoBuilder {
         if (command.isEmpty()) return false;
 
         // Shorten it
-        final int cmdLines = Math.min(MAX_LINES - info.size(), MAX_COMMAND_LINES);
-        final int maxLength = (int) (cmdLines * MAX_COMMAND_LINE_LENGTH * 1.25); // (*1.25 to leave some room)
+        final int cmdLines = Math.min(config.maxLines() - info.size(), config.maxCommandLines());
+        final int maxLength = (int) (cmdLines * config.maxCommandLineLength() * 1.25); // (*1.25 to leave some room)
         final boolean shouldCut = command.length() > maxLength;
         if (shouldCut) command = command.substring(0, maxLength);
 
@@ -224,7 +213,7 @@ public final class InfoBuilder {
         final String fCommand = command; // `final` to reference it in the lambda
         TEXT_RENDERER.getTextHandler().wrapLines(
             command,
-            MAX_COMMAND_LINE_LENGTH * 6, // Largeur
+            config.maxCommandLineLength() * 6, // 6px per character
             Style.EMPTY, false,
             (style, start, end) -> fLines.add(new LiteralText(fCommand.substring(start, end)))
         );
@@ -253,7 +242,7 @@ public final class InfoBuilder {
      */
     @SuppressWarnings("UnusedReturnValue")
     private static boolean appendContainerContent(List<Text> info, ItemStack stack) {
-        if (info.size() >= MAX_LINES) {
+        if (info.size() >= config.maxLines()) {
             return false;
         }
 
@@ -262,7 +251,7 @@ public final class InfoBuilder {
 
         final ListTag items = tag.getList("Items", NbtType.COMPOUND);
 
-        List<Text> newInfo = new ArrayList<>(MAX_LINES - info.size());
+        List<Text> newInfo = new ArrayList<>(config.maxLines() - info.size());
 
         // Loot table (same as vanilla)
         if (tag.contains("LootTable", 8)) newInfo.add(new LiteralText("???????"));
@@ -276,7 +265,7 @@ public final class InfoBuilder {
                 final ItemStack iStack = ItemStack.fromTag(itemTag);
                 if (iStack.isEmpty()) continue;
 
-                if (info.size() + newInfo.size() < MAX_LINES) {
+                if (info.size() + newInfo.size() < config.maxLines()) {
                     // Add it if possible
                     newInfo.add(
                         iStack.getName()
@@ -299,10 +288,7 @@ public final class InfoBuilder {
      * @return {@code true} if something changed */
     @SuppressWarnings("UnusedReturnValue")
     private static boolean appendEnchantments(List<Text> info, ItemStack stack) {
-        //noinspection ConstantConditions
-        if (info.size() >= MAX_LINES
-                || !(stack.getItem().isEnchantable(stack) || stack.getItem() instanceof EnchantedBookItem)
-                || (stack.getTag().getInt("HideFlags") & 1) != 0) {
+        if (info.size() >= config.maxLines() || shouldHide(stack.getTag(), 1)) {
             return false;
         }
 
@@ -317,7 +303,7 @@ public final class InfoBuilder {
     /** Add a potion's effects
      * @return {@code true} if something changed */
     private static boolean appendPotionEffects(List<Text> info, ItemStack stack) {
-        List<Text> potionInfo = new ArrayList<>(MAX_LINES);
+        List<Text> potionInfo = new ArrayList<>(config.maxLines());
 
         if (!appendUsualTooltip(potionInfo, stack, PotionItem.class)
                 && !appendUsualTooltip(potionInfo, stack, LingeringPotionItem.class)
@@ -343,7 +329,7 @@ public final class InfoBuilder {
     /** Add a sign's text
      * @return {@code true} if something changed */
     private static boolean appendSignText(List<Text> info, ItemStack stack) {
-        if (info.size() >= MAX_LINES || !(stack.getItem() instanceof SignItem)) {
+        if (info.size() >= config.maxLines() || !(stack.getItem() instanceof SignItem)) {
             return false;
         }
 
@@ -386,13 +372,13 @@ public final class InfoBuilder {
      * @return {@code true} if something changed */
     @SuppressWarnings("UnusedReturnValue")
     private static boolean appendUnbreakable(List<Text> info, ItemStack stack) {
-        if (info.size() >= MAX_LINES || !stack.getItem().isDamageable()) {
+        if (info.size() >= config.maxLines() || !stack.getItem().isDamageable()) {
             return false;
         }
 
         final CompoundTag tag = stack.getTag();
 
-        if (tag == null || !tag.getBoolean("Unbreakable") || (tag.getInt("HideFlags") & 4) != 0) {
+        if (tag == null || !tag.getBoolean("Unbreakable") || shouldHide(tag, 4)) {
             return false;
         }
 
@@ -401,6 +387,13 @@ public final class InfoBuilder {
         );
 
         return true;
+    }
+
+
+    /** @return {@code true} if something should be hidden according to the
+     * {@code HideFlags} tag and the user preference */
+    private static boolean shouldHide(CompoundTag tag, int flag) {
+        return config.respectHideFlags() && (tag.getInt("HideFlags") & flag) != 0;
     }
 
 

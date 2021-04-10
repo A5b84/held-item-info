@@ -1,0 +1,21 @@
+{
+    "text.autoconfig.held-item-info.title": "Held Item Info Config",
+
+    "text.autoconfig.held-item-info.option.maxLines":  "Max Number of Lines",
+    "text.autoconfig.held-item-info.option.maxLines.@Tooltip":  "The maximum number of lines to display including the item name",
+    "text.autoconfig.held-item-info.option.maxCommandLines": "Max Number of Command Lines",
+    "text.autoconfig.held-item-info.option.maxCommandLines.@Tooltip": "The maximum number of lines of a Command Block's command to display",
+    "text.autoconfig.held-item-info.option.maxCommandLineLength":  "Max Command Line Length",
+    "text.autoconfig.held-item-info.option.maxCommandLineLength.@Tooltip":  "The maximum-ish number of characters per line of a Command Block's command",
+    "text.autoconfig.held-item-info.option.respectHideFlags": "Respect HideFlags Tags",
+    "text.autoconfig.held-item-info.option.respectHideFlags.@Tooltip": "Only show information when the corresponding HideFlags tag is set",
+    "text.autoconfig.held-item-info.option.lineHeight":  "Line Height",
+    "text.autoconfig.held-item-info.option.lineHeight.@Tooltip":  "The height of each line in pixels",
+    "text.autoconfig.held-item-info.option.offsetPerExtraLine": "Vertical Offset per Extra Line",
+    "text.autoconfig.held-item-info.option.offsetPerExtraLine.@Tooltip[0]": "The vertical offset in pixels of all the text per extra line",
+    "text.autoconfig.held-item-info.option.offsetPerExtraLine.@Tooltip[1]": "By default, this makes the tooltip get closer to the hotbar the more lines there are",
+    "text.autoconfig.held-item-info.option.baseFadeDuration":  "Base Fade Duration",
+    "text.autoconfig.held-item-info.option.baseFadeDuration.@Tooltip":  "The time in seconds it takes for a one line tooltip to disappear",
+    "text.autoconfig.held-item-info.option.fadeDurationPerExtraLine": "Additional Fade Duration per Extra Line",
+    "text.autoconfig.held-item-info.option.fadeDurationPerExtraLine.@Tooltip": "The additional time before the tooltip fades out per extra line"
+}
