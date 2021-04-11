@@ -23,12 +23,15 @@ import net.minecraft.item.TippedArrowItem;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.InvalidIdentifierException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -49,23 +52,26 @@ public final class InfoBuilder {
 
     /** Creates additional lines for an item's tooltip */
     public static List<Text> buildInfo(ItemStack stack) {
-        // Item name
-        final MutableText stackName = new LiteralText("") // Prevents overwriting the name formatting
-                .append(stack.getName())
-                .formatted(stack.getRarity().formatting);
-        if (stack.hasCustomName()) stackName.formatted(Formatting.ITALIC);
-
         final List<Text> lines = new ArrayList<>(config.maxLines());
-        lines.add(stackName);
+
+        if (config.showName()) {
+            // Item name
+            final MutableText stackName = new LiteralText("") // Prevents overwriting the name formatting
+                    .append(stack.getName())
+                    .formatted(stack.getRarity().formatting);
+            if (stack.hasCustomName()) stackName.formatted(Formatting.ITALIC);
+
+            lines.add(stackName);
+        }
 
         // Item-related lines
         appendItemRelatedLines(lines, stack);
 
         // Tag-relates lines
         if (stack.hasTag()) {
-            appendContainerContent(lines, stack);
-            appendEnchantments(lines, stack);
-            appendUnbreakable(lines, stack);
+            if (config.showContainerContent()) appendContainerContent(lines, stack);
+            if (config.showEnchantments()) appendEnchantments(lines, stack);
+            if (config.showUnbreakable()) appendUnbreakable(lines, stack);
         }
 
         // Done
@@ -75,17 +81,17 @@ public final class InfoBuilder {
     /** Adds lines dependant on the item itself */
     private static void appendItemRelatedLines(List<Text> lines, ItemStack stack) {
         // Specific stuff
-        if (appendBeehiveContent(lines, stack)) return;
-        if (appendCommandBlockInfo(lines, stack)) return;
-        if (appendPotionEffects(lines, stack)) return;
-        if (appendSignText(lines, stack)) return;
+        if (config.showBeehiveContent() && appendBeehiveContent(lines, stack)) return;
+        if (config.showCommandBlockInfo() && appendCommandBlockInfo(lines, stack)) return;
+        if (config.showPotionEffects() && appendPotionEffects(lines, stack)) return;
+        if (config.showSignText() && appendSignText(lines, stack)) return;
 
         // Somewhat generic stuff
-        if (appendUsualTooltip(lines, stack, BannerPatternItem.class)) return;
-        if (appendUsualTooltip(lines, stack, FireworkItem.class)) return;
-        if (appendUsualTooltip(lines, stack, FishBucketItem.class)) return;
-        if (appendUsualTooltip(lines, stack, MusicDiscItem.class)) return;
-        appendUsualTooltip(lines, stack, WrittenBookItem.class);
+        if (config.showPatternName() && appendUsualTooltip(lines, stack, BannerPatternItem.class)) return;
+        if (config.showFireworkEffects() && appendUsualTooltip(lines, stack, FireworkItem.class)) return;
+        if (config.showFishInBucket() && appendUsualTooltip(lines, stack, FishBucketItem.class)) return;
+        if (config.showMusicDiscDescription() && appendUsualTooltip(lines, stack, MusicDiscItem.class)) return;
+        if (config.showBookMeta()) appendUsualTooltip(lines, stack, WrittenBookItem.class);
     }
 
 
@@ -203,26 +209,33 @@ public final class InfoBuilder {
         if (command.isEmpty()) return false;
 
         // Shorten it
-        final int cmdLines = Math.min(config.maxLines() - info.size(), config.maxCommandLines());
-        final int maxLength = (int) (cmdLines * config.maxCommandLineLength() * 1.25); // (*1.25 to leave some room)
+        final int maxCmdLines = Math.min(config.maxLines() - info.size(), config.maxCommandLines());
+        if (maxCmdLines <= 0) return false;
+
+        double maxLength = 1.25 * maxCmdLines * config.maxCommandLineLength(); // (*1.25 to avoid truncating too much)
+        if (maxLength <= 0) return false;
+        if (maxLength > Integer.MAX_VALUE) maxLength = Integer.MAX_VALUE; // In case the user messed with their config
+
         final boolean shouldCut = command.length() > maxLength;
-        if (shouldCut) command = command.substring(0, maxLength);
+        if (shouldCut) command = command.substring(0, (int) maxLength);
 
         // Split it
-        final List<MutableText> fLines = new ArrayList<>(cmdLines);
+        final List<MutableText> fLines = new ArrayList<>(maxCmdLines);
         final String fCommand = command; // `final` to reference it in the lambda
+        double maxWidth = config.maxCommandLineLength() * 6; // 6px per character
+        if (maxWidth > Integer.MAX_VALUE) maxWidth = Integer.MAX_VALUE; // In case the user messed with their config
         TEXT_RENDERER.getTextHandler().wrapLines(
-            command,
-            config.maxCommandLineLength() * 6, // 6px per character
-            Style.EMPTY, false,
-            (style, start, end) -> fLines.add(new LiteralText(fCommand.substring(start, end)))
+                command,
+                (int) maxWidth,
+                Style.EMPTY, false,
+                (style, start, end) -> fLines.add(new LiteralText(fCommand.substring(start, end)))
         );
 
         // Truncate again
         List<MutableText> lines = fLines;
-        if (shouldCut || lines.size() > cmdLines) {
-            if (lines.size() > cmdLines) lines = lines.subList(0, cmdLines);
-            lines.get(cmdLines - 1).append("...");
+        if (shouldCut || lines.size() > maxCmdLines) {
+            if (lines.size() > maxCmdLines) lines = lines.subList(0, maxCmdLines);
+            lines.get(maxCmdLines - 1).append("...");
         }
 
         // Formatting
@@ -292,9 +305,31 @@ public final class InfoBuilder {
             return false;
         }
 
-        final ListTag enchantments = (stack.getItem() == Items.ENCHANTED_BOOK)
+        ListTag enchantments = (stack.getItem() == Items.ENCHANTED_BOOK)
                 ? EnchantedBookItem.getEnchantmentTag(stack)
                 : stack.getEnchantments();
+
+        if (enchantments.isEmpty()) return false;
+
+        // Filtering
+        final List<Identifier> filters = config.filteredEnchants();
+        if (!filters.isEmpty()) {
+            ListTag filtered = new ListTag();
+
+            for (Tag tag : enchantments) {
+                if (tag instanceof CompoundTag) {
+                    try {
+                        Identifier id = new Identifier(((CompoundTag) tag).getString("id"));
+                        if (filters.contains(id) == config.showOnlyFilteredEnchants()) {
+                            filtered.add(tag);
+                        }
+                    } catch (InvalidIdentifierException ignored) {}
+                }
+            }
+
+            enchantments = filtered;
+        }
+
         final List<Text> enchantmentTexts = new ArrayList<>(enchantments.size());
         ItemStack.appendEnchantments(enchantmentTexts, enchantments);
         return appendToInfo(info, enchantmentTexts);
