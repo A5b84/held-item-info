@@ -26,14 +26,17 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -71,30 +74,13 @@ public final class InfoBuilder {
         if (stack.hasTag()) {
             if (config.showContainerContent()) appendContainerContent(lines, stack);
             if (config.showEnchantments()) appendEnchantments(lines, stack);
+            if (config.showLore()) appendLore(lines, stack);
             if (config.showUnbreakable()) appendUnbreakable(lines, stack);
         }
 
         // Done
         return lines;
     }
-
-    /** Adds lines dependant on the item itself */
-    private static void appendItemRelatedLines(List<Text> lines, ItemStack stack) {
-        // Specific stuff
-        if (config.showBeehiveContent() && appendBeehiveContent(lines, stack)) return;
-        if (config.showCommandBlockInfo() && appendCommandBlockInfo(lines, stack)) return;
-        if (config.showPotionEffects() && appendPotionEffects(lines, stack)) return;
-        if (config.showSignText() && appendSignText(lines, stack)) return;
-
-        // Somewhat generic stuff
-        if (config.showPatternName() && appendUsualTooltip(lines, stack, BannerPatternItem.class)) return;
-        if (config.showFireworkEffects() && appendUsualTooltip(lines, stack, FireworkItem.class)) return;
-        if (config.showFishInBucket() && appendUsualTooltip(lines, stack, FishBucketItem.class)) return;
-        if (config.showMusicDiscDescription() && appendUsualTooltip(lines, stack, MusicDiscItem.class)) return;
-        if (config.showBookMeta()) appendUsualTooltip(lines, stack, WrittenBookItem.class);
-    }
-
-
 
     /** @return true if both lists are equivalent */
     public static boolean areEqual(List<InfoLine> oldInfo, List<Text> newInfo) {
@@ -110,16 +96,12 @@ public final class InfoBuilder {
         return true;
     }
 
-
-
     /** Converts a list of {@link Text} to a list of {@link InfoLine} */
     public static List<InfoLine> toInfoLines(List<Text> texts) {
         final List<InfoLine> info = new ArrayList<>(texts.size());
         for (Text text : texts) info.add(new InfoLine(text));
         return info;
     }
-
-
 
     /** Adds the content of {@code newInfo} to {@code info} and handles truncating
      * @return {@code true} if something changed */
@@ -150,6 +132,22 @@ public final class InfoBuilder {
     }
 
 
+
+    /** Adds lines dependant on the item itself */
+    private static void appendItemRelatedLines(List<Text> lines, ItemStack stack) {
+        // Specific stuff
+        if (config.showBeehiveContent() && appendBeehiveContent(lines, stack)) return;
+        if (config.showCommandBlockInfo() && appendCommandBlockInfo(lines, stack)) return;
+        if (config.showPotionEffects() && appendPotionEffects(lines, stack)) return;
+        if (config.showSignText() && appendSignText(lines, stack)) return;
+
+        // Somewhat generic stuff
+        if (config.showPatternName() && appendUsualTooltip(lines, stack, BannerPatternItem.class)) return;
+        if (config.showFireworkEffects() && appendUsualTooltip(lines, stack, FireworkItem.class)) return;
+        if (config.showFishInBucket() && appendUsualTooltip(lines, stack, FishBucketItem.class)) return;
+        if (config.showMusicDiscDescription() && appendUsualTooltip(lines, stack, MusicDiscItem.class)) return;
+        if (config.showBookMeta()) appendUsualTooltip(lines, stack, WrittenBookItem.class);
+    }
 
     /** Adds the usual tooltip (the one in the inventory)
      * @return {@code true} if something changed */
@@ -192,10 +190,7 @@ public final class InfoBuilder {
     }
 
     /** Adds a command block's command
-     * @return {@code true} if something changed
-     * @see ChatMessages#breakRenderedChatMessageLines
-     * @see TextHandler#wrapLines(String, int, Style)
-     */
+     * @return {@code true} if something changed */
     private static boolean appendCommandBlockInfo(List<Text> info, ItemStack stack) {
         if (info.size() >= config.maxLines() || !(stack.getItem() instanceof CommandBlockItem)) {
             return false;
@@ -208,35 +203,8 @@ public final class InfoBuilder {
         String command = blockEntityTag.getString("Command").trim();
         if (command.isEmpty()) return false;
 
-        // Shorten it
-        final int maxCmdLines = Math.min(config.maxLines() - info.size(), config.maxCommandLines());
-        if (maxCmdLines <= 0) return false;
-
-        double maxLength = 1.25 * maxCmdLines * config.maxCommandLineLength(); // (*1.25 to avoid truncating too much)
-        if (maxLength <= 0) return false;
-        if (maxLength > Integer.MAX_VALUE) maxLength = Integer.MAX_VALUE; // In case the user messed with their config
-
-        final boolean shouldCut = command.length() > maxLength;
-        if (shouldCut) command = command.substring(0, (int) maxLength);
-
-        // Split it
-        final List<MutableText> fLines = new ArrayList<>(maxCmdLines);
-        final String fCommand = command; // `final` to reference it in the lambda
-        double maxWidth = config.maxCommandLineLength() * 6; // 6px per character
-        if (maxWidth > Integer.MAX_VALUE) maxWidth = Integer.MAX_VALUE; // In case the user messed with their config
-        TEXT_RENDERER.getTextHandler().wrapLines(
-                command,
-                (int) maxWidth,
-                Style.EMPTY, false,
-                (style, start, end) -> fLines.add(new LiteralText(fCommand.substring(start, end)))
-        );
-
-        // Truncate again
-        List<MutableText> lines = fLines;
-        if (shouldCut || lines.size() > maxCmdLines) {
-            if (lines.size() > maxCmdLines) lines = lines.subList(0, maxCmdLines);
-            lines.get(maxCmdLines - 1).append("...");
-        }
+        List<MutableText> lines = wrapLines(command, config.maxCommandLines(), info);
+        if (lines.isEmpty()) return false;
 
         // Formatting
         for (final MutableText text : lines) {
@@ -403,6 +371,42 @@ public final class InfoBuilder {
         return appendToInfo(info, lines);
     }
 
+    /** Adds the item's lore
+     * @return {@code true} if something changed */
+    @SuppressWarnings("UnusedReturnValue")
+    private static boolean appendLore(List<Text> info, ItemStack stack) {
+        if (info.size() >= config.maxLines()) {
+            return false;
+        }
+
+        // Get the tag
+        CompoundTag displayTag = stack.getSubTag("display");
+        if (displayTag == null) return false;
+
+        ListTag loreTag = displayTag.getList("Lore", NbtType.STRING);
+        if (loreTag.isEmpty()) return false;
+
+        // Convert it to a list of text
+        List<MutableText> lore = new ArrayList<>();
+        for(int i = 0; i < loreTag.size(); i++) {
+            try {
+                MutableText line = Text.Serializer.fromJson(loreTag.getString(i));
+                if (line != null) {
+                    List<MutableText> newLines = wrapLines(line, config.maxLoreLines() - lore.size(), info);
+                    lore.addAll(newLines);
+                }
+            } catch (JsonParseException e) {
+                return false;
+            }
+        }
+
+        for (MutableText line : lore) {
+            Texts.setStyleIfAbsent(line, Style.EMPTY.withColor(COLOR));
+        }
+
+        return appendToInfo(info, lore);
+    }
+
     /** Adds the 'Unbreakable' line
      * @return {@code true} if something changed */
     @SuppressWarnings("UnusedReturnValue")
@@ -424,6 +428,78 @@ public final class InfoBuilder {
         return true;
     }
 
+
+    /**
+     * @param maxLines The max number of lines the string will be wrapped into
+     * @see ChatMessages#breakRenderedChatMessageLines
+     * @see TextHandler#wrapLines(String, int, Style) */
+    private static List<MutableText> wrapLines(String s, int maxLines, List<Text> info) {
+        // Shorten the string
+        maxLines = Math.min(config.maxLines() - info.size(), maxLines);
+        if (maxLines <= 0) return Collections.emptyList();
+
+        double maxLength = 1.25 * maxLines * config.maxLineLength(); // (*1.25 to avoid truncating too much)
+        if (maxLength <= 0) return Collections.emptyList();
+        if (maxLength > Integer.MAX_VALUE) maxLength = Integer.MAX_VALUE;
+        //      ^ In case the user messed with their config (could crash)
+
+        final boolean shouldCut = s.length() > maxLength;
+        if (shouldCut) s = s.substring(0, (int) maxLength);
+
+        // Split it
+        final List<MutableText> fLines = new ArrayList<>(maxLines);
+        final String finalString = s; // `final` required to reference it in the lambda
+        double maxWidth = config.maxLineLength() * 6; // ~6px per character
+        if (maxWidth > Integer.MAX_VALUE) maxWidth = Integer.MAX_VALUE;
+        //      ^ In case the user messed with their config (could crash)
+        TEXT_RENDERER.getTextHandler().wrapLines(
+                s, (int) maxWidth, Style.EMPTY, false,
+                (style, start, end) -> fLines.add(new LiteralText(finalString.substring(start, end)))
+        );
+
+        // Truncate again
+        List<MutableText> lines = fLines;
+        if (shouldCut || lines.size() > maxLines) {
+            if (lines.size() > maxLines) lines = lines.subList(0, maxLines);
+            lines.get(maxLines - 1).append("..."); // maxLines > 0
+        }
+
+        // Done
+        return lines;
+    }
+
+    /**
+     * @param maxLines The max number of lines the string will be wrapped into
+     * @see ChatMessages#breakRenderedChatMessageLines
+     * @see TextHandler#wrapLines(String, int, Style) */
+    private static List<MutableText> wrapLines(StringVisitable s, int maxLines, List<Text> info) {
+        // TODO somehow make this not yeet styles
+        maxLines = Math.min(config.maxLines() - info.size(), maxLines);
+        if (maxLines <= 0) return Collections.emptyList();
+
+        // Split
+        double maxWidth = config.maxLineLength() * 6; // ~6px per character
+        if (maxWidth > Integer.MAX_VALUE) maxWidth = Integer.MAX_VALUE;
+        //      ^ In case the user messed with their config (could crash)
+        List<StringVisitable> strings = TEXT_RENDERER.getTextHandler().wrapLines(
+                s, (int) maxWidth, Style.EMPTY
+        );
+
+        // Convert and truncate
+        List<MutableText> lines = new ArrayList<>(maxLines);
+        for (StringVisitable visitable : strings) {
+            lines.add(new LiteralText(visitable.getString()));
+            if (lines.size() >= maxLines) {
+                if (strings.size() > maxLines) {
+                    lines.get(maxLines - 1).append("...");
+                }
+                break;
+            }
+        }
+
+        // Done
+        return lines;
+    }
 
     /** @return {@code true} if something should be hidden according to the
      * {@code HideFlags} tag and the user preference */

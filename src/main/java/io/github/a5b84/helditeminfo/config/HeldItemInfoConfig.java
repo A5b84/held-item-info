@@ -3,7 +3,7 @@ package io.github.a5b84.helditeminfo.config;
 import io.github.a5b84.helditeminfo.Mod;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
-import me.shedaniel.autoconfig.annotation.ConfigEntry;
+import me.shedaniel.autoconfig.annotation.ConfigEntry.BoundedDiscrete;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Category;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.PrefixText;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.Tooltip;
@@ -20,26 +20,18 @@ public class HeldItemInfoConfig {
     // General stuff
 
     public int maxLines() { return 6; }
-    public int maxCommandLines() { return 2; }
-    public int maxCommandLineLength() { return 32; }
+    public int maxLineLength() { return 48; }
     public boolean respectHideFlags() { return true; }
-
-
-
-    // Layout stuff
 
     public int lineHeight() { return FONT_HEIGHT - 1; }
     public float offsetPerExtraLine() { return .3334f; }
     public float baseFadeDuration() { return 2; }
     public float fadeDurationPerExtraLine() { return 0.2f; }
 
-
-
-    // Content stuff
-
     public boolean showName() { return true; }
     public boolean showBeehiveContent() { return true; }
     public boolean showCommandBlockInfo() { return true; }
+    public int maxCommandLines() { return 2; }
     public boolean showPotionEffects() { return true; }
     public boolean showSignText() { return true; }
     public boolean showPatternName() { return true; }
@@ -49,6 +41,8 @@ public class HeldItemInfoConfig {
     public boolean showBookMeta() { return true; }
     public boolean showContainerContent() { return true; }
     public boolean showEnchantments() { return true; }
+    public boolean showLore() { return true; }
+    public int maxLoreLines() { return 3; }
     public boolean showUnbreakable() { return true; }
 
 
@@ -65,15 +59,12 @@ public class HeldItemInfoConfig {
     @Config(name = Mod.ID)
     public static class HeldItemInfoAutoConfig extends HeldItemInfoConfig implements ConfigData {
 
-        @PrefixText @ConfigEntry.BoundedDiscrete(max = 40)
+        @BoundedDiscrete(max = 40)
         @Tooltip private int maxLines = super.maxLines();
-        @ConfigEntry.BoundedDiscrete(max = 40)
-        @Tooltip private int maxCommandLines = super.maxCommandLines();
-        @ConfigEntry.BoundedDiscrete(max = 240)
-        @Tooltip private int maxCommandLineLength = super.maxCommandLineLength();
+        @BoundedDiscrete(max = 240)
+        @Tooltip(count = 2) private int maxLineLength = super.maxLineLength();
         @Tooltip private boolean respectHideFlags = super.respectHideFlags();
 
-        @PrefixText
         @Tooltip private int lineHeight = super.lineHeight();
         @Tooltip(count = 2) private float offsetPerExtraLine = super.offsetPerExtraLine();
         @Tooltip private float baseFadeDuration = super.baseFadeDuration();
@@ -83,6 +74,8 @@ public class HeldItemInfoConfig {
         private boolean showName = super.showName();
         private boolean showBeehiveContent = super.showBeehiveContent();
         private boolean showCommandBlockInfo = super.showCommandBlockInfo();
+        @BoundedDiscrete(max = 40)
+        @Tooltip private int maxCommandLines = super.maxCommandLines();
         private boolean showPotionEffects = super.showPotionEffects();
         private boolean showSignText = super.showSignText();
         @Tooltip private boolean showPatternName = super.showPatternName();
@@ -92,6 +85,8 @@ public class HeldItemInfoConfig {
         private boolean showBookMeta = super.showBookMeta();
         private boolean showContainerContent = super.showContainerContent();
         private boolean showEnchantments = super.showEnchantments();
+        private boolean showLore = super.showLore();
+        private int maxLoreLines = super.maxLoreLines();
         private boolean showUnbreakable = super.showUnbreakable();
 
         @Category("enchants")
@@ -102,8 +97,7 @@ public class HeldItemInfoConfig {
 
 
         @Override public int maxLines() { return maxLines; }
-        @Override public int maxCommandLines() { return maxCommandLines; }
-        @Override public int maxCommandLineLength() { return maxCommandLineLength; }
+        @Override public int maxLineLength() { return maxLineLength; }
         @Override public boolean respectHideFlags() { return respectHideFlags; }
 
         @Override public int lineHeight() { return lineHeight; }
@@ -114,6 +108,7 @@ public class HeldItemInfoConfig {
         @Override public boolean showName() { return showName; }
         @Override public boolean showBeehiveContent() { return showBeehiveContent; }
         @Override public boolean showCommandBlockInfo() { return showCommandBlockInfo; }
+        @Override public int maxCommandLines() { return maxCommandLines; }
         @Override public boolean showPotionEffects() { return showPotionEffects; }
         @Override public boolean showSignText() { return showSignText; }
         @Override public boolean showPatternName() { return showPatternName; }
@@ -123,9 +118,12 @@ public class HeldItemInfoConfig {
         @Override public boolean showBookMeta() { return showBookMeta; }
         @Override public boolean showContainerContent() { return showContainerContent; }
         @Override public boolean showEnchantments() { return showEnchantments; }
+        @Override public boolean showLore() { return showLore; }
+        @Override public int maxLoreLines() { return maxLoreLines; }
         @Override public boolean showUnbreakable() { return showUnbreakable; }
 
         public boolean showOnlyFilteredEnchants() { return showOnlyFilteredEnchants; }
+
         public List<Identifier> filteredEnchants() {
             List<Identifier> result = new LinkedList<>();
             for (String enchant : filteredEnchants) {

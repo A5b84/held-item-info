@@ -3,17 +3,14 @@
 
     "text.autoconfig.held-item-info.category.default":  "General Settings",
 
-    "text.autoconfig.held-item-info.option.maxLines.@PrefixText":  "General Settings",
     "text.autoconfig.held-item-info.option.maxLines":  "Max Number of Lines",
     "text.autoconfig.held-item-info.option.maxLines.@Tooltip":  "The maximum number of lines to display including the item name",
-    "text.autoconfig.held-item-info.option.maxCommandLines": "Max Number of Command Lines",
-    "text.autoconfig.held-item-info.option.maxCommandLines.@Tooltip": "The maximum number of lines of a Command Block's command to display",
-    "text.autoconfig.held-item-info.option.maxCommandLineLength":  "Max Command Line Length",
-    "text.autoconfig.held-item-info.option.maxCommandLineLength.@Tooltip":  "The maximum-ish number of characters per line of a Command Block's command",
+    "text.autoconfig.held-item-info.option.maxLineLength":  "Max Line Length",
+    "text.autoconfig.held-item-info.option.maxLineLength.@Tooltip[0]":  "The maximum-ish number of characters per line",
+    "text.autoconfig.held-item-info.option.maxLineLength.@Tooltip[1]":  "§iThis only affects lore and command blocks",
     "text.autoconfig.held-item-info.option.respectHideFlags": "Respect HideFlags Tags",
     "text.autoconfig.held-item-info.option.respectHideFlags.@Tooltip": "Only show information when the corresponding HideFlags NBT tag is not set",
 
-    "text.autoconfig.held-item-info.option.lineHeight.@PrefixText":  "Layout Settings",
     "text.autoconfig.held-item-info.option.lineHeight":  "Line Height",
     "text.autoconfig.held-item-info.option.lineHeight.@Tooltip":  "The height of each line in pixels",
     "text.autoconfig.held-item-info.option.offsetPerExtraLine": "Vertical Offset per Extra Line",
@@ -24,10 +21,12 @@
     "text.autoconfig.held-item-info.option.fadeDurationPerExtraLine": "Additional Fade Duration per Extra Line",
     "text.autoconfig.held-item-info.option.fadeDurationPerExtraLine.@Tooltip": "The additional time before the tooltip fades out per extra line",
 
-    "text.autoconfig.held-item-info.option.showName.@PrefixText":  "Content Settings",
+    "text.autoconfig.held-item-info.option.showName.@PrefixText":  "Content Toggles",
     "text.autoconfig.held-item-info.option.showName": "Item Name",
     "text.autoconfig.held-item-info.option.showBeehiveContent": "Beehive/Bee Nest Content",
     "text.autoconfig.held-item-info.option.showCommandBlockInfo": "Command Block Command",
+    "text.autoconfig.held-item-info.option.maxCommandLines": "Max Number of Command Lines",
+    "text.autoconfig.held-item-info.option.maxCommandLines.@Tooltip": "The maximum number of lines of a Command Block's command to display",
     "text.autoconfig.held-item-info.option.showPotionEffects": "Potion Effects",
     "text.autoconfig.held-item-info.option.showSignText": "Sign Text",
     "text.autoconfig.held-item-info.option.showPatternName": "Banner Pattern Name",
@@ -38,6 +37,8 @@
     "text.autoconfig.held-item-info.option.showBookMeta": "Book Author and Generation",
     "text.autoconfig.held-item-info.option.showContainerContent": "Container Content",
     "text.autoconfig.held-item-info.option.showEnchantments": "Enchantments",
+    "text.autoconfig.held-item-info.option.showLore": "Lore",
+    "text.autoconfig.held-item-info.option.maxLoreLines": "Max Number of Lore Lines",
     "text.autoconfig.held-item-info.option.showUnbreakable": "Unbreakable",
 
     "text.autoconfig.held-item-info.category.enchants":  "Enchantment filters",
@@ -45,5 +46,5 @@
     "text.autoconfig.held-item-info.option.showOnlyFilteredEnchants.@Tooltip": "[...] instead of showing everything but filtered enchantments",
     "text.autoconfig.held-item-info.option.filteredEnchants": "Filtered Enchantments",
     "text.autoconfig.held-item-info.option.filteredEnchants.@Tooltip[0]": "Write ID's here (e.g. 'slik_touch' instead of 'Silk Touch')",
-    "text.autoconfig.held-item-info.option.filteredEnchants.@Tooltip[1]": "Hit TAB a couple times if you can't see the text field"
+    "text.autoconfig.held-item-info.option.filteredEnchants.@Tooltip[1]": "Hit TAB a couple times if you can't see the text fields"
 }

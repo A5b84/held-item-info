@@ -8,7 +8,7 @@ The following can be displayed when holding an item:
 - Container contents (mainly Shulker Boxes, but other block entity containers should work)
 - Firework attributes (flight duration, shape, color)
 - Commands inside of command blocks
-- Number of bees inside of bee nests/beehives
+- Number of bees inside Bee Nests/Beehives
 - Sign text
 - Actual names of music discs
 - Authors of written books

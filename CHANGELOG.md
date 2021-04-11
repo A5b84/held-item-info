@@ -1,6 +1,7 @@
 # Changelog
 
 ### Unreleased
+- Added Lore display 
 - Added a config screen
     - The config screen is only available if both [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu) and [Cloth Config](https://www.curseforge.com/minecraft/mc-mods/cloth-config) (4.9 or higher) are installed
 - Now requires Fabric API
