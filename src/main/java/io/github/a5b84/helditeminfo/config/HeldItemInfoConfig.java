@@ -29,21 +29,21 @@ public class HeldItemInfoConfig {
     public float fadeDurationPerExtraLine() { return 0.2f; }
 
     public boolean showName() { return true; }
-    public boolean showBeehiveContent() { return true; }
+    public boolean showEnchantments() { return true; }
+    public boolean showPotionEffects() { return true; }
+    public boolean showContainerContent() { return true; }
+    public boolean showFireworkAttributes() { return true; }
     public boolean showCommandBlockInfo() { return true; }
     public int maxCommandLines() { return 2; }
-    public boolean showPotionEffects() { return true; }
-    public boolean showSignText() { return true; }
-    public boolean showPatternName() { return true; }
-    public boolean showFireworkEffects() { return true; }
-    public boolean showFishInBucket() { return true; }
-    public boolean showMusicDiscDescription() { return true; }
-    public boolean showBookMeta() { return true; }
-    public boolean showContainerContent() { return true; }
-    public boolean showEnchantments() { return true; }
+    public boolean showBeehiveContent() { return true; }
     public boolean showLore() { return true; }
     public int maxLoreLines() { return 3; }
     public boolean showUnbreakable() { return true; }
+    public boolean showSignText() { return true; }
+    public boolean showMusicDiscDescription() { return true; }
+    public boolean showBookMeta() { return true; }
+    public boolean showPatternName() { return true; }
+    public boolean showFishInBucket() { return true; }
 
 
 
@@ -72,22 +72,23 @@ public class HeldItemInfoConfig {
 
         @PrefixText
         private boolean showName = super.showName();
-        private boolean showBeehiveContent = super.showBeehiveContent();
+        private boolean showEnchantments = super.showEnchantments();
+        private boolean showPotionEffects = super.showPotionEffects();
+        private boolean showContainerContent = super.showContainerContent();
+        private boolean showFireworkAttributes = super.showFireworkAttributes();
         private boolean showCommandBlockInfo = super.showCommandBlockInfo();
         @BoundedDiscrete(max = 40)
         @Tooltip private int maxCommandLines = super.maxCommandLines();
-        private boolean showPotionEffects = super.showPotionEffects();
-        private boolean showSignText = super.showSignText();
-        @Tooltip private boolean showPatternName = super.showPatternName();
-        private boolean showFireworkEffects = super.showFireworkEffects();
-        private boolean showFishInBucket = super.showFishInBucket();
-        private boolean showMusicDiscDescription = super.showMusicDiscDescription();
-        private boolean showBookMeta = super.showBookMeta();
-        private boolean showContainerContent = super.showContainerContent();
-        private boolean showEnchantments = super.showEnchantments();
+        private boolean showBeehiveContent = super.showBeehiveContent();
         private boolean showLore = super.showLore();
+        @BoundedDiscrete(max = 40)
         private int maxLoreLines = super.maxLoreLines();
         private boolean showUnbreakable = super.showUnbreakable();
+        private boolean showSignText = super.showSignText();
+        private boolean showMusicDiscDescription = super.showMusicDiscDescription();
+        private boolean showBookMeta = super.showBookMeta();
+        @Tooltip private boolean showPatternName = super.showPatternName();
+        private boolean showFishInBucket = super.showFishInBucket();
 
         @Category("enchants")
         @Tooltip private boolean showOnlyFilteredEnchants = super.showOnlyFilteredEnchants();
@@ -106,21 +107,21 @@ public class HeldItemInfoConfig {
         @Override public float fadeDurationPerExtraLine() { return fadeDurationPerExtraLine; }
 
         @Override public boolean showName() { return showName; }
-        @Override public boolean showBeehiveContent() { return showBeehiveContent; }
+        @Override public boolean showEnchantments() { return showEnchantments; }
+        @Override public boolean showPotionEffects() { return showPotionEffects; }
+        @Override public boolean showContainerContent() { return showContainerContent; }
+        @Override public boolean showFireworkAttributes() { return showFireworkAttributes; }
         @Override public boolean showCommandBlockInfo() { return showCommandBlockInfo; }
         @Override public int maxCommandLines() { return maxCommandLines; }
-        @Override public boolean showPotionEffects() { return showPotionEffects; }
-        @Override public boolean showSignText() { return showSignText; }
-        @Override public boolean showPatternName() { return showPatternName; }
-        @Override public boolean showFireworkEffects() { return showFireworkEffects; }
-        @Override public boolean showFishInBucket() { return showFishInBucket; }
-        @Override public boolean showMusicDiscDescription() { return showMusicDiscDescription; }
-        @Override public boolean showBookMeta() { return showBookMeta; }
-        @Override public boolean showContainerContent() { return showContainerContent; }
-        @Override public boolean showEnchantments() { return showEnchantments; }
+        @Override public boolean showBeehiveContent() { return showBeehiveContent; }
         @Override public boolean showLore() { return showLore; }
         @Override public int maxLoreLines() { return maxLoreLines; }
         @Override public boolean showUnbreakable() { return showUnbreakable; }
+        @Override public boolean showSignText() { return showSignText; }
+        @Override public boolean showMusicDiscDescription() { return showMusicDiscDescription; }
+        @Override public boolean showBookMeta() { return showBookMeta; }
+        @Override public boolean showPatternName() { return showPatternName; }
+        @Override public boolean showFishInBucket() { return showFishInBucket; }
 
         public boolean showOnlyFilteredEnchants() { return showOnlyFilteredEnchants; }
 

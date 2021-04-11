@@ -72,8 +72,8 @@ public final class InfoBuilder {
 
         // Tag-relates lines
         if (stack.hasTag()) {
-            if (config.showContainerContent()) appendContainerContent(lines, stack);
             if (config.showEnchantments()) appendEnchantments(lines, stack);
+            if (config.showContainerContent()) appendContainerContent(lines, stack);
             if (config.showLore()) appendLore(lines, stack);
             if (config.showUnbreakable()) appendUnbreakable(lines, stack);
         }
@@ -133,20 +133,21 @@ public final class InfoBuilder {
 
 
 
-    /** Adds lines dependant on the item itself */
+    /** Adds lines depending on the item itself */
+    @SuppressWarnings("UnnecessaryReturnStatement")
     private static void appendItemRelatedLines(List<Text> lines, ItemStack stack) {
         // Specific stuff
-        if (config.showBeehiveContent() && appendBeehiveContent(lines, stack)) return;
-        if (config.showCommandBlockInfo() && appendCommandBlockInfo(lines, stack)) return;
         if (config.showPotionEffects() && appendPotionEffects(lines, stack)) return;
+        if (config.showCommandBlockInfo() && appendCommandBlockInfo(lines, stack)) return;
+        if (config.showBeehiveContent() && appendBeehiveContent(lines, stack)) return;
         if (config.showSignText() && appendSignText(lines, stack)) return;
 
         // Somewhat generic stuff
-        if (config.showPatternName() && appendUsualTooltip(lines, stack, BannerPatternItem.class)) return;
-        if (config.showFireworkEffects() && appendUsualTooltip(lines, stack, FireworkItem.class)) return;
-        if (config.showFishInBucket() && appendUsualTooltip(lines, stack, FishBucketItem.class)) return;
+        if (config.showFireworkAttributes() && appendUsualTooltip(lines, stack, FireworkItem.class)) return;
         if (config.showMusicDiscDescription() && appendUsualTooltip(lines, stack, MusicDiscItem.class)) return;
-        if (config.showBookMeta()) appendUsualTooltip(lines, stack, WrittenBookItem.class);
+        if (config.showBookMeta() && appendUsualTooltip(lines, stack, WrittenBookItem.class)) return;
+        if (config.showPatternName() && appendUsualTooltip(lines, stack, BannerPatternItem.class)) return;
+        if (config.showFishInBucket() && appendUsualTooltip(lines, stack, FishBucketItem.class)) return;
     }
 
     /** Adds the usual tooltip (the one in the inventory)
