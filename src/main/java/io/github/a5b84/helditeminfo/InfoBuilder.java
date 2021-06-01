@@ -10,8 +10,8 @@ import net.minecraft.client.util.ChatMessages;
 import net.minecraft.item.BannerPatternItem;
 import net.minecraft.item.CommandBlockItem;
 import net.minecraft.item.EnchantedBookItem;
+import net.minecraft.item.EntityBucketItem;
 import net.minecraft.item.FireworkItem;
-import net.minecraft.item.FishBucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -21,9 +21,9 @@ import net.minecraft.item.PotionItem;
 import net.minecraft.item.SignItem;
 import net.minecraft.item.TippedArrowItem;
 import net.minecraft.item.WrittenBookItem;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
@@ -147,7 +147,7 @@ public final class InfoBuilder {
         if (config.showMusicDiscDescription() && appendUsualTooltip(lines, stack, MusicDiscItem.class)) return;
         if (config.showBookMeta() && appendUsualTooltip(lines, stack, WrittenBookItem.class)) return;
         if (config.showPatternName() && appendUsualTooltip(lines, stack, BannerPatternItem.class)) return;
-        if (config.showFishInBucket() && appendUsualTooltip(lines, stack, FishBucketItem.class)) return;
+        if (config.showFishInBucket() && appendUsualTooltip(lines, stack, EntityBucketItem.class)) return;
     }
 
     /** Adds the usual tooltip (the one in the inventory)
@@ -175,7 +175,7 @@ public final class InfoBuilder {
         }
 
         // Get the number
-        final CompoundTag blockEntityTag = stack.getSubTag("BlockEntityTag");
+        final NbtCompound blockEntityTag = stack.getSubTag("BlockEntityTag");
         if (blockEntityTag == null) return false;
 
         final int beeCount = blockEntityTag.getList("Bees", NbtType.COMPOUND).size();
@@ -198,7 +198,7 @@ public final class InfoBuilder {
         }
 
         // Get the command
-        final CompoundTag blockEntityTag = stack.getSubTag("BlockEntityTag");
+        final NbtCompound blockEntityTag = stack.getSubTag("BlockEntityTag");
         if (blockEntityTag == null) return false;
 
         String command = blockEntityTag.getString("Command").trim();
@@ -220,7 +220,7 @@ public final class InfoBuilder {
      * Add a container's content
      * @return {@code true} if something changed
      * @see net.minecraft.block.ShulkerBoxBlock ShulkerBoxBlock#buildTooltip
-     * @see net.minecraft.inventory.Inventories#fromTag
+     * @see net.minecraft.inventory.Inventories#readNbt
      */
     @SuppressWarnings("UnusedReturnValue")
     private static boolean appendContainerContent(List<Text> info, ItemStack stack) {
@@ -228,10 +228,10 @@ public final class InfoBuilder {
             return false;
         }
 
-        final CompoundTag tag = stack.getSubTag("BlockEntityTag");
+        final NbtCompound tag = stack.getSubTag("BlockEntityTag");
         if (tag == null) return false;
 
-        final ListTag items = tag.getList("Items", NbtType.COMPOUND);
+        final NbtList items = tag.getList("Items", NbtType.COMPOUND);
 
         List<Text> newInfo = new ArrayList<>(config.maxLines() - info.size());
 
@@ -242,9 +242,9 @@ public final class InfoBuilder {
         if (!items.isEmpty()) {
             for (int i = 0; i < items.size(); i++) {
                 // Get the item
-                final CompoundTag itemTag = items.getCompound(i);
+                final NbtCompound itemTag = items.getCompound(i);
                 if (itemTag.isEmpty()) continue;
-                final ItemStack iStack = ItemStack.fromTag(itemTag);
+                final ItemStack iStack = ItemStack.fromNbt(itemTag);
                 if (iStack.isEmpty()) continue;
 
                 if (info.size() + newInfo.size() < config.maxLines()) {
@@ -274,8 +274,8 @@ public final class InfoBuilder {
             return false;
         }
 
-        ListTag enchantments = (stack.getItem() == Items.ENCHANTED_BOOK)
-                ? EnchantedBookItem.getEnchantmentTag(stack)
+        NbtList enchantments = (stack.getItem() == Items.ENCHANTED_BOOK)
+                ? EnchantedBookItem.getEnchantmentNbt(stack)
                 : stack.getEnchantments();
 
         if (enchantments.isEmpty()) return false;
@@ -283,12 +283,12 @@ public final class InfoBuilder {
         // Filtering
         final List<Identifier> filters = config.filteredEnchants();
         if (!filters.isEmpty()) {
-            ListTag filtered = new ListTag();
+            NbtList filtered = new NbtList();
 
-            for (Tag tag : enchantments) {
-                if (tag instanceof CompoundTag) {
+            for (NbtElement tag : enchantments) {
+                if (tag instanceof NbtCompound) {
                     try {
-                        Identifier id = new Identifier(((CompoundTag) tag).getString("id"));
+                        Identifier id = new Identifier(((NbtCompound) tag).getString("id"));
                         if (filters.contains(id) == config.showOnlyFilteredEnchants()) {
                             filtered.add(tag);
                         }
@@ -338,7 +338,7 @@ public final class InfoBuilder {
         }
 
         // Get the text
-        final CompoundTag blockEntityTag = stack.getSubTag("BlockEntityTag");
+        final NbtCompound blockEntityTag = stack.getSubTag("BlockEntityTag");
         if (blockEntityTag == null) return false;
 
         final List<MutableText> lines = new ArrayList<>(4);
@@ -381,10 +381,10 @@ public final class InfoBuilder {
         }
 
         // Get the tag
-        CompoundTag displayTag = stack.getSubTag("display");
+        NbtCompound displayTag = stack.getSubTag("display");
         if (displayTag == null) return false;
 
-        ListTag loreTag = displayTag.getList("Lore", NbtType.STRING);
+        NbtList loreTag = displayTag.getList("Lore", NbtType.STRING);
         if (loreTag.isEmpty()) return false;
 
         // Convert it to a list of text
@@ -416,7 +416,7 @@ public final class InfoBuilder {
             return false;
         }
 
-        final CompoundTag tag = stack.getTag();
+        final NbtCompound tag = stack.getTag();
 
         if (tag == null || !tag.getBoolean("Unbreakable") || shouldHide(tag, 4)) {
             return false;
@@ -504,7 +504,7 @@ public final class InfoBuilder {
 
     /** @return {@code true} if something should be hidden according to the
      * {@code HideFlags} tag and the user preference */
-    private static boolean shouldHide(CompoundTag tag, int flag) {
+    private static boolean shouldHide(NbtCompound tag, int flag) {
         return config.respectHideFlags() && (tag.getInt("HideFlags") & flag) != 0;
     }
 

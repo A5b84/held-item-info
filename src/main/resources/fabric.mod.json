@@ -1,33 +1,32 @@
 {
-    "schemaVersion": 1,
-    "id": "held-item-info",
-    "version": "${version}",
+  "schemaVersion": 1,
+  "id": "held-item-info",
+  "version": "${version}",
 
-    "name": "Held Item Info",
-    "description": "Shows information about the held item under its name",
-    "authors": ["Neecko5b84"],
-    "contact": {
-        "homepage": "https://www.curseforge.com/minecraft/mc-mods/held-item-info",
-        "issues": "https://github.com/A5b84/held-item-info/issues",
-        "sources": "https://github.com/A5b84/held-item-info"
-    },
+  "name": "Held Item Info",
+  "description": "Shows information about the held item under its name",
+  "authors": ["Neecko5b84"],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/held-item-info",
+    "issues": "https://github.com/A5b84/held-item-info/issues",
+    "sources": "https://github.com/A5b84/held-item-info"
+  },
 
-    "license": "LGPL-3.0-or-later",
-    "icon": "assets/held-item-info/icon.png",
+  "license": "LGPL-3.0-or-later",
+  "icon": "assets/held-item-info/icon.png",
 
-    "environment": "client",
-    "entrypoints": {
-        "client": ["io.github.a5b84.helditeminfo.Mod"],
-        "modmenu": ["io.github.a5b84.helditeminfo.config.ModMenuIntegration"]
-    },
-    "mixins": ["held-item-info.mixins.json"],
+  "environment": "client",
+  "entrypoints": {
+    "client": ["io.github.a5b84.helditeminfo.Mod"],
+    "modmenu": ["io.github.a5b84.helditeminfo.config.ModMenuIntegration"]
+  },
+  "mixins": ["held-item-info.mixins.json"],
 
-    "depends": {
-        "minecraft": ">=1.16.2",
-        "fabric-api-base": "*"
-    },
-
-    "breaks": {
-        "cloth-config2": "<4.9.0"
-    }
+  "depends": {
+    "minecraft": ">=1.16.2",
+    "fabric-api-base": "*"
+  },
+  "breaks": {
+    "cloth-config2": "<4.9.0"
+  }
 }
