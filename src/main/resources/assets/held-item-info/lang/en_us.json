@@ -43,8 +43,9 @@
 
     "text.autoconfig.held-item-info.category.enchants":  "Enchantment filters",
     "text.autoconfig.held-item-info.option.showOnlyFilteredEnchants": "Only Show Filtered Enchantments",
-    "text.autoconfig.held-item-info.option.showOnlyFilteredEnchants.@Tooltip": "[...] instead of showing everything but filtered enchantments",
+    "text.autoconfig.held-item-info.option.showOnlyFilteredEnchants.@Tooltip[0]": "Set to 'Yes' to only show the enchantments below",
+    "text.autoconfig.held-item-info.option.showOnlyFilteredEnchants.@Tooltip[1]": "Set to 'No' to show everything but those enchantments",
     "text.autoconfig.held-item-info.option.filteredEnchants": "Filtered Enchantments",
-    "text.autoconfig.held-item-info.option.filteredEnchants.@Tooltip[0]": "Write ID's here (e.g. 'silk_touch' instead of 'Silk Touch')",
-    "text.autoconfig.held-item-info.option.filteredEnchants.@Tooltip[1]": "Hit TAB a couple times if you can't see the text fields"
+    "text.autoconfig.held-item-info.option.filteredEnchants.@Tooltip[0]": "Put ID's here (e.g. 'minecraft:silk_touch' instead of 'Silk Touch')",
+    "text.autoconfig.held-item-info.option.filteredEnchants.@Tooltip[1]": "Hit TAB a couple times if you can't find the text fields"
 }

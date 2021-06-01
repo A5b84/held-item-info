@@ -8,6 +8,9 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry.Category;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.PrefixText;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.Tooltip;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.InvalidIdentifierException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -16,6 +19,14 @@ import java.util.List;
 import static io.github.a5b84.helditeminfo.Mod.FONT_HEIGHT;
 
 public class HeldItemInfoConfig {
+
+    // Fields used by HeldItemInfoAutoConfig that shouldn't be serialized
+    // (looks like AutoConfig ignores the 'transient' keyword)
+    private static final Logger LOGGER = LogManager.getLogger();
+    protected List<String> previousFilteredEnchants = null;
+    protected List<Identifier> filteredEnchantIds = new LinkedList<>();
+
+
 
     // General stuff
 
@@ -91,7 +102,7 @@ public class HeldItemInfoConfig {
         private boolean showFishInBucket = super.showFishInBucket();
 
         @Category("enchants")
-        @Tooltip private boolean showOnlyFilteredEnchants = super.showOnlyFilteredEnchants();
+        @Tooltip(count = 2) private boolean showOnlyFilteredEnchants = super.showOnlyFilteredEnchants();
         @Category("enchants")
         @Tooltip(count = 2) private List<String> filteredEnchants = Collections.emptyList();
 
@@ -126,13 +137,20 @@ public class HeldItemInfoConfig {
         public boolean showOnlyFilteredEnchants() { return showOnlyFilteredEnchants; }
 
         public List<Identifier> filteredEnchants() {
-            List<Identifier> result = new LinkedList<>();
-            for (String enchant : filteredEnchants) {
-                try {
-                    result.add(new Identifier(enchant));
-                } catch (Throwable ignored) {}
+            if (previousFilteredEnchants != filteredEnchants) {
+                // Recreate the list of identifiers if it changed
+                previousFilteredEnchants = filteredEnchants;
+                filteredEnchantIds = new LinkedList<>();
+                for (String enchant : filteredEnchants) {
+                    try {
+                        filteredEnchantIds.add(new Identifier(enchant));
+                    } catch (InvalidIdentifierException e) {
+                        LOGGER.error("[Held Item Info] Invalid enchantment identifier '" + enchant + "': " + e.getMessage());
+                    }
+                }
             }
-            return result;
+
+            return filteredEnchantIds;
         }
 
     }
