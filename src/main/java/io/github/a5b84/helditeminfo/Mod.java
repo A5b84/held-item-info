@@ -22,7 +22,7 @@ public class Mod implements ClientModInitializer {
             AutoConfig.register(HeldItemInfoAutoConfig.class, GsonConfigSerializer::new);
             config = AutoConfig.getConfigHolder(HeldItemInfoAutoConfig.class).getConfig();
         } else {
-            config = new HeldItemInfoAutoConfig();
+            config = new HeldItemInfoConfig();
         }
     }
 
