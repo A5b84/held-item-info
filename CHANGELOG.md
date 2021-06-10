@@ -2,6 +2,7 @@
 
 ### [1.2.0] (1.17+)
 - Updated to 1.17
+    - Added bundle support
 - Added Lore display 
 - Added a config screen
     - The config screen is only available if both [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu) and [Cloth Config](https://www.curseforge.com/minecraft/mc-mods/cloth-config) (4.9 or higher) are installed

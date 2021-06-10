@@ -48,7 +48,6 @@ public final class InfoBuilder {
     private InfoBuilder() {}
 
     private static final Formatting COLOR = Formatting.GRAY;
-
     private static final TextRenderer TEXT_RENDERER = MinecraftClient.getInstance().textRenderer;
 
 
@@ -73,7 +72,10 @@ public final class InfoBuilder {
         // Tag-relates lines
         if (stack.hasTag()) {
             if (config.showEnchantments()) appendEnchantments(lines, stack);
-            if (config.showContainerContent()) appendContainerContent(lines, stack);
+            if (config.showContainerContent()) {
+                appendContainerContent(lines, stack, true); // Shulker Boxes/Chests/...
+                appendContainerContent(lines, stack, false); // Bundles
+            }
             if (config.showLore()) appendLore(lines, stack);
             if (config.showUnbreakable()) appendUnbreakable(lines, stack);
         }
@@ -223,12 +225,12 @@ public final class InfoBuilder {
      * @see net.minecraft.inventory.Inventories#readNbt
      */
     @SuppressWarnings("UnusedReturnValue")
-    private static boolean appendContainerContent(List<Text> info, ItemStack stack) {
+    private static boolean appendContainerContent(List<Text> info, ItemStack stack, boolean blockEntity) {
         if (info.size() >= config.maxLines()) {
             return false;
         }
 
-        final NbtCompound tag = stack.getSubTag("BlockEntityTag");
+        NbtCompound tag = blockEntity ? stack.getSubTag("BlockEntityTag") : stack.getTag();
         if (tag == null) return false;
 
         final NbtList items = tag.getList("Items", NbtType.COMPOUND);
