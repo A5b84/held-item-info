@@ -357,7 +357,7 @@ public final class InfoBuilder {
 
             if (text == null) continue;
             final String str = text.asString();
-            if (str.trim().isEmpty()) continue;
+            if (str.isBlank()) continue;
 
             // Add missing lines and this one
             while (lines.size() < i) lines.add(new LiteralText(""));
