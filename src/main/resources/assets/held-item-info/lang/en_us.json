@@ -33,6 +33,7 @@
     "text.autoconfig.held-item-info.option.showBeehiveContent": "Beehive/Bee Nest Content",
     "text.autoconfig.held-item-info.option.showLore": "Lore",
     "text.autoconfig.held-item-info.option.maxLoreLines": "Max Number of Lore Lines",
+    "text.autoconfig.held-item-info.option.removePlusNbt": "Remove '(+NBT)' from the Lore Tooltip",
     "text.autoconfig.held-item-info.option.showUnbreakable": "Unbreakable",
     "text.autoconfig.held-item-info.option.showSignText": "Sign Text",
     "text.autoconfig.held-item-info.option.showMusicDiscDescription": "Music Disc Title",

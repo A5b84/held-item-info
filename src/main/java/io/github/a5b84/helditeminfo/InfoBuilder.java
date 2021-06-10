@@ -390,14 +390,17 @@ public final class InfoBuilder {
         // Convert it to a list of text
         List<MutableText> lore = new ArrayList<>();
         for(int i = 0; i < loreTag.size(); i++) {
-            try {
-                MutableText line = Text.Serializer.fromJson(loreTag.getString(i));
-                if (line != null) {
-                    List<MutableText> newLines = wrapLines(line, config.maxLoreLines() - lore.size(), info);
-                    lore.addAll(newLines);
+            String lineString = loreTag.getString(i);
+            if (!(config.removePlusNbt() && lineString.equals("\"(+NBT)\""))) {
+                try {
+                    MutableText line = Text.Serializer.fromJson(lineString);
+                    if (line != null) {
+                        List<MutableText> newLines = wrapLines(line, config.maxLoreLines() - lore.size(), info);
+                        lore.addAll(newLines);
+                    }
+                } catch (JsonParseException e) {
+                    return false;
                 }
-            } catch (JsonParseException e) {
-                return false;
             }
         }
 

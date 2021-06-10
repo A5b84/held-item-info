@@ -49,6 +49,7 @@ public class HeldItemInfoConfig {
     public boolean showBeehiveContent() { return true; }
     public boolean showLore() { return true; }
     public int maxLoreLines() { return 3; }
+    public boolean removePlusNbt() { return true; }
     public boolean showUnbreakable() { return true; }
     public boolean showSignText() { return true; }
     public boolean showMusicDiscDescription() { return true; }
@@ -94,6 +95,7 @@ public class HeldItemInfoConfig {
         private boolean showLore = super.showLore();
         @BoundedDiscrete(max = 40)
         private int maxLoreLines = super.maxLoreLines();
+        private boolean removePlusNbt = super.removePlusNbt();
         private boolean showUnbreakable = super.showUnbreakable();
         private boolean showSignText = super.showSignText();
         private boolean showMusicDiscDescription = super.showMusicDiscDescription();
@@ -127,6 +129,7 @@ public class HeldItemInfoConfig {
         @Override public boolean showBeehiveContent() { return showBeehiveContent; }
         @Override public boolean showLore() { return showLore; }
         @Override public int maxLoreLines() { return maxLoreLines; }
+        @Override public boolean removePlusNbt() { return removePlusNbt; }
         @Override public boolean showUnbreakable() { return showUnbreakable; }
         @Override public boolean showSignText() { return showSignText; }
         @Override public boolean showMusicDiscDescription() { return showMusicDiscDescription; }
