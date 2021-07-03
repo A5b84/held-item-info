@@ -68,7 +68,7 @@ public abstract class HeldItemTooltipMixin extends DrawableHelper {
         // Only do the math part when actually rendering
         if ((color & 0xff000000) == 0) return;
 
-        // Find the largest line
+        // Find the longest line
         if (maxWidth < 0) {
             for (InfoLine line : info) {
                 if (line.width > maxWidth) maxWidth = line.width;
