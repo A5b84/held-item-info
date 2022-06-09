@@ -1,6 +1,12 @@
 # Changelog
 
-### [1.2.0] (1.17+)
+### Unreleased
+- Added crossbow projectiles display
+- Added filled map ID display
+- Added banner patterns display
+- Added a vertical offset setting ([#6](https://github.com/A5b84/held-item-info/issues/6))
+
+### [1.2.0] (1.17-1.18.2)
 - Updated to 1.17
     - Added bundle support
 - Added Lore display 

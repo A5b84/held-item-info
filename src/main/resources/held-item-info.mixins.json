@@ -3,7 +3,21 @@
     "minVersion": "0.8",
     "package": "io.github.a5b84.helditeminfo.mixin",
     "compatibilityLevel": "JAVA_16",
-    "client": ["HeldItemTooltipMixin"],
+    "client": [
+        "block.BeehiveBlockMixin",
+        "item.BannerPatternItemMixin",
+        "item.CommandBlockItemMixin",
+        "item.CrossbowItemMixin",
+        "item.EntityBucketItemMixin",
+        "item.FilledMapItemMixin",
+        "item.FireworkItemsMixin",
+        "item.ItemsWithBannerMixin",
+        "item.ItemsWithPotionEffectsMixin",
+        "item.MusicDiscItemMixin",
+        "item.SignItemMixin",
+        "item.WrittenBookItemMixin",
+        "HeldItemTooltipMixin"
+    ],
     "injectors": {
         "defaultRequire": 1
     }

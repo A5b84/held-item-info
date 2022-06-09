@@ -17,13 +17,15 @@
 
   "environment": "client",
   "entrypoints": {
-    "client": ["io.github.a5b84.helditeminfo.Mod"],
+    "client": [
+      "io.github.a5b84.helditeminfo.HeldItemInfo"
+    ],
     "modmenu": ["io.github.a5b84.helditeminfo.config.ModMenuIntegration"]
   },
   "mixins": ["held-item-info.mixins.json"],
 
   "depends": {
-    "minecraft": ">=1.16.2",
+    "minecraft": ">=1.16.2 <1.19",
     "fabric-api-base": "*"
   },
   "breaks": {
