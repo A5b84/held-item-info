@@ -12,7 +12,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -32,8 +31,8 @@ import static io.github.a5b84.helditeminfo.Appenders.appendContainerContent;
 import static io.github.a5b84.helditeminfo.Appenders.appendEnchantments;
 import static io.github.a5b84.helditeminfo.Appenders.appendLore;
 import static io.github.a5b84.helditeminfo.Appenders.appendUnbreakable;
-import static io.github.a5b84.helditeminfo.Util.FONT_HEIGHT;
 import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
+import static io.github.a5b84.helditeminfo.Util.FONT_HEIGHT;
 
 @Mixin(InGameHud.class)
 public abstract class HeldItemTooltipMixin extends DrawableHelper {
@@ -106,13 +105,13 @@ public abstract class HeldItemTooltipMixin extends DrawableHelper {
     }
 
 
-    @Inject(method = "tick", at = @At("HEAD"))
+    @Inject(method = "tick()V", at = @At("HEAD"))
     public void onBeforeTick(CallbackInfo ci) {
         stackBeforeTick = currentStack;
     }
 
     /** Rebuilds the tooltip */
-    @Inject(method = "tick", at = @At("RETURN"))
+    @Inject(method = "tick()V", at = @At("RETURN"))
     public void onAfterTick(CallbackInfo ci) {
         if (client.player == null || currentStack == stackBeforeTick) {
             return;
@@ -142,7 +141,7 @@ public abstract class HeldItemTooltipMixin extends DrawableHelper {
 
             // Stack name
             if (config.showName()) {
-                MutableText stackName = new LiteralText("") // Prevents overwriting the name formatting
+                MutableText stackName = Text.empty() // Prevents overwriting the name formatting
                         .append(stack.getName())
                         .formatted(stack.getRarity().formatting);
                 if (stack.hasCustomName()) stackName.formatted(Formatting.ITALIC);
@@ -163,7 +162,7 @@ public abstract class HeldItemTooltipMixin extends DrawableHelper {
             }
 
             // Tag-related lines
-            if (stack.hasTag()) {
+            if (stack.hasNbt()) {
                 if (config.showEnchantments()) appendEnchantments(builder);
                 if (config.showContainerContent()) appendContainerContent(builder);
                 if (config.showLore()) appendLore(builder);

@@ -17,16 +17,18 @@
 
   "environment": "client",
   "entrypoints": {
-    "client": [
-      "io.github.a5b84.helditeminfo.HeldItemInfo"
-    ],
+    "client": ["io.github.a5b84.helditeminfo.HeldItemInfo"],
     "modmenu": ["io.github.a5b84.helditeminfo.config.ModMenuIntegration"]
   },
   "mixins": ["held-item-info.mixins.json"],
 
   "depends": {
-    "minecraft": ">=1.16.2 <1.19",
+    "minecraft": ">=1.19-",
     "fabric-api-base": "*"
+  },
+  "suggests": {
+    "modmenu": "*",
+    "cloth-config2": ">=4.9.0"
   },
   "breaks": {
     "cloth-config2": "<4.9.0"

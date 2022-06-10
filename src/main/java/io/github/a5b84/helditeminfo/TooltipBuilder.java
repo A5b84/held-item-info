@@ -2,7 +2,6 @@ package io.github.a5b84.helditeminfo;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
@@ -70,7 +69,7 @@ public class TooltipBuilder {
 
     public List<Text> build() {
         if (realSize > maxSize && config.showHiddenLinesCount()) {
-            Text moreText = new TranslatableText("container.shulkerBox.more", realSize - maxSize + 1)
+            Text moreText = Text.translatable("container.shulkerBox.more", realSize - maxSize + 1)
                     .formatted(DEFAULT_COLOR, Formatting.ITALIC);
             lines.set(lines.size() - 1, moreText);
         }

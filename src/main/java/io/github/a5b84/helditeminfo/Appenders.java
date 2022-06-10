@@ -8,12 +8,10 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
@@ -31,7 +29,7 @@ public final class Appenders {
     public static void appendEnchantments(TooltipBuilder builder) {
         // Get the enchantments
         ItemStack stack = builder.stack;
-        if (hasHideFlag(stack.getTag(), 1)) return;
+        if (hasHideFlag(stack.getNbt(), 1)) return;
 
         NbtList enchantments = (stack.getItem() == Items.ENCHANTED_BOOK)
                 ? EnchantedBookItem.getEnchantmentNbt(stack)
@@ -66,9 +64,9 @@ public final class Appenders {
     public static void appendContainerContent(TooltipBuilder builder) {
         @SuppressWarnings("unused")
         // Shulker Boxes, Chests, ...
-        boolean added = appendContainerContent(builder, builder.stack.getTag())
+        boolean added = appendContainerContent(builder, builder.stack.getNbt())
                 // Bundles
-                || appendContainerContent(builder, builder.stack.getSubTag("BlockEntityTag"));
+                || appendContainerContent(builder, builder.stack.getSubNbt("BlockEntityTag"));
     }
 
     /**
@@ -84,7 +82,7 @@ public final class Appenders {
 
         if (tag.contains("LootTable", NbtType.STRING)) {
             // Loot table (same as vanilla shulker boxes)
-            builder.append(new LiteralText("???????"));
+            builder.append(Text.literal("???????"));
             return true;
 
         } else if (!items.isEmpty()) {
@@ -101,7 +99,7 @@ public final class Appenders {
                 Text text;
                 if (builder.canAdd()) {
                     text = iStack.getName()
-                            .shallowCopy() // shallowCopy to get a MutableText
+                            .copy() // shallowCopy to get a MutableText
                             .append(" x" + iStack.getCount())
                             .formatted(TooltipBuilder.DEFAULT_COLOR);
                 } else {
@@ -126,7 +124,7 @@ public final class Appenders {
      */
     public static void appendLore(TooltipBuilder builder) {
         // Get the tag
-        NbtCompound displayTag = builder.stack.getSubTag("display");
+        NbtCompound displayTag = builder.stack.getSubNbt("display");
         if (displayTag == null) return;
 
         NbtList loreTag = displayTag.getList("Lore", NbtType.STRING);
@@ -166,14 +164,14 @@ public final class Appenders {
             return;
         }
 
-        NbtCompound tag = builder.stack.getTag();
+        NbtCompound tag = builder.stack.getNbt();
         if (tag == null
                 || !tag.getBoolean("Unbreakable")
                 || Util.hasHideFlag(tag, 4)) {
             return;
         }
 
-        builder.append(new TranslatableText("item.unbreakable").formatted(Formatting.BLUE));
+        builder.append(Text.translatable("item.unbreakable").formatted(Formatting.BLUE));
     }
 
 }

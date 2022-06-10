@@ -1,7 +1,6 @@
 package io.github.a5b84.helditeminfo.mixin.item;
 
 import io.github.a5b84.helditeminfo.TooltipAppender;
-import io.github.a5b84.helditeminfo.HeldItemInfo;
 import io.github.a5b84.helditeminfo.TooltipBuilder;
 import io.github.a5b84.helditeminfo.Util;
 import net.minecraft.item.CommandBlockItem;
@@ -24,7 +23,7 @@ public abstract class CommandBlockItemMixin implements TooltipAppender {
     @Override
     public void heldItemInfo_appendTooltip(TooltipBuilder builder) {
         // Get the command
-        NbtCompound tag = builder.stack.getSubTag("BlockEntityTag");
+        NbtCompound tag = builder.stack.getSubNbt("BlockEntityTag");
         if (tag == null) return;
         String command = tag.getString("Command");
         if (command == null) return;

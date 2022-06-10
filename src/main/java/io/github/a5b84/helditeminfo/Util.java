@@ -5,14 +5,15 @@ import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.ChatMessages;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
 
@@ -30,6 +31,19 @@ public final class Util {
      */
     public static boolean hasHideFlag(NbtCompound tag, int flag) {
         return config.respectHideFlags() && (tag.getInt("HideFlags") & flag) != 0;
+    }
+
+
+    public static boolean isBlank(StringVisitable visitable) {
+        Optional<Boolean> result = visitable.visit(asString -> {
+            if (asString.isBlank()) {
+                return Optional.empty();
+            } else {
+                return Optional.of(false);
+            }
+        });
+
+        return result.isEmpty();
     }
 
 
@@ -60,7 +74,7 @@ public final class Util {
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         textRenderer.getTextHandler().wrapLines(
                 s, (int) maxWidth, Style.EMPTY, false,
-                (style, start, end) -> lines.add(new LiteralText(finalString.substring(start, end)))
+                (style, start, end) -> lines.add(Text.literal(finalString.substring(start, end)))
         );
 
         // Truncating
@@ -95,7 +109,7 @@ public final class Util {
         // Convert and truncate
         List<MutableText> lines = new ArrayList<>(maxLines);
         for (StringVisitable visitable : strings) {
-            lines.add(new LiteralText(visitable.getString()));
+            lines.add(Text.literal(visitable.getString()));
             if (lines.size() >= maxLines) {
                 if (strings.size() > maxLines) {
                     lines.get(maxLines - 1).append("...");

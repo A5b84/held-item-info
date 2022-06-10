@@ -1,15 +1,12 @@
 package io.github.a5b84.helditeminfo.mixin.item;
 
 import com.google.gson.JsonParseException;
-import io.github.a5b84.helditeminfo.HeldItemInfo;
 import io.github.a5b84.helditeminfo.TooltipAppender;
 import io.github.a5b84.helditeminfo.TooltipBuilder;
-import io.github.a5b84.helditeminfo.Util;
-import net.minecraft.item.CommandBlockItem;
 import net.minecraft.item.SignItem;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 
 import java.util.ArrayList;
@@ -28,7 +25,7 @@ public abstract class SignItemMixin implements TooltipAppender {
     @Override
     public void heldItemInfo_appendTooltip(TooltipBuilder builder) {
         // Get the text
-        NbtCompound blockEntityTag = builder.stack.getSubTag("BlockEntityTag");
+        NbtCompound blockEntityTag = builder.stack.getSubNbt("BlockEntityTag");
         if (blockEntityTag != null) {
 
             List<MutableText> lines = new ArrayList<>(4);
@@ -46,12 +43,12 @@ public abstract class SignItemMixin implements TooltipAppender {
 
                 if (text == null) continue;
 
-                String str = text.asString();
+                String str = text.getString();
                 if (str.isBlank()) continue;
 
                 // Add empty lines up to the current one
-                while (lines.size() < i) lines.add(new LiteralText(""));
-                lines.add(new LiteralText(str));
+                while (lines.size() < i) lines.add(Text.empty());
+                lines.add(Text.literal(str));
             }
 
             // Formatting
