@@ -49,7 +49,7 @@
     "text.autoconfig.held-item-info.option.showHiddenLinesCount": "Show the number of extra lines",
 
     "text.autoconfig.held-item-info.category.enchantments": "Enchantment filters",
-    "text.autoconfig.held-item-info.option.showOnlyFilteredEnchantments": "Only show filtered rnchantments",
+    "text.autoconfig.held-item-info.option.showOnlyFilteredEnchantments": "Only show filtered enchantments",
     "text.autoconfig.held-item-info.option.showOnlyFilteredEnchantments.@Tooltip[0]": "Set to 'Yes' to only show the enchantments below",
     "text.autoconfig.held-item-info.option.showOnlyFilteredEnchantments.@Tooltip[1]": "Set to 'No' to show everything but those enchantments",
     "text.autoconfig.held-item-info.option.filteredEnchantments": "Filtered enchantments",
