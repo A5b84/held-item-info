@@ -5,8 +5,8 @@
     "compatibilityLevel": "JAVA_17",
     "client": [
         "block.BeehiveBlockMixin",
+        "block.CommandBlockMixin",
         "item.BannerPatternItemMixin",
-        "item.CommandBlockItemMixin",
         "item.CrossbowItemMixin",
         "item.EntityBucketItemMixin",
         "item.FilledMapItemMixin",
