@@ -13,7 +13,8 @@ The following can be displayed when holding an item:
 - Lore
 - `Unbreakable` tag
 - Sign text
-- Title of Music Discs
+- Title of Music Discs and Disc Fragments
+- Instrument of Goat Horns
 - Author and generation of Written Books
 - Filled map identifier
 - Banner Pattern (both for banner pattern items and actual banners or shields)

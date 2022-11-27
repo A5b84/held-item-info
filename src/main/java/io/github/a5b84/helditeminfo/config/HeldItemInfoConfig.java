@@ -44,6 +44,7 @@ public class HeldItemInfoConfig {
     public boolean showUnbreakable() { return true; }
     public boolean showSignText() { return true; }
     public boolean showMusicDiscDescription() { return true; }
+    public boolean showGoatHornInstrument() { return true; }
     public boolean showBookMeta() { return true; }
     public boolean showFilledMapId() { return false; }
     public boolean showBannerPatternName() { return true; }
@@ -92,6 +93,7 @@ public class HeldItemInfoConfig {
         private boolean showUnbreakable = super.showUnbreakable();
         private boolean showSignText = super.showSignText();
         private boolean showMusicDiscDescription = super.showMusicDiscDescription();
+        private boolean showGoatHornInstrument = super.showGoatHornInstrument();
         private boolean showBookMeta = super.showBookMeta();
         private boolean showFilledMapId = super.showFilledMapId();
         @Tooltip private boolean showBannerPatternName = super.showBannerPatternName();
@@ -130,6 +132,7 @@ public class HeldItemInfoConfig {
         @Override public boolean showUnbreakable() { return showUnbreakable; }
         @Override public boolean showSignText() { return showSignText; }
         @Override public boolean showMusicDiscDescription() { return showMusicDiscDescription; }
+        @Override public boolean showGoatHornInstrument() { return showGoatHornInstrument; }
         @Override public boolean showBookMeta() { return showBookMeta; }
         @Override public boolean showFilledMapId() { return showFilledMapId; }
         @Override public boolean showBannerPatternName() { return showBannerPatternName; }

@@ -1,6 +1,11 @@
 # Changelog
 
-### [1.3.0] (1.19+)
+### [1.4.0] (1.19-1.19.2)
+- Added goat horn instrument display
+- Added disc fragment title display
+- Fixed an untranslated config entry
+
+### [1.3.0] (1.19-1.19.2)
 - Update to 1.19 ([#8](https://github.com/A5b84/held-item-info/issues/8))
 - Added crossbow projectiles display
 - Added filled map ID display
@@ -37,3 +42,4 @@
 [1.1.3]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.1.3
 [1.2.0]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.2.0
 [1.3.0]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.3.0
+[1.4.0]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.4.0
