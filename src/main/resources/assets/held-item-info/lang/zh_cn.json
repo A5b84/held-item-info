@@ -15,10 +15,10 @@
     "text.autoconfig.held-item-info.option.lineHeight.@Tooltip": "每行的高度，单位是像素",
     "text.autoconfig.held-item-info.option.offsetPerExtraLine": "每一额外行的垂直偏移",
     "text.autoconfig.held-item-info.option.offsetPerExtraLine.@Tooltip[0]": "每一额外行的所有文本的垂直偏移，单位为像素",
-    "text.autoconfig.held-item-info.option.offsetPerExtraLine.@Tooltip[1]": "默认情况下，这使得工具提示越多行越靠近热键。",
+    "text.autoconfig.held-item-info.option.offsetPerExtraLine.@Tooltip[1]": "默认情况下，这使得工具提示越多行越靠近热键",
     "text.autoconfig.held-item-info.option.verticalOffset": "垂直偏移量",
     "text.autoconfig.held-item-info.option.baseFadeDuration": "基础淡化时间",
-    "text.autoconfig.held-item-info.option.baseFadeDuration.@Tooltip": "单行工具提示消失的时间（秒）。",
+    "text.autoconfig.held-item-info.option.baseFadeDuration.@Tooltip": "单行工具提示消失的时间（秒）",
     "text.autoconfig.held-item-info.option.fadeDurationPerExtraLine": "每一额外行的额外淡化时间",
     "text.autoconfig.held-item-info.option.fadeDurationPerExtraLine.@Tooltip": "每多一行工具提示淡出前的额外时间",
 
@@ -51,9 +51,9 @@
 
     "text.autoconfig.held-item-info.category.enchantments": "附魔过滤",
     "text.autoconfig.held-item-info.option.showOnlyFilteredEnchantments": "只显示经过滤的附魔",
-    "text.autoconfig.held-item-info.option.showOnlyFilteredEnchantments.@Tooltip[0]": "设置为「是」，只显示以下附魔。",
-    "text.autoconfig.held-item-info.option.showOnlyFilteredEnchantments.@Tooltip[1]": "设置为「否」，以显示除这些附魔之外的所有内容。",
+    "text.autoconfig.held-item-info.option.showOnlyFilteredEnchantments.@Tooltip[0]": "设置为「是」，只显示以下附魔",
+    "text.autoconfig.held-item-info.option.showOnlyFilteredEnchantments.@Tooltip[1]": "设置为「否」，以显示除这些附魔之外的所有内容",
     "text.autoconfig.held-item-info.option.filteredEnchantments": "经过滤的附魔",
     "text.autoconfig.held-item-info.option.filteredEnchantments.@Tooltip[0]": "把 ID 放在这里（例如，「minecraft:silk_touch」而不是「Silk Touch」）",
-    "text.autoconfig.held-item-info.option.filteredEnchantments.@Tooltip[1]": "如果你找不到文本字段，请按 TAB 键几次。"
+    "text.autoconfig.held-item-info.option.filteredEnchantments.@Tooltip[1]": "如果你找不到文本字段，请按 TAB 键几次"
 }
