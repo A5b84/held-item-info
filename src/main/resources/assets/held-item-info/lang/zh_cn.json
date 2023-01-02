@@ -7,9 +7,9 @@
     "text.autoconfig.held-item-info.option.maxLines.@Tooltip": "要显示的最大行数，包括物品名称",
     "text.autoconfig.held-item-info.option.maxLineLength": "最大行宽",
     "text.autoconfig.held-item-info.option.maxLineLength.@Tooltip[0]": "每行的最大字符数",
-    "text.autoconfig.held-item-info.option.maxLineLength.@Tooltip[1]": "§i这只影响到 Lore 和命令方块",
+    "text.autoconfig.held-item-info.option.maxLineLength.@Tooltip[1]": "§i这只影响到Lore和命令方块",
     "text.autoconfig.held-item-info.option.respectHideFlags": "遵守 HideFlags 标签",
-    "text.autoconfig.held-item-info.option.respectHideFlags.@Tooltip": "只在相应的 HideFlags NBT 标签未设置时显示信息",
+    "text.autoconfig.held-item-info.option.respectHideFlags.@Tooltip": "只在相应的HideFlags NBT标签未设置时显示信息",
 
     "text.autoconfig.held-item-info.option.lineHeight": "行高",
     "text.autoconfig.held-item-info.option.lineHeight.@Tooltip": "每行的高度，单位是像素",
@@ -34,14 +34,14 @@
     "text.autoconfig.held-item-info.option.showBeehiveContent": "蜂箱/蜂巢内容",
     "text.autoconfig.held-item-info.option.showCrossbowProjectiles": "弩的投射物",
     "text.autoconfig.held-item-info.option.showLore": "Lore",
-    "text.autoconfig.held-item-info.option.maxLoreLines": "Lore 的最大行数",
-    "text.autoconfig.held-item-info.option.removePlusNbt": "把「(+NBT)」从 Lore 的工具提示中删除",
+    "text.autoconfig.held-item-info.option.maxLoreLines": "Lore的最大行数",
+    "text.autoconfig.held-item-info.option.removePlusNbt": "把「(+NBT)」从Lore的工具提示中删除",
     "text.autoconfig.held-item-info.option.showUnbreakable": "无法破坏",
     "text.autoconfig.held-item-info.option.showSignText": "告示牌文本",
     "text.autoconfig.held-item-info.option.showMusicDiscDescription": "唱片名称",
     "text.autoconfig.held-item-info.option.showGoatHornInstrument": "山羊角乐器",
     "text.autoconfig.held-item-info.option.showBookMeta": "书的作者和副本级别",
-    "text.autoconfig.held-item-info.option.showFilledMapId": "地图 ID",
+    "text.autoconfig.held-item-info.option.showFilledMapId": "地图ID",
     "text.autoconfig.held-item-info.option.showBannerPatternName": "旗帜图案名称",
     "text.autoconfig.held-item-info.option.showBannerPatternName.@Tooltip": "只影响到旗帜图案物品，而不是实际的旗帜",
     "text.autoconfig.held-item-info.option.showBannerPatterns": "旗帜图案",
@@ -54,6 +54,6 @@
     "text.autoconfig.held-item-info.option.showOnlyFilteredEnchantments.@Tooltip[0]": "设置为「是」，只显示以下附魔",
     "text.autoconfig.held-item-info.option.showOnlyFilteredEnchantments.@Tooltip[1]": "设置为「否」，以显示除这些附魔之外的所有内容",
     "text.autoconfig.held-item-info.option.filteredEnchantments": "经过滤的附魔",
-    "text.autoconfig.held-item-info.option.filteredEnchantments.@Tooltip[0]": "把 ID 放在这里（例如，「minecraft:silk_touch」而不是「Silk Touch」）",
-    "text.autoconfig.held-item-info.option.filteredEnchantments.@Tooltip[1]": "如果你找不到文本字段，请按 TAB 键几次"
+    "text.autoconfig.held-item-info.option.filteredEnchantments.@Tooltip[0]": "把ID放在这里（例如，「minecraft:silk_touch」而不是「Silk Touch」）",
+    "text.autoconfig.held-item-info.option.filteredEnchantments.@Tooltip[1]": "如果你找不到文本字段，请按TAB键几次"
 }
