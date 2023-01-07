@@ -6,6 +6,10 @@
   "name": "Held Item Info",
   "description": "Shows information about the held item under its name",
   "authors": ["Neecko5b84"],
+  "contributors": [
+    "Cccc-owo",
+    "DrHesperus"
+  ],
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/held-item-info",
     "issues": "https://github.com/A5b84/held-item-info/issues",
