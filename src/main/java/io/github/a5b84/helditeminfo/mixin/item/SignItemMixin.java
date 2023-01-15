@@ -5,6 +5,7 @@ import io.github.a5b84.helditeminfo.TooltipAppender;
 import io.github.a5b84.helditeminfo.TooltipBuilder;
 import net.minecraft.item.SignItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,7 +29,7 @@ public abstract class SignItemMixin implements TooltipAppender {
         NbtCompound blockEntityTag = builder.stack.getSubNbt("BlockEntityTag");
         if (blockEntityTag != null) {
 
-            List<MutableText> lines = new ArrayList<>(4);
+            List<Text> lines = new ArrayList<>(4);
 
             // Add it
             for (int i = 0; i < 4; i++) {
@@ -47,13 +48,8 @@ public abstract class SignItemMixin implements TooltipAppender {
                 if (str.isBlank()) continue;
 
                 // Add empty lines up to the current one
-                while (lines.size() < i) lines.add(Text.empty());
-                lines.add(Text.literal(str));
-            }
-
-            // Formatting
-            for (MutableText line : lines) {
-                line.formatted(TooltipBuilder.DEFAULT_COLOR);
+                while (lines.size() < i) lines.add(LiteralText.EMPTY);
+                lines.add(new LiteralText(str).formatted(TooltipBuilder.DEFAULT_COLOR));
             }
 
             builder.appendAll(lines);

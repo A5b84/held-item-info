@@ -12,6 +12,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -141,7 +142,7 @@ public abstract class HeldItemTooltipMixin extends DrawableHelper {
 
             // Stack name
             if (config.showName()) {
-                MutableText stackName = Text.empty() // Prevents overwriting the name formatting
+                MutableText stackName = new LiteralText("") // Prevents overwriting the name formatting
                         .append(stack.getName())
                         .formatted(stack.getRarity().formatting);
                 if (stack.hasCustomName()) stackName.formatted(Formatting.ITALIC);

@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import org.spongepowered.asm.mixin.Mixin;
 
 import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
@@ -24,7 +25,7 @@ public abstract class BeehiveBlockMixin implements TooltipAppender {
         if (blockEntityTag != null) {
             int beeCount = blockEntityTag.getList("Bees", NbtType.COMPOUND).size();
             if (beeCount > 0) {
-                Text text = Text.translatable("entity.minecraft.bee")
+                Text text = new TranslatableText("entity.minecraft.bee")
                         .append(" x" + beeCount)
                         .formatted(TooltipBuilder.DEFAULT_COLOR);
                 builder.append(text);

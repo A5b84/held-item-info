@@ -4,7 +4,8 @@ import io.github.a5b84.helditeminfo.TooltipAppender;
 import io.github.a5b84.helditeminfo.TooltipBuilder;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import org.spongepowered.asm.mixin.Mixin;
 
 import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
@@ -25,9 +26,9 @@ public abstract class FilledMapItemMixin implements TooltipAppender {
     public void heldItemInfo_appendTooltip(TooltipBuilder builder) {
         Integer id = FilledMapItem.getMapId(builder.stack);
         if (id != null) {
-            builder.append(Text.literal("#" + id).formatted(TooltipBuilder.DEFAULT_COLOR));
+            builder.append(new LiteralText("#" + id).formatted(TooltipBuilder.DEFAULT_COLOR));
         } else {
-            builder.append(Text.translatable("filled_map.unknown").formatted(TooltipBuilder.DEFAULT_COLOR));
+            builder.append(new TranslatableText("filled_map.unknown").formatted(TooltipBuilder.DEFAULT_COLOR));
         }
     }
 }

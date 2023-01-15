@@ -1,6 +1,6 @@
 # Changelog
 
-### [1.4.2] (1.19.3+)
+### [1.4.2] (1.17-1.18.2, 1.19.3+)
 - Addded `ru_ru` and `zh_cn` translations ([#10](https://github.com/A5b84/held-item-info/pull/10), [#11](https://github.com/A5b84/held-item-info/pull/11))
 
 ### [1.4.1] (1.19.3+)

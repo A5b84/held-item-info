@@ -11,10 +11,9 @@
         "item.EntityBucketItemMixin",
         "item.FilledMapItemMixin",
         "item.FireworkItemsMixin",
-        "item.GoatHornItemMixin",
         "item.ItemsWithBannerMixin",
         "item.ItemsWithPotionEffectsMixin",
-        "item.MusicDiscItemsMixin",
+        "item.MusicDiscItemMixin",
         "item.SignItemMixin",
         "item.WrittenBookItemMixin",
         "HeldItemTooltipMixin"

@@ -8,10 +8,12 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
@@ -82,7 +84,7 @@ public final class Appenders {
 
         if (tag.contains("LootTable", NbtType.STRING)) {
             // Loot table (same as vanilla shulker boxes)
-            builder.append(Text.literal("???????"));
+            builder.append(new LiteralText("???????"));
             return true;
 
         } else if (!items.isEmpty()) {
@@ -99,7 +101,7 @@ public final class Appenders {
                 Text text;
                 if (builder.canAdd()) {
                     text = iStack.getName()
-                            .copy() // shallowCopy to get a MutableText
+                            .shallowCopy() // shallowCopy to get a MutableText
                             .append(" x" + iStack.getCount())
                             .formatted(TooltipBuilder.DEFAULT_COLOR);
                 } else {
@@ -171,7 +173,7 @@ public final class Appenders {
             return;
         }
 
-        builder.append(Text.translatable("item.unbreakable").formatted(Formatting.BLUE));
+        builder.append(new TranslatableText("item.unbreakable").formatted(Formatting.BLUE));
     }
 
 }
