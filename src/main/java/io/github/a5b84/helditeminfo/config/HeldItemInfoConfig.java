@@ -23,6 +23,7 @@ public class HeldItemInfoConfig {
 
     public int lineHeight() { return FONT_HEIGHT - 1; }
     public float offsetPerExtraLine() { return .3334f; }
+    public int itemNameSpacing() { return 2; }
     public int verticalOffset() { return 0; }
     public float baseFadeDuration() { return 2; }
     public float fadeDurationPerExtraLine() { return 0.2f; }
@@ -72,6 +73,7 @@ public class HeldItemInfoConfig {
 
         @Tooltip private int lineHeight = super.lineHeight();
         @Tooltip(count = 2) private float offsetPerExtraLine = super.offsetPerExtraLine();
+        @Tooltip private int itemNameSpacing = super.itemNameSpacing();
         private int verticalOffset = super.verticalOffset();
         @Tooltip private float baseFadeDuration = super.baseFadeDuration();
         @Tooltip private float fadeDurationPerExtraLine = super.fadeDurationPerExtraLine();
@@ -115,6 +117,7 @@ public class HeldItemInfoConfig {
 
         @Override public int lineHeight() { return lineHeight; }
         @Override public float offsetPerExtraLine() { return offsetPerExtraLine; }
+        @Override public int itemNameSpacing() { return itemNameSpacing; }
         @Override public int verticalOffset() { return verticalOffset; }
         @Override public float baseFadeDuration() { return baseFadeDuration; }
         @Override public float fadeDurationPerExtraLine() { return fadeDurationPerExtraLine; }

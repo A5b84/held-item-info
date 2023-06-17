@@ -16,6 +16,8 @@
     "text.autoconfig.held-item-info.option.offsetPerExtraLine": "Vertical offset per extra line",
     "text.autoconfig.held-item-info.option.offsetPerExtraLine.@Tooltip[0]": "The vertical offset in pixels of all the text per extra line",
     "text.autoconfig.held-item-info.option.offsetPerExtraLine.@Tooltip[1]": "By default, this makes the tooltip get closer to the hotbar the more lines there are",
+    "text.autoconfig.held-item-info.option.itemNameSpacing": "Item name spacing",
+    "text.autoconfig.held-item-info.option.itemNameSpacing.@Tooltip": "Gap between the item name and the next line",
     "text.autoconfig.held-item-info.option.verticalOffset": "Vertical offset",
     "text.autoconfig.held-item-info.option.baseFadeDuration": "Base fade duration",
     "text.autoconfig.held-item-info.option.baseFadeDuration.@Tooltip": "The time in seconds it takes for a one line tooltip to disappear",

@@ -3,6 +3,7 @@
 ### [1.5.0] (1.20+)
 - Updated to 1.20.1
 - Added support for paintings ([#15](https://github.com/A5b84/held-item-info/issues/15)) and suspicious sand/gravel
+- Added 'Item name spacing' option ([#18](https://github.com/A5b84/held-item-info/issues/18))
 - Added `pt_br` translation ([#16](https://github.com/A5b84/held-item-info/pull/16))
 - Fabric API is no longer required
 

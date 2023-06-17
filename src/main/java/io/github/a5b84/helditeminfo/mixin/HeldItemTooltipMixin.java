@@ -58,8 +58,13 @@ public abstract class HeldItemTooltipMixin {
         y = scaledHeight - 50 - FONT_HEIGHT // Vanilla value (50 = 32 (hotbar) + 14 (health & xp) + 4 (spacing))
                 - (int) ((config.lineHeight() - config.offsetPerExtraLine()) * (tooltip.size() - 1))
                 - config.verticalOffset();
+
         //noinspection ConstantConditions
         if (!this.client.interactionManager.hasStatusBars()) y += 14;
+
+        if (config.showName() && tooltip.size() > 1) {
+            y -= config.itemNameSpacing();
+        }
     }
 
 
@@ -80,9 +85,14 @@ public abstract class HeldItemTooltipMixin {
         }
 
         // Fill the background
+        int height = config.lineHeight() * tooltip.size();
+        if (config.showName() && tooltip.size() > 1) {
+            height += config.itemNameSpacing();
+        }
+
         context.fill(
             (scaledWidth - maxWidth) / 2 - 2, y - 2,
-            (scaledWidth + maxWidth) / 2 + 2, y + (config.lineHeight() * tooltip.size()) + 2,
+            (scaledWidth + maxWidth) / 2 + 2, y + height + 2,
             color
         );
     }
@@ -93,10 +103,17 @@ public abstract class HeldItemTooltipMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I"))
     private int drawTextProxy(DrawContext context, TextRenderer textRenderer, Text name, int _x, int _y, int color) {
         int lineHeight = config.lineHeight();
+        int i = 0;
+
         for (TooltipLine line : tooltip) {
             int x = (scaledWidth - line.width) / 2;
             context.drawTextWithShadow(textRenderer, line.text, x, y, color);
             y += lineHeight;
+
+            if (i == 0 && config.showName()) {
+                y += config.itemNameSpacing();
+            }
+            i++;
         }
 
         return 0;

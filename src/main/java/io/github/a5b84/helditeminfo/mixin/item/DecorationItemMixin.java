@@ -12,7 +12,7 @@ import java.util.List;
 import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
 
 @Mixin(DecorationItem.class)
-public class DecorationItemMixin implements GenericTooltipAppender {
+public abstract class DecorationItemMixin implements GenericTooltipAppender {
 
     @Override
     public boolean heldItemInfo_shouldAppendTooltip() {
