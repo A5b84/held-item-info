@@ -21,7 +21,7 @@ public abstract class ItemsWithPotionEffectsMixin implements GenericTooltipAppen
     }
 
     @Override
-    public List<Text> postProcess(TooltipBuilder builder, List<Text> tooltip) {
+    public List<Text> heldItemInfo_postProcess(TooltipBuilder builder, List<Text> tooltip) {
         // Remove the 'When applied: ...' lines (everything after the first blank line)
         int i = 0;
         for (Text line : tooltip) {

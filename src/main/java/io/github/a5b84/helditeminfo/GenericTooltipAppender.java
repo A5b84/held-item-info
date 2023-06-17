@@ -16,11 +16,11 @@ public interface GenericTooltipAppender extends TooltipAppender {
         Item item = builder.stack.getItem();
         List<Text> tooltip = new ArrayList<>();
         item.appendTooltip(builder.stack, null, tooltip, TooltipContext.Default.BASIC);
-        tooltip = postProcess(builder, tooltip);
+        tooltip = heldItemInfo_postProcess(builder, tooltip);
         builder.appendAll(tooltip);
     }
 
-    default List<Text> postProcess(TooltipBuilder builder, List<Text> tooltip) {
+    default List<Text> heldItemInfo_postProcess(TooltipBuilder builder, List<Text> tooltip) {
         return tooltip;
     }
 

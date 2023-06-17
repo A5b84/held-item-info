@@ -1,6 +1,6 @@
 # Held Item Info
 
-A client-side [Fabric](https://fabricmc.net) / [Quilt](https://quiltmc.org/) mod that shows information (like enchantments) about the held item under its name. Requires Fabric API ([CurseForge](https://www.curseforge.com/minecraft/mc-mods/fabric-api) / [Modrinth](https://modrinth.com/mod/fabric-api)). 
+A client-side [Fabric](https://fabricmc.net) / [Quilt](https://quiltmc.org/) mod that shows information (like enchantments) about the held item under its name.
 
 The following can be displayed when holding an item:
 - Enchantments 
@@ -14,6 +14,7 @@ The following can be displayed when holding an item:
 - `Unbreakable` tag
 - Sign text
 - Title of Music Discs and Disc Fragments
+- Painting information (title, author, dimensions)
 - Instrument of Goat Horns
 - Author and generation of Written Books
 - Filled map identifier

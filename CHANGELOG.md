@@ -1,7 +1,10 @@
 # Changelog
 
-### [1.4.3] (1.20+)
+### [1.5.0] (1.20+)
+- Updated to 1.20.1
+- Added support for paintings ([#15](https://github.com/A5b84/held-item-info/issues/15)) and suspicious sand/gravel
 - Added `pt_br` translation ([#16](https://github.com/A5b84/held-item-info/pull/16))
+- Fabric API is no longer required
 
 ### [1.4.2] (1.19.3-1.19.4)
 - Added `ru_ru` and `zh_cn` translations ([#10](https://github.com/A5b84/held-item-info/pull/10), [#11](https://github.com/A5b84/held-item-info/pull/11))
@@ -54,4 +57,4 @@
 [1.4.0]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.4.0
 [1.4.1]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.4.1
 [1.4.2]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.4.2
-[1.4.3]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.4.3
+[1.5.0]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.5.0

@@ -39,6 +39,7 @@
     "text.autoconfig.held-item-info.option.showUnbreakable": "Unbreakable",
     "text.autoconfig.held-item-info.option.showSignText": "Sign text",
     "text.autoconfig.held-item-info.option.showMusicDiscDescription": "Music disc title",
+    "text.autoconfig.held-item-info.option.showPaintingDescription": "Painting information",
     "text.autoconfig.held-item-info.option.showGoatHornInstrument": "Goat horn instrument",
     "text.autoconfig.held-item-info.option.showBookMeta": "Book author and generation",
     "text.autoconfig.held-item-info.option.showFilledMapId": "Filled map ID",

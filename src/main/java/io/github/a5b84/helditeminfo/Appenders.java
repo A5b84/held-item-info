@@ -1,7 +1,6 @@
 package io.github.a5b84.helditeminfo;
 
 import com.google.gson.JsonParseException;
-import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -78,9 +77,9 @@ public final class Appenders {
     private static boolean appendContainerContent(TooltipBuilder builder, NbtCompound tag) {
         if (tag == null) return false;
 
-        NbtList items = tag.getList("Items", NbtType.COMPOUND);
+        NbtList items = tag.getList("Items", NbtElement.COMPOUND_TYPE);
 
-        if (tag.contains("LootTable", NbtType.STRING)) {
+        if (tag.contains("LootTable", NbtElement.STRING_TYPE)) {
             // Loot table (same as vanilla shulker boxes)
             builder.append(Text.literal("???????"));
             return true;
@@ -89,33 +88,38 @@ public final class Appenders {
             boolean added = false;
 
             for (NbtElement itemElement : items) {
-                if (!(itemElement instanceof NbtCompound itemTag)
-                        || itemTag.isEmpty()) {
-                    continue;
+                if (itemElement instanceof NbtCompound itemNbt
+                        && appendItem(builder, itemNbt)) {
+                    added = true;
                 }
-                ItemStack iStack = ItemStack.fromNbt(itemTag);
-                if (iStack.isEmpty()) continue;
-
-                Text text;
-                if (builder.canAdd()) {
-                    text = iStack.getName()
-                            .copy() // shallowCopy to get a MutableText
-                            .append(" x" + iStack.getCount())
-                            .formatted(TooltipBuilder.DEFAULT_COLOR);
-                } else {
-                    // If it's full and there are still items left, add `null`
-                    // instead so the "and x more" shows the right number
-                    text = null;
-                }
-
-                builder.append(text);
-                added = true;
             }
 
             return added;
         } else {
             return false;
         }
+    }
+
+    public static boolean appendItem(TooltipBuilder builder, NbtCompound itemNbt) {
+        if (itemNbt.isEmpty()) return false;
+
+        ItemStack iStack = ItemStack.fromNbt(itemNbt);
+        if (iStack.isEmpty()) return false;
+
+        Text text;
+        if (builder.canAdd()) {
+            text = iStack.getName()
+                    .copy() // shallowCopy to get a MutableText
+                    .append(" x" + iStack.getCount())
+                    .formatted(TooltipBuilder.DEFAULT_COLOR);
+        } else {
+            // If it's full and there are still items left, add `null`
+            // instead so the "and x more" shows the right number
+            text = null;
+        }
+
+        builder.append(text);
+        return true;
     }
 
 
@@ -127,7 +131,7 @@ public final class Appenders {
         NbtCompound displayTag = builder.stack.getSubNbt("display");
         if (displayTag == null) return;
 
-        NbtList loreTag = displayTag.getList("Lore", NbtType.STRING);
+        NbtList loreTag = displayTag.getList("Lore", NbtElement.STRING_TYPE);
         if (loreTag.isEmpty()) return;
 
         // Convert it to a list of text

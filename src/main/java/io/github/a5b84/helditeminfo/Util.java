@@ -33,6 +33,13 @@ public final class Util {
         return config.respectHideFlags() && (tag.getInt("HideFlags") & flag) != 0;
     }
 
+    public static void setAllToDefaultColor(List<Text> lines) {
+        for (Text line : lines) {
+            if (line instanceof MutableText mutableLine) {
+                mutableLine.formatted(TooltipBuilder.DEFAULT_COLOR);
+            }
+        }
+    }
 
     public static boolean isBlank(StringVisitable visitable) {
         Optional<Boolean> result = visitable.visit(asString -> {
