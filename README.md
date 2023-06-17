@@ -23,6 +23,7 @@ The following can be displayed when holding an item:
 Each of these can be toggled individually in-game if both Mod Menu ([CurseForge](https://www.curseforge.com/minecraft/mc-mods/modmenu) / [Modrinth](https://modrinth.com/mod/modmenu)) and a recent version of Cloth Config ([CurseForge](https://www.curseforge.com/minecraft/mc-mods/cloth-config) / [Modrinth](https://modrinth.com/mod/cloth-config)) are installed.
 
 ## Credits
+- `pt_br` translation by [FITFC](https://github.com/FITFC)
 - `ru_ru` translation by [DrHesperus](https://github.com/DrHesperus)
 - `zh_cn` translation by [Cccc-owo](https://github.com/Cccc-owo)
 
