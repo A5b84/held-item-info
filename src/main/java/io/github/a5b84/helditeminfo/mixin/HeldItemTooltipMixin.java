@@ -6,9 +6,8 @@ import io.github.a5b84.helditeminfo.TooltipLine;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -35,7 +34,7 @@ import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
 import static io.github.a5b84.helditeminfo.Util.FONT_HEIGHT;
 
 @Mixin(InGameHud.class)
-public abstract class HeldItemTooltipMixin extends DrawableHelper {
+public abstract class HeldItemTooltipMixin {
 
     @Shadow private @Final MinecraftClient client;
     @Shadow private int heldItemTooltipFade;
@@ -59,15 +58,20 @@ public abstract class HeldItemTooltipMixin extends DrawableHelper {
         y = scaledHeight - 50 - FONT_HEIGHT // Vanilla value (50 = 32 (hotbar) + 14 (health & xp) + 4 (spacing))
                 - (int) ((config.lineHeight() - config.offsetPerExtraLine()) * (tooltip.size() - 1))
                 - config.verticalOffset();
+
         //noinspection ConstantConditions
         if (!this.client.interactionManager.hasStatusBars()) y += 14;
+
+        if (config.showName() && tooltip.size() > 1) {
+            y -= config.itemNameSpacing();
+        }
     }
 
 
     /** Renders the background if enabled in the vanilla settings */
     @Redirect(method = "renderHeldItemTooltip",
-            at = @At(value = "INVOKE", target = "net/minecraft/client/gui/hud/InGameHud.fill(Lnet/minecraft/client/util/math/MatrixStack;IIIII)V"))
-    private void fillBackgroundProxy(MatrixStack stack, int x1, int y1, int x2, int y2, int color) {
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;fill(IIIII)V"))
+    private void fillBackgroundProxy(DrawContext context, int x1, int y1, int x2, int y2, int color) {
         // Only do the math part when actually rendering
         if ((color & 0xff000000) == 0) return;
 
@@ -81,10 +85,14 @@ public abstract class HeldItemTooltipMixin extends DrawableHelper {
         }
 
         // Fill the background
-        fill(
-            stack,
+        int height = config.lineHeight() * tooltip.size();
+        if (config.showName() && tooltip.size() > 1) {
+            height += config.itemNameSpacing();
+        }
+
+        context.fill(
             (scaledWidth - maxWidth) / 2 - 2, y - 2,
-            (scaledWidth + maxWidth) / 2 + 2, y + (config.lineHeight() * tooltip.size()) + 2,
+            (scaledWidth + maxWidth) / 2 + 2, y + height + 2,
             color
         );
     }
@@ -92,13 +100,20 @@ public abstract class HeldItemTooltipMixin extends DrawableHelper {
 
     /** Replaces vanilla rendering with the mod's */
     @Redirect(method = "renderHeldItemTooltip",
-            at = @At(value = "INVOKE", target = "net/minecraft/client/font/TextRenderer.drawWithShadow(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/text/Text;FFI)I"))
-    private int drawTextProxy(TextRenderer fontRenderer, MatrixStack stack, Text name, float _x, float _y, int color) {
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I"))
+    private int drawTextProxy(DrawContext context, TextRenderer textRenderer, Text name, int _x, int _y, int color) {
         int lineHeight = config.lineHeight();
+        int i = 0;
+
         for (TooltipLine line : tooltip) {
             int x = (scaledWidth - line.width) / 2;
-            fontRenderer.drawWithShadow(stack, line.text, x, y, color);
+            context.drawTextWithShadow(textRenderer, line.text, x, y, color);
             y += lineHeight;
+
+            if (i == 0 && config.showName()) {
+                y += config.itemNameSpacing();
+            }
+            i++;
         }
 
         return 0;

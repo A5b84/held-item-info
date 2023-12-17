@@ -1,14 +1,16 @@
 {
-  "schemaVersion": 1,
-  "id": "held-item-info",
-  "version": "${version}",
-
-  "name": "Held Item Info",
-  "description": "Shows information about the held item under its name",
-  "authors": ["Neecko5b84"],
-  "contributors": [
-    "Cccc-owo",
-    "DrHesperus"
+	"schemaVersion": 1,
+	"id": "held-item-info",
+	"version": "${version}",
+	"name": "Held Item Info",
+	"description": "Shows information about the held item under its name",
+	"authors": [
+		"Neecko5b84"
+	],
+	"contributors": [
+		"Cccc-owo",
+		"DrHesperus",
+		"FITFC"
   ],
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/held-item-info",
@@ -21,20 +23,24 @@
 
   "environment": "client",
   "entrypoints": {
-    "client": ["io.github.a5b84.helditeminfo.HeldItemInfo"],
-    "modmenu": ["io.github.a5b84.helditeminfo.config.ModMenuIntegration"]
-  },
-  "mixins": ["held-item-info.mixins.json"],
-
-  "depends": {
-    "minecraft": ">=1.19.3-",
-    "fabric-api-base": "*"
-  },
-  "suggests": {
-    "modmenu": "*",
-    "cloth-config2": ">=4.9.0"
-  },
-  "breaks": {
-    "cloth-config2": "<4.9.0"
-  }
+    "client": ["io.github.a5b84.helditeminfo.HeldItemInfo"
+		],
+		"modmenu": [
+			"io.github.a5b84.helditeminfo.config.ModMenuIntegration"
+		]
+	},
+	"mixins": [
+		{
+			"config": "held-item-info.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"minecraft": ">=1.20-",
+		"fabricloader": ">=0.14.21"
+	},
+	"suggests": {
+		"modmenu": "*",
+		"cloth-config2": "*"
+	}
 }

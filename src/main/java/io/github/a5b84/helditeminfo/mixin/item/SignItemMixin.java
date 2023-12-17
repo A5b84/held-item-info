@@ -5,11 +5,16 @@ import io.github.a5b84.helditeminfo.TooltipAppender;
 import io.github.a5b84.helditeminfo.TooltipBuilder;
 import net.minecraft.item.SignItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
@@ -26,29 +31,56 @@ public abstract class SignItemMixin implements TooltipAppender {
     public void heldItemInfo_appendTooltip(TooltipBuilder builder) {
         // Get the text
         NbtCompound blockEntityTag = builder.stack.getSubNbt("BlockEntityTag");
+
         if (blockEntityTag != null) {
+            List<MutableText> frontLines = buildSide(blockEntityTag, "front_text");
+            List<MutableText> backLines = buildSide(blockEntityTag, "back_text");
 
-            List<MutableText> lines = new ArrayList<>(4);
-
-            // Add it
-            for (int i = 0; i < 4; i++) {
-                MutableText text;
-
-                try {
-                    String textJson = blockEntityTag.getString("Text" + (i + 1));
-                    text = MutableText.Serializer.fromJson(textJson);
-                } catch (JsonParseException e) {
-                    continue;
+            if (!frontLines.isEmpty()) {
+                builder.appendAll(frontLines);
+                if (!backLines.isEmpty()) {
+                    builder.append(Text.literal("-------").formatted(TooltipBuilder.DEFAULT_COLOR));
                 }
+            }
 
-                if (text == null) continue;
+            if (!backLines.isEmpty()) {
+                builder.appendAll(backLines);
+            }
+        }
+    }
 
-                String str = text.getString();
-                if (str.isBlank()) continue;
+    @Unique
+    private List<MutableText> buildSide(NbtCompound blockEntityTag, String sideKey) {
+        NbtList messages = blockEntityTag.getCompound(sideKey).getList("messages", NbtElement.STRING_TYPE);
+        if (messages.isEmpty()) {
+            return Collections.emptyList();
+        } else {
+            List<MutableText> lines = new ArrayList<>(4);
+            int i = -1;
 
-                // Add empty lines up to the current one
-                while (lines.size() < i) lines.add(Text.empty());
-                lines.add(Text.literal(str));
+            for (NbtElement element : messages) {
+                i++;
+
+                if (element instanceof NbtString message) {
+                    MutableText text;
+                    try {
+                        String textJson = message.asString();
+                        text = MutableText.Serializer.fromJson(textJson);
+                    } catch (JsonParseException e) {
+                        continue;
+                    }
+
+                    if (text == null) continue;
+
+                    String str = text.getString();
+                    if (str.isBlank()) continue;
+
+                    // Add empty lines up to the current one
+                    if (!lines.isEmpty()) {
+                        while (lines.size() < i) lines.add(Text.empty());
+                    }
+                    lines.add(Text.literal(str));
+                }
             }
 
             // Formatting
@@ -56,7 +88,7 @@ public abstract class SignItemMixin implements TooltipAppender {
                 line.formatted(TooltipBuilder.DEFAULT_COLOR);
             }
 
-            builder.appendAll(lines);
+            return lines;
         }
     }
 

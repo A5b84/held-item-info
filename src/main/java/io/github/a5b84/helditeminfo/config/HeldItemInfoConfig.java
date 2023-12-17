@@ -23,6 +23,7 @@ public class HeldItemInfoConfig {
 
     public int lineHeight() { return FONT_HEIGHT - 1; }
     public float offsetPerExtraLine() { return .3334f; }
+    public int itemNameSpacing() { return 2; }
     public int verticalOffset() { return 0; }
     public float baseFadeDuration() { return 2; }
     public float fadeDurationPerExtraLine() { return 0.2f; }
@@ -44,6 +45,7 @@ public class HeldItemInfoConfig {
     public boolean showUnbreakable() { return true; }
     public boolean showSignText() { return true; }
     public boolean showMusicDiscDescription() { return true; }
+    public boolean showPaintingDescription() { return true; }
     public boolean showGoatHornInstrument() { return true; }
     public boolean showBookMeta() { return true; }
     public boolean showFilledMapId() { return false; }
@@ -71,6 +73,7 @@ public class HeldItemInfoConfig {
 
         @Tooltip private int lineHeight = super.lineHeight();
         @Tooltip(count = 2) private float offsetPerExtraLine = super.offsetPerExtraLine();
+        @Tooltip private int itemNameSpacing = super.itemNameSpacing();
         private int verticalOffset = super.verticalOffset();
         @Tooltip private float baseFadeDuration = super.baseFadeDuration();
         @Tooltip private float fadeDurationPerExtraLine = super.fadeDurationPerExtraLine();
@@ -93,6 +96,7 @@ public class HeldItemInfoConfig {
         private boolean showUnbreakable = super.showUnbreakable();
         private boolean showSignText = super.showSignText();
         private boolean showMusicDiscDescription = super.showMusicDiscDescription();
+        private boolean showPaintingDescription = super.showPaintingDescription();
         private boolean showGoatHornInstrument = super.showGoatHornInstrument();
         private boolean showBookMeta = super.showBookMeta();
         private boolean showFilledMapId = super.showFilledMapId();
@@ -113,6 +117,7 @@ public class HeldItemInfoConfig {
 
         @Override public int lineHeight() { return lineHeight; }
         @Override public float offsetPerExtraLine() { return offsetPerExtraLine; }
+        @Override public int itemNameSpacing() { return itemNameSpacing; }
         @Override public int verticalOffset() { return verticalOffset; }
         @Override public float baseFadeDuration() { return baseFadeDuration; }
         @Override public float fadeDurationPerExtraLine() { return fadeDurationPerExtraLine; }
@@ -132,6 +137,7 @@ public class HeldItemInfoConfig {
         @Override public boolean showUnbreakable() { return showUnbreakable; }
         @Override public boolean showSignText() { return showSignText; }
         @Override public boolean showMusicDiscDescription() { return showMusicDiscDescription; }
+        @Override public boolean showPaintingDescription() { return showPaintingDescription; }
         @Override public boolean showGoatHornInstrument() { return showGoatHornInstrument; }
         @Override public boolean showBookMeta() { return showBookMeta; }
         @Override public boolean showFilledMapId() { return showFilledMapId; }
