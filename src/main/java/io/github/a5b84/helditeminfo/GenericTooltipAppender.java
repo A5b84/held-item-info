@@ -1,6 +1,6 @@
 package io.github.a5b84.helditeminfo;
 
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.item.Item;
 import net.minecraft.text.Text;
 
@@ -15,7 +15,7 @@ public interface GenericTooltipAppender extends TooltipAppender {
     default void heldItemInfo_appendTooltip(TooltipBuilder builder) {
         Item item = builder.stack.getItem();
         List<Text> tooltip = new ArrayList<>();
-        item.appendTooltip(builder.stack, null, tooltip, TooltipContext.Default.BASIC);
+        item.appendTooltip(builder.stack, builder.tooltipContext, tooltip, TooltipType.Default.BASIC);
         tooltip = heldItemInfo_postProcess(builder, tooltip);
         builder.appendAll(tooltip);
     }

@@ -7,6 +7,7 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigHolder;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -37,6 +38,9 @@ public class HeldItemInfo implements ClientModInitializer {
             config = new HeldItemInfoConfig();
             filteredEnchantments = Collections.emptyList();
         }
-    }
 
+        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+            ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> HeldItemInfoDebugCommand.register(dispatcher));
+        }
+    }
 }

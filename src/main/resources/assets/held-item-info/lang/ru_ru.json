@@ -35,7 +35,6 @@
     "text.autoconfig.held-item-info.option.showCrossbowProjectiles": "Снаряды арбалета",
     "text.autoconfig.held-item-info.option.showLore": "Статистика использования ресурсов",
     "text.autoconfig.held-item-info.option.maxLoreLines": "Максимальное кол-во строк в статистике использования ресурсов",
-    "text.autoconfig.held-item-info.option.removePlusNbt": "Убрать '(+NBT)' из подсказки статистики использования ресурсов",
     "text.autoconfig.held-item-info.option.showUnbreakable": "Нерушимый",
     "text.autoconfig.held-item-info.option.showSignText": "Текст таблички",
     "text.autoconfig.held-item-info.option.showMusicDiscDescription": "Заголовок пластинки",

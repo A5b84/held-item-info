@@ -3,11 +3,11 @@
 A client-side [Fabric](https://fabricmc.net) / [Quilt](https://quiltmc.org/) mod that shows information (like enchantments) about the held item under its name.
 
 The following can be displayed when holding an item:
-- Enchantments 
+- Enchantments
 - Potion effects
-- Container contents (mainly Shulker Boxes and Bundles)
-- Firework attributes (flight duration, shape, color)
+- Container contents (e.g. Shulker Boxes and Bundles)
 - Commands inside of command blocks
+- Firework attributes (flight duration, shape, color)
 - Number of bees inside Bee Nests/Beehives
 - Projectiles in a crossbow
 - Lore

@@ -4,7 +4,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.ChatMessages;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
@@ -24,14 +23,6 @@ public final class Util {
 
     private Util() {}
 
-
-    /**
-     * @return {@code true} if what {@code flag} refers to should be hidden
-     * according to the {@code HideFlags} tag and the user's preference
-     */
-    public static boolean hasHideFlag(NbtCompound tag, int flag) {
-        return config.respectHideFlags() && (tag.getInt("HideFlags") & flag) != 0;
-    }
 
     public static void setAllToDefaultColor(List<Text> lines) {
         for (Text line : lines) {
@@ -55,7 +46,7 @@ public final class Util {
 
 
     /**
-     * @param s The string to wrp
+     * @param s The string to wrap
      * @param maxLines The max number of lines the string will be wrapped into
      * @see ChatMessages#breakRenderedChatMessageLines
      * @see TextHandler#wrapLines(String, int, Style) */
@@ -91,7 +82,7 @@ public final class Util {
         }
 
         if (wasShortened) {
-            lines.get(lines.size() - 1).append("...");
+            lines.getLast().append("...");
         }
 
         // Done
@@ -99,14 +90,12 @@ public final class Util {
     }
 
     /**
-     * @param maxLines The max number of lines the string will be wrapped into
      * @see ChatMessages#breakRenderedChatMessageLines
      * @see TextHandler#wrapLines(String, int, Style) */
     public static List<MutableText> wrapLines(StringVisitable s, int maxLines) {
         // TODO somehow make this not yeet styles
         if (maxLines <= 0) return Collections.emptyList();
 
-        // Split
         double maxWidth = config.maxLineLength() * CHARACTER_WIDTH;
         if (maxWidth > Integer.MAX_VALUE) maxWidth = Integer.MAX_VALUE;
         //      ^ In case the user messed with their config (could crash)
@@ -125,7 +114,6 @@ public final class Util {
             }
         }
 
-        // Done
         return lines;
     }
 

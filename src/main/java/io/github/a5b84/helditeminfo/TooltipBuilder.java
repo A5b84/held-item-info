@@ -1,11 +1,13 @@
 package io.github.a5b84.helditeminfo;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
 
@@ -14,6 +16,7 @@ public class TooltipBuilder {
     public static final Formatting DEFAULT_COLOR = Formatting.GRAY;
 
     public final ItemStack stack;
+    public final Item.TooltipContext tooltipContext;
     private final int maxSize;
     private final List<Text> lines;
     /**
@@ -23,8 +26,9 @@ public class TooltipBuilder {
     private int realSize = 0;
 
 
-    public TooltipBuilder(ItemStack stack, int maxSize) {
+    public TooltipBuilder(ItemStack stack, Item.TooltipContext tooltipContext, int maxSize) {
         this.stack = stack;
+        this.tooltipContext = tooltipContext;
         this.maxSize = maxSize;
         lines = new ArrayList<>(maxSize);
     }
@@ -37,21 +41,22 @@ public class TooltipBuilder {
         return lines.size() < maxSize;
     }
 
-    /**
-     * @return how many lines can be added before the tooltip is full
-     */
     public int getRemainingLines() {
         return maxSize - lines.size();
     }
 
 
-    /**
-     * Tries to add a single line to the tooltip.
-     */
     public void append(Text text) {
         realSize++;
         if (canAdd()) {
             lines.add(text);
+        }
+    }
+
+    public void append(Supplier<Text> textSupplier) {
+        realSize++;
+        if (canAdd()) {
+            lines.add(textSupplier.get());
         }
     }
 

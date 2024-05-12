@@ -1,181 +1,123 @@
 package io.github.a5b84.helditeminfo;
 
-import com.google.gson.JsonParseException;
-import net.minecraft.item.EnchantedBookItem;
+import io.github.a5b84.helditeminfo.mixin.ItemEnchantmentsComponentAccessor;
+import net.minecraft.client.item.TooltipType;
+import net.minecraft.component.DataComponentType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
+import net.minecraft.component.type.LoreComponent;
+import net.minecraft.component.type.UnbreakableComponent;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.EnchantmentTags;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.InvalidIdentifierException;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
-import static io.github.a5b84.helditeminfo.Util.hasHideFlag;
 
 public final class Appenders {
+
+    private static final Style LORE_STYLE = Style.EMPTY.withColor(TooltipBuilder.DEFAULT_COLOR).withItalic(true);
+    private static final Text UNBREAKABLE_TEXT = Text.translatable("item.unbreakable").formatted(TooltipBuilder.DEFAULT_COLOR);
 
     private Appenders() {}
 
     public static void appendEnchantments(TooltipBuilder builder) {
-        // Get the enchantments
-        ItemStack stack = builder.stack;
-        if (hasHideFlag(stack.getNbt(), 1)) return;
+        appendEnchantments(builder, DataComponentTypes.STORED_ENCHANTMENTS);
+        appendEnchantments(builder, DataComponentTypes.ENCHANTMENTS);
+    }
 
-        NbtList enchantments = (stack.getItem() == Items.ENCHANTED_BOOK)
-                ? EnchantedBookItem.getEnchantmentNbt(stack)
-                : stack.getEnchantments();
+    /**
+     * @see ItemEnchantmentsComponent#appendTooltip(Item.TooltipContext, Consumer, TooltipType)
+     */
+    private static void appendEnchantments(TooltipBuilder builder, DataComponentType<ItemEnchantmentsComponent> componentType) {
+        ItemEnchantmentsComponent enchantments = builder.stack.get(componentType);
+        if (enchantments == null
+                || enchantments.isEmpty()
+                || config.respectHideFlags() && !((ItemEnchantmentsComponentAccessor) enchantments).getShowInTooltip()) {
+            return;
+        }
 
-        if (enchantments.isEmpty()) return;
+        RegistryEntryList<Enchantment> tooltipOrder = ItemEnchantmentsComponentAccessor.callGetTooltipOrderList(builder.tooltipContext.getRegistryLookup(), RegistryKeys.ENCHANTMENT, EnchantmentTags.TOOLTIP_ORDER);
 
-        // Filtering
+        for (RegistryEntry<Enchantment> registryEntry : tooltipOrder) {
+            Enchantment enchantment = registryEntry.value();
+            int level = enchantments.getLevel(enchantment);
+            if (level > 0 && shouldShowEnchantment(registryEntry)) {
+                builder.append(() -> enchantment.getName(level));
+            }
+        }
+
+        for (var mapEntry : enchantments.getEnchantmentsMap()) {
+            RegistryEntry<Enchantment> registryEntry = mapEntry.getKey();
+            if (!tooltipOrder.contains(registryEntry) && shouldShowEnchantment(registryEntry)) {
+                builder.append(() -> {
+                    Enchantment enchantment = registryEntry.value();
+                    int level = mapEntry.getIntValue();
+                    return enchantment.getName(level);
+                });
+            }
+        }
+    }
+
+    private static boolean shouldShowEnchantment(RegistryEntry<Enchantment> entry) {
         List<Identifier> filters = HeldItemInfo.filteredEnchantments;
-        if (!filters.isEmpty()) {
-            NbtList filtered = new NbtList();
-
-            for (NbtElement tag : enchantments) {
-                if (tag instanceof NbtCompound) {
-                    try {
-                        Identifier id = new Identifier(((NbtCompound) tag).getString("id"));
-                        if (filters.contains(id) == config.showOnlyFilteredEnchantments()) {
-                            filtered.add(tag);
-                        }
-                    } catch (InvalidIdentifierException ignored) {}
-                }
-            }
-
-            enchantments = filtered;
-        }
-
-        List<Text> enchantmentTexts = new ArrayList<>(enchantments.size());
-        ItemStack.appendEnchantments(enchantmentTexts, enchantments);
-        builder.appendAll(enchantmentTexts);
-    }
-
-    public static void appendContainerContent(TooltipBuilder builder) {
-        @SuppressWarnings("unused")
-        // Shulker Boxes, Chests, ...
-        boolean added = appendContainerContent(builder, builder.stack.getNbt())
-                // Bundles
-                || appendContainerContent(builder, builder.stack.getSubNbt("BlockEntityTag"));
-    }
-
-    /**
-     * Add the items in {@code tag} to the tooltip.
-     * @return {@code true} if something was added.
-     * @see net.minecraft.block.ShulkerBoxBlock#appendTooltip
-     * @see net.minecraft.inventory.Inventories#readNbt
-     */
-    private static boolean appendContainerContent(TooltipBuilder builder, NbtCompound tag) {
-        if (tag == null) return false;
-
-        NbtList items = tag.getList("Items", NbtElement.COMPOUND_TYPE);
-
-        if (tag.contains("LootTable", NbtElement.STRING_TYPE)) {
-            // Loot table (same as vanilla shulker boxes)
-            builder.append(Text.literal("???????"));
+        if (filters.isEmpty()) {
             return true;
-
-        } else if (!items.isEmpty()) {
-            boolean added = false;
-
-            for (NbtElement itemElement : items) {
-                if (itemElement instanceof NbtCompound itemNbt
-                        && appendItem(builder, itemNbt)) {
-                    added = true;
-                }
-            }
-
-            return added;
         } else {
-            return false;
+            Identifier id = entry.getKey().map(RegistryKey::getValue).orElse(null);
+            return filters.contains(id) == config.showOnlyFilteredEnchantments();
         }
     }
 
-    public static boolean appendItem(TooltipBuilder builder, NbtCompound itemNbt) {
-        if (itemNbt.isEmpty()) return false;
 
-        ItemStack iStack = ItemStack.fromNbt(itemNbt);
-        if (iStack.isEmpty()) return false;
+    public static void appendItem(TooltipBuilder builder, NbtCompound itemNbt) {
+        if (itemNbt == null || itemNbt.isEmpty()) return;
 
-        Text text;
-        if (builder.canAdd()) {
-            text = iStack.getName()
-                    .copy() // shallowCopy to get a MutableText
-                    .append(" x" + iStack.getCount())
-                    .formatted(TooltipBuilder.DEFAULT_COLOR);
-        } else {
-            // If it's full and there are still items left, add `null`
-            // instead so the "and x more" shows the right number
-            text = null;
-        }
+        //noinspection DataFlowIssue (Argument 'builder.tooltipContext.getRegistryLookup()' might be null)
+        Optional<ItemStack> optionalStack = ItemStack.fromNbt(builder.tooltipContext.getRegistryLookup(), itemNbt);
+        ItemStack stack;
+        if (optionalStack.isEmpty() || (stack = optionalStack.get()).isEmpty()) return;
 
-        builder.append(text);
-        return true;
+        builder.append(() -> Text.translatable("container.shulkerBox.itemCount", stack.getName(), stack.getCount())
+                .formatted(TooltipBuilder.DEFAULT_COLOR));
     }
 
 
-    /**
-     * Adds the item's lore to the tooltip.
-     */
     public static void appendLore(TooltipBuilder builder) {
-        // Get the tag
-        NbtCompound displayTag = builder.stack.getSubNbt("display");
-        if (displayTag == null) return;
+        LoreComponent loreComponent = builder.stack.get(DataComponentTypes.LORE);
+        if (loreComponent != null) {
+            int currentLoreLines = 0;
 
-        NbtList loreTag = displayTag.getList("Lore", NbtElement.STRING_TYPE);
-        if (loreTag.isEmpty()) return;
+            for (Text line : loreComponent.lines()) {
+                int maxLines = Math.min(config.maxLoreLines() - currentLoreLines, builder.getRemainingLines());
+                List<MutableText> wrappedLine = Util.wrapLines(line, maxLines);
 
-        // Convert it to a list of text
-        List<MutableText> lore = new ArrayList<>();
-        for(int i = 0; i < loreTag.size(); i++) {
-            String lineString = loreTag.getString(i);
-            if (!(config.removePlusNbt() && lineString.equals("\"(+NBT)\""))) {
-                try {
-                    MutableText line = Text.Serializer.fromJson(lineString);
-                    if (line != null) {
-                        int maxLines = Math.min(config.maxLoreLines() - lore.size(), builder.getRemainingLines());
-                        List<MutableText> newLines = Util.wrapLines(line, maxLines);
-                        lore.addAll(newLines);
-                    }
-                } catch (JsonParseException e) {
-                    return;
+                for (MutableText linePart : wrappedLine) {
+                    builder.append(() -> Texts.setStyleIfAbsent(linePart, LORE_STYLE));
                 }
             }
         }
-
-        for (MutableText line : lore) {
-            Texts.setStyleIfAbsent(line, Style.EMPTY.withColor(TooltipBuilder.DEFAULT_COLOR));
-        }
-
-        builder.appendAll(lore);
     }
 
 
-    /**
-     * Adds a line if the item has the unbreakable modifier.
-     */
     public static void appendUnbreakable(TooltipBuilder builder) {
-        if (!builder.stack.getItem().isDamageable()) {
-            return;
+        UnbreakableComponent unbreakableComponent = builder.stack.get(DataComponentTypes.UNBREAKABLE);
+        if (unbreakableComponent != null && !(config.respectHideFlags() && !unbreakableComponent.showInTooltip())) {
+            builder.append(UNBREAKABLE_TEXT);
         }
-
-        NbtCompound tag = builder.stack.getNbt();
-        if (tag == null
-                || !tag.getBoolean("Unbreakable")
-                || Util.hasHideFlag(tag, 4)) {
-            return;
-        }
-
-        builder.append(Text.translatable("item.unbreakable").formatted(Formatting.BLUE));
     }
-
 }

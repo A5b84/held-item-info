@@ -11,19 +11,18 @@
 		"Cccc-owo",
 		"DrHesperus",
 		"FITFC"
-  ],
-  "contact": {
-    "homepage": "https://www.curseforge.com/minecraft/mc-mods/held-item-info",
-    "issues": "https://github.com/A5b84/held-item-info/issues",
-    "sources": "https://github.com/A5b84/held-item-info"
-  },
-
-  "license": "LGPL-3.0-or-later",
-  "icon": "assets/held-item-info/icon.png",
-
-  "environment": "client",
-  "entrypoints": {
-    "client": ["io.github.a5b84.helditeminfo.HeldItemInfo"
+ 	],
+	"contact": {
+		"homepage": "https://www.curseforge.com/minecraft/mc-mods/held-item-info",
+		"issues": "https://github.com/A5b84/held-item-info/issues",
+		"sources": "https://github.com/A5b84/held-item-info"
+	},
+	"license": "LGPL-3.0-or-later",
+	"icon": "assets/held-item-info/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"io.github.a5b84.helditeminfo.HeldItemInfo"
 		],
 		"modmenu": [
 			"io.github.a5b84.helditeminfo.config.ModMenuIntegration"
@@ -36,8 +35,8 @@
 		}
 	],
 	"depends": {
-		"minecraft": ">=1.20-",
-		"fabricloader": ">=0.14.21"
+		"minecraft": ">=1.20.5-",
+		"fabricloader": ">=0.15.10"
 	},
 	"suggests": {
 		"modmenu": "*",

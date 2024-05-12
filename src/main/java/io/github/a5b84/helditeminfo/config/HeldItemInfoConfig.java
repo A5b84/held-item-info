@@ -34,6 +34,7 @@ public class HeldItemInfoConfig {
     public boolean showEnchantments() { return true; }
     public boolean showPotionEffects() { return true; }
     public boolean showContainerContent() { return true; }
+    public boolean mergeSimilarContainerItems() { return true; }
     public boolean showFireworkAttributes() { return true; }
     public boolean showCommandBlockInfo() { return true; }
     public int maxCommandLines() { return 2; }
@@ -41,7 +42,6 @@ public class HeldItemInfoConfig {
     public boolean showCrossbowProjectiles() { return true; }
     public boolean showLore() { return true; }
     public int maxLoreLines() { return 3; }
-    public boolean removePlusNbt() { return true; }
     public boolean showUnbreakable() { return true; }
     public boolean showSignText() { return true; }
     public boolean showMusicDiscDescription() { return true; }
@@ -83,6 +83,7 @@ public class HeldItemInfoConfig {
         private boolean showEnchantments = super.showEnchantments();
         private boolean showPotionEffects = super.showPotionEffects();
         private boolean showContainerContent = super.showContainerContent();
+        private boolean mergeSimilarContainerItems = super.mergeSimilarContainerItems();
         private boolean showFireworkAttributes = super.showFireworkAttributes();
         private boolean showCommandBlockInfo = super.showCommandBlockInfo();
         @BoundedDiscrete(max = 40)
@@ -92,7 +93,6 @@ public class HeldItemInfoConfig {
         private boolean showLore = super.showLore();
         @BoundedDiscrete(max = 40)
         private int maxLoreLines = super.maxLoreLines();
-        private boolean removePlusNbt = super.removePlusNbt();
         private boolean showUnbreakable = super.showUnbreakable();
         private boolean showSignText = super.showSignText();
         private boolean showMusicDiscDescription = super.showMusicDiscDescription();
@@ -126,6 +126,7 @@ public class HeldItemInfoConfig {
         @Override public boolean showEnchantments() { return showEnchantments; }
         @Override public boolean showPotionEffects() { return showPotionEffects; }
         @Override public boolean showContainerContent() { return showContainerContent; }
+        @Override public boolean mergeSimilarContainerItems() { return mergeSimilarContainerItems; }
         @Override public boolean showFireworkAttributes() { return showFireworkAttributes; }
         @Override public boolean showCommandBlockInfo() { return showCommandBlockInfo; }
         @Override public int maxCommandLines() { return maxCommandLines; }
@@ -133,7 +134,6 @@ public class HeldItemInfoConfig {
         @Override public boolean showCrossbowProjectiles() { return showCrossbowProjectiles; }
         @Override public boolean showLore() { return showLore; }
         @Override public int maxLoreLines() { return maxLoreLines; }
-        @Override public boolean removePlusNbt() { return removePlusNbt; }
         @Override public boolean showUnbreakable() { return showUnbreakable; }
         @Override public boolean showSignText() { return showSignText; }
         @Override public boolean showMusicDiscDescription() { return showMusicDiscDescription; }

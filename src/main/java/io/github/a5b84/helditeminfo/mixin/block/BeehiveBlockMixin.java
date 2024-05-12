@@ -3,10 +3,12 @@ package io.github.a5b84.helditeminfo.mixin.block;
 import io.github.a5b84.helditeminfo.TooltipAppender;
 import io.github.a5b84.helditeminfo.TooltipBuilder;
 import net.minecraft.block.BeehiveBlock;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.block.entity.BeehiveBlockEntity;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
+
+import java.util.List;
 
 import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
 
@@ -20,15 +22,10 @@ public abstract class BeehiveBlockMixin implements TooltipAppender {
 
     @Override
     public void heldItemInfo_appendTooltip(TooltipBuilder builder) {
-        NbtCompound blockEntityTag = builder.stack.getSubNbt("BlockEntityTag");
-        if (blockEntityTag != null) {
-            int beeCount = blockEntityTag.getList("Bees", NbtElement.COMPOUND_TYPE).size();
-            if (beeCount > 0) {
-                Text text = Text.translatable("entity.minecraft.bee")
-                        .append(" x" + beeCount)
-                        .formatted(TooltipBuilder.DEFAULT_COLOR);
-                builder.append(text);
-            }
+        List<BeehiveBlockEntity.BeeData> beeData = builder.stack.get(DataComponentTypes.BEES);
+
+        if (beeData != null && !beeData.isEmpty()) {
+            builder.append(Text.translatable("container.shulkerBox.itemCount", Text.translatable("entity.minecraft.bee"), beeData.size()).formatted(TooltipBuilder.DEFAULT_COLOR));
         }
     }
 

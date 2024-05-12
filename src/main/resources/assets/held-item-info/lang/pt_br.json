@@ -35,7 +35,6 @@
     "text.autoconfig.held-item-info.option.showCrossbowProjectiles": "Projéteis de besta",
     "text.autoconfig.held-item-info.option.showLore": "Lore",
     "text.autoconfig.held-item-info.option.maxLoreLines": "Número máximo de linhas de conhecimento",
-    "text.autoconfig.held-item-info.option.removePlusNbt": "Remova '(+NBT)' da dica de ferramenta lore",
     "text.autoconfig.held-item-info.option.showUnbreakable": "Inquebrável",
     "text.autoconfig.held-item-info.option.showSignText": "Texto da Placa",
     "text.autoconfig.held-item-info.option.showMusicDiscDescription": "Título do disco de música",

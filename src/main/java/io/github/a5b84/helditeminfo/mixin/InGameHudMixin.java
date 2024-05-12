@@ -8,6 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -26,22 +27,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Collections;
 import java.util.List;
 
-import static io.github.a5b84.helditeminfo.Appenders.appendContainerContent;
 import static io.github.a5b84.helditeminfo.Appenders.appendEnchantments;
 import static io.github.a5b84.helditeminfo.Appenders.appendLore;
 import static io.github.a5b84.helditeminfo.Appenders.appendUnbreakable;
+import static io.github.a5b84.helditeminfo.ContainerContentAppender.appendContainerContent;
 import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
 import static io.github.a5b84.helditeminfo.Util.FONT_HEIGHT;
 
 @Mixin(InGameHud.class)
-public abstract class HeldItemTooltipMixin {
+public abstract class InGameHudMixin {
 
     @Shadow private @Final MinecraftClient client;
     @Shadow private int heldItemTooltipFade;
     @Shadow private ItemStack currentStack;
-    @Shadow private int scaledWidth;
-    @Shadow private int scaledHeight;
-
 
     @Unique private List<TooltipLine> tooltip = Collections.emptyList();
     @Unique private int y;
@@ -54,8 +52,8 @@ public abstract class HeldItemTooltipMixin {
     /** Updates rendering variables */
     @Inject(method = "renderHeldItemTooltip",
             at = @At(value = "INVOKE", target = "net/minecraft/client/font/TextRenderer.getWidth(Lnet/minecraft/text/StringVisitable;)I"))
-    public void onBeforeRenderHeldItemTooltip(CallbackInfo ci) {
-        y = scaledHeight - 50 - FONT_HEIGHT // Vanilla value (50 = 32 (hotbar) + 14 (health & xp) + 4 (spacing))
+    public void onBeforeRenderHeldItemTooltip(DrawContext context, CallbackInfo ci) {
+        y = context.getScaledWindowHeight() - 50 - FONT_HEIGHT // Vanilla value (50 = 32 (hotbar) + 14 (health & xp) + 4 (spacing))
                 - (int) ((config.lineHeight() - config.offsetPerExtraLine()) * (tooltip.size() - 1))
                 - config.verticalOffset();
 
@@ -70,12 +68,11 @@ public abstract class HeldItemTooltipMixin {
 
     /** Renders the background if enabled in the vanilla settings */
     @Redirect(method = "renderHeldItemTooltip",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;fill(IIIII)V"))
+            at = @At(value = "INVOKE", target = "net/minecraft/client/gui/DrawContext.fill(IIIII)V"))
     private void fillBackgroundProxy(DrawContext context, int x1, int y1, int x2, int y2, int color) {
         // Only do the math part when actually rendering
         if ((color & 0xff000000) == 0) return;
 
-        // Find the longest line
         if (maxWidth < 0) {
             for (TooltipLine line : tooltip) {
                 if (line.width > maxWidth) {
@@ -84,7 +81,7 @@ public abstract class HeldItemTooltipMixin {
             }
         }
 
-        // Fill the background
+        int scaledWidth = context.getScaledWindowWidth();
         int height = config.lineHeight() * tooltip.size();
         if (config.showName() && tooltip.size() > 1) {
             height += config.itemNameSpacing();
@@ -100,13 +97,13 @@ public abstract class HeldItemTooltipMixin {
 
     /** Replaces vanilla rendering with the mod's */
     @Redirect(method = "renderHeldItemTooltip",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I"))
+            at = @At(value = "INVOKE", target = "net/minecraft/client/gui/DrawContext.drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I"))
     private int drawTextProxy(DrawContext context, TextRenderer textRenderer, Text name, int _x, int _y, int color) {
         int lineHeight = config.lineHeight();
         int i = 0;
 
         for (TooltipLine line : tooltip) {
-            int x = (scaledWidth - line.width) / 2;
+            int x = (context.getScaledWindowWidth() - line.width) / 2;
             context.drawTextWithShadow(textRenderer, line.text, x, y, color);
             y += lineHeight;
 
@@ -138,7 +135,6 @@ public abstract class HeldItemTooltipMixin {
         } else {
             List<Text> newInfo = buildTooltip(currentStack);
 
-            // Reset everything if the tooltip changed
             if (!TooltipLine.areEquivalent(tooltip, newInfo)) {
                 tooltip = TooltipLine.from(newInfo);
                 maxWidth = -1;
@@ -152,32 +148,37 @@ public abstract class HeldItemTooltipMixin {
         if (stack.isEmpty()) {
             return Collections.emptyList();
         } else {
-            TooltipBuilder builder = new TooltipBuilder(stack, config.maxLines());
+            Item.TooltipContext tooltipContext = Item.TooltipContext.create(client.world);
+            TooltipBuilder builder = new TooltipBuilder(stack, tooltipContext, config.maxLines());
 
             // Stack name
             if (config.showName()) {
+                // See ItemStack.getTooltip
                 MutableText stackName = Text.empty() // Prevents overwriting the name formatting
                         .append(stack.getName())
-                        .formatted(stack.getRarity().formatting);
-                if (stack.hasCustomName()) stackName.formatted(Formatting.ITALIC);
+                        .formatted(stack.getRarity().getFormatting());
+                if (stack.contains(DataComponentTypes.CUSTOM_NAME)) {
+                    stackName.formatted(Formatting.ITALIC);
+                }
+
                 builder.append(stackName);
             }
 
-            // Item-specific tooltip
-            Item item = stack.getItem();
-            if (item instanceof TooltipAppender appender
-                    && appender.heldItemInfo_shouldAppendTooltip()) {
-                appender.heldItemInfo_appendTooltip(builder);
-            }
+            if (!(config.respectHideFlags() && stack.contains(DataComponentTypes.HIDE_TOOLTIP))) {
+                // Item-specific tooltip
+                Item item = stack.getItem();
+                if (item instanceof TooltipAppender appender
+                        && appender.heldItemInfo_shouldAppendTooltip()) {
+                    appender.heldItemInfo_appendTooltip(builder);
+                }
 
-            if (item instanceof BlockItem blockItem
-                    && blockItem.getBlock() instanceof TooltipAppender appender
-                    && appender.heldItemInfo_shouldAppendTooltip()) {
-                appender.heldItemInfo_appendTooltip(builder);
-            }
+                if (item instanceof BlockItem blockItem
+                        && blockItem.getBlock() instanceof TooltipAppender appender
+                        && appender.heldItemInfo_shouldAppendTooltip()) {
+                    appender.heldItemInfo_appendTooltip(builder);
+                }
 
-            // Tag-related lines
-            if (stack.hasNbt()) {
+                // Component-related lines
                 if (config.showEnchantments()) appendEnchantments(builder);
                 if (config.showContainerContent()) appendContainerContent(builder);
                 if (config.showLore()) appendLore(builder);

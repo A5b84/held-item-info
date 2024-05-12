@@ -1,6 +1,10 @@
 # Changelog
 
-### [1.5.0] (1.20+)
+### [1.6.0] (1.20.5+)
+- Updated to 1.20.6
+- Added a 'Merge similar items in containers' option to merge duplicate stacks in containers, e.g. by displaying "Stone x128" intead of "Stone x64, Stone x64" in Shulker Boxes
+
+### [1.5.0] (1.20-1.20.4)
 - Updated to 1.20.1
 - Added support for paintings ([#15](https://github.com/A5b84/held-item-info/issues/15)) and suspicious sand/gravel
 - Added 'Item name spacing' option ([#18](https://github.com/A5b84/held-item-info/issues/18))
@@ -59,3 +63,4 @@
 [1.4.1]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.4.1
 [1.4.2]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.4.2
 [1.5.0]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.5.0
+[1.6.0]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.6.0

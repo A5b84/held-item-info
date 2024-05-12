@@ -35,7 +35,6 @@
     "text.autoconfig.held-item-info.option.showCrossbowProjectiles": "弩的投射物",
     "text.autoconfig.held-item-info.option.showLore": "Lore",
     "text.autoconfig.held-item-info.option.maxLoreLines": "Lore的最大行数",
-    "text.autoconfig.held-item-info.option.removePlusNbt": "把「(+NBT)」从Lore的工具提示中删除",
     "text.autoconfig.held-item-info.option.showUnbreakable": "无法破坏",
     "text.autoconfig.held-item-info.option.showSignText": "告示牌文本",
     "text.autoconfig.held-item-info.option.showMusicDiscDescription": "唱片名称",
