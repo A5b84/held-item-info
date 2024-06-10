@@ -1,6 +1,9 @@
 # Changelog
 
-### [1.6.0] (1.20.5+)
+### [1.6.1] (1.21+)
+- Updated to 1.21-pre4
+
+### [1.6.0] (1.20.5-1.20.6)
 - Updated to 1.20.6
 - Added a 'Merge similar items in containers' option to merge duplicate stacks in containers, e.g. by displaying "Stone x128" intead of "Stone x64, Stone x64" in Shulker Boxes
 
@@ -64,3 +67,4 @@
 [1.4.2]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.4.2
 [1.5.0]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.5.0
 [1.6.0]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.6.0
+[1.6.1]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.6.1

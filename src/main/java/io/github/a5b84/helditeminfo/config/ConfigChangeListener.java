@@ -26,7 +26,7 @@ public class ConfigChangeListener {
         List<Identifier> ids = new ArrayList<>(idStrings.size());
         for (String idString : idStrings) {
             try {
-                ids.add(new Identifier(idString));
+                ids.add(Identifier.of(idString));
             } catch (InvalidIdentifierException e) {
                 LOGGER.error("[Held Item Info] Invalid enchantment identifier '" + idString + "': " + e.getMessage());
             }

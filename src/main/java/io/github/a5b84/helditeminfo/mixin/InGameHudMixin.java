@@ -1,5 +1,7 @@
 package io.github.a5b84.helditeminfo.mixin;
 
+import io.github.a5b84.helditeminfo.Appenders;
+import io.github.a5b84.helditeminfo.ContainerContentAppender;
 import io.github.a5b84.helditeminfo.TooltipAppender;
 import io.github.a5b84.helditeminfo.TooltipBuilder;
 import io.github.a5b84.helditeminfo.TooltipLine;
@@ -27,10 +29,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Collections;
 import java.util.List;
 
-import static io.github.a5b84.helditeminfo.Appenders.appendEnchantments;
-import static io.github.a5b84.helditeminfo.Appenders.appendLore;
-import static io.github.a5b84.helditeminfo.Appenders.appendUnbreakable;
-import static io.github.a5b84.helditeminfo.ContainerContentAppender.appendContainerContent;
 import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
 import static io.github.a5b84.helditeminfo.Util.FONT_HEIGHT;
 
@@ -66,39 +64,33 @@ public abstract class InGameHudMixin {
     }
 
 
-    /** Renders the background if enabled in the vanilla settings */
-    @Redirect(method = "renderHeldItemTooltip",
-            at = @At(value = "INVOKE", target = "net/minecraft/client/gui/DrawContext.fill(IIIII)V"))
-    private void fillBackgroundProxy(DrawContext context, int x1, int y1, int x2, int y2, int color) {
-        // Only do the math part when actually rendering
-        if ((color & 0xff000000) == 0) return;
-
-        if (maxWidth < 0) {
-            for (TooltipLine line : tooltip) {
-                if (line.width > maxWidth) {
-                    maxWidth = line.width;
-                }
-            }
-        }
-
-        int scaledWidth = context.getScaledWindowWidth();
-        int height = config.lineHeight() * tooltip.size();
-        if (config.showName() && tooltip.size() > 1) {
-            height += config.itemNameSpacing();
-        }
-
-        context.fill(
-            (scaledWidth - maxWidth) / 2 - 2, y - 2,
-            (scaledWidth + maxWidth) / 2 + 2, y + height + 2,
-            color
-        );
-    }
-
-
     /** Replaces vanilla rendering with the mod's */
     @Redirect(method = "renderHeldItemTooltip",
-            at = @At(value = "INVOKE", target = "net/minecraft/client/gui/DrawContext.drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I"))
-    private int drawTextProxy(DrawContext context, TextRenderer textRenderer, Text name, int _x, int _y, int color) {
+            at = @At(value = "INVOKE", target = "net/minecraft/client/gui/DrawContext.drawTextWithBackground(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;IIII)I"))
+    private int drawTextProxy(DrawContext context, TextRenderer textRenderer, Text text, int _x, int _y, int width, int color) {
+        int backgroundColor = client.options.getTextBackgroundColor(0);
+
+        if ((backgroundColor & 0xff000000) != 0) {
+            if (maxWidth < 0) {
+                for (TooltipLine line : tooltip) {
+                    if (line.width > maxWidth) {
+                        maxWidth = line.width;
+                    }
+                }
+            }
+
+            int scaledWidth = context.getScaledWindowWidth();
+            int height = config.lineHeight() * tooltip.size();
+            if (config.showName() && tooltip.size() > 1) {
+                height += config.itemNameSpacing();
+            }
+
+            context.fill(
+                    (scaledWidth - maxWidth) / 2 - 2, y - 2,
+                    (scaledWidth + maxWidth) / 2 + 2, y + height + 2,
+                    color);
+        }
+
         int lineHeight = config.lineHeight();
         int i = 0;
 
@@ -179,10 +171,11 @@ public abstract class InGameHudMixin {
                 }
 
                 // Component-related lines
-                if (config.showEnchantments()) appendEnchantments(builder);
-                if (config.showContainerContent()) appendContainerContent(builder);
-                if (config.showLore()) appendLore(builder);
-                if (config.showUnbreakable()) appendUnbreakable(builder);
+                if (config.showMusicDiscDescription()) Appenders.appendMusicDiscDescription(builder);
+                if (config.showEnchantments()) Appenders.appendEnchantments(builder);
+                if (config.showContainerContent()) ContainerContentAppender.appendContainerContent(builder);
+                if (config.showLore()) Appenders.appendLore(builder);
+                if (config.showUnbreakable()) Appenders.appendUnbreakable(builder);
             }
 
             return builder.build();

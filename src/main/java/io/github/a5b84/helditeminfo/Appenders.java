@@ -1,15 +1,16 @@
 package io.github.a5b84.helditeminfo;
 
 import io.github.a5b84.helditeminfo.mixin.ItemEnchantmentsComponentAccessor;
-import net.minecraft.client.item.TooltipType;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
+import net.minecraft.component.type.JukeboxPlayableComponent;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.UnbreakableComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -35,6 +36,22 @@ public final class Appenders {
 
     private Appenders() {}
 
+
+    /**
+     * @see JukeboxPlayableComponent#appendTooltip
+     */
+    public static void appendMusicDiscDescription(TooltipBuilder builder) {
+        JukeboxPlayableComponent songComponent = builder.stack.get(DataComponentTypes.JUKEBOX_PLAYABLE);
+        if (songComponent != null && (!config.respectHideFlags() || songComponent.showInTooltip())) {
+            //noinspection DataFlowIssue ("Argument 'builder.tooltipContext.getRegistryLookup()' might be null")
+            songComponent.song().getEntry(builder.tooltipContext.getRegistryLookup()).ifPresent(entry -> builder.append(() -> {
+                MutableText description = entry.value().description().copy();
+                return Texts.setStyleIfAbsent(description, Style.EMPTY.withColor(TooltipBuilder.DEFAULT_COLOR));
+            }));
+        }
+    }
+
+
     public static void appendEnchantments(TooltipBuilder builder) {
         appendEnchantments(builder, DataComponentTypes.STORED_ENCHANTMENTS);
         appendEnchantments(builder, DataComponentTypes.ENCHANTMENTS);
@@ -43,7 +60,7 @@ public final class Appenders {
     /**
      * @see ItemEnchantmentsComponent#appendTooltip(Item.TooltipContext, Consumer, TooltipType)
      */
-    private static void appendEnchantments(TooltipBuilder builder, DataComponentType<ItemEnchantmentsComponent> componentType) {
+    private static void appendEnchantments(TooltipBuilder builder, ComponentType<ItemEnchantmentsComponent> componentType) {
         ItemEnchantmentsComponent enchantments = builder.stack.get(componentType);
         if (enchantments == null
                 || enchantments.isEmpty()
@@ -53,21 +70,19 @@ public final class Appenders {
 
         RegistryEntryList<Enchantment> tooltipOrder = ItemEnchantmentsComponentAccessor.callGetTooltipOrderList(builder.tooltipContext.getRegistryLookup(), RegistryKeys.ENCHANTMENT, EnchantmentTags.TOOLTIP_ORDER);
 
-        for (RegistryEntry<Enchantment> registryEntry : tooltipOrder) {
-            Enchantment enchantment = registryEntry.value();
+        for (RegistryEntry<Enchantment> enchantment : tooltipOrder) {
             int level = enchantments.getLevel(enchantment);
-            if (level > 0 && shouldShowEnchantment(registryEntry)) {
-                builder.append(() -> enchantment.getName(level));
+            if (level > 0 && shouldShowEnchantment(enchantment)) {
+                builder.append(() -> Enchantment.getName(enchantment, level));
             }
         }
 
-        for (var mapEntry : enchantments.getEnchantmentsMap()) {
-            RegistryEntry<Enchantment> registryEntry = mapEntry.getKey();
-            if (!tooltipOrder.contains(registryEntry) && shouldShowEnchantment(registryEntry)) {
+        for (var mapEntry : enchantments.getEnchantmentEntries()) {
+            RegistryEntry<Enchantment> enchantment = mapEntry.getKey();
+            if (!tooltipOrder.contains(enchantment) && shouldShowEnchantment(enchantment)) {
                 builder.append(() -> {
-                    Enchantment enchantment = registryEntry.value();
                     int level = mapEntry.getIntValue();
-                    return enchantment.getName(level);
+                    return Enchantment.getName(enchantment, level);
                 });
             }
         }

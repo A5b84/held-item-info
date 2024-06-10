@@ -3,7 +3,7 @@ package io.github.a5b84.helditeminfo;
 import com.google.common.collect.Iterables;
 import io.github.a5b84.helditeminfo.mixin.ShulkerBoxBlockAccessor;
 import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.client.item.TooltipType;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.component.type.ContainerComponent;

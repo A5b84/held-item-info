@@ -1,6 +1,6 @@
 package io.github.a5b84.helditeminfo;
 
-import net.minecraft.client.item.TooltipType;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.item.Item;
 import net.minecraft.text.Text;
 
