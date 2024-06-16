@@ -88,7 +88,7 @@ public abstract class InGameHudMixin {
             context.fill(
                     (scaledWidth - maxWidth) / 2 - 2, y - 2,
                     (scaledWidth + maxWidth) / 2 + 2, y + height + 2,
-                    color);
+                    backgroundColor);
         }
 
         int lineHeight = config.lineHeight();

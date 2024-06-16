@@ -13,5 +13,4 @@ public abstract class DiscFragmentItemMixin implements GenericTooltipAppender {
     public boolean heldItemInfo_shouldAppendTooltip() {
         return config.showMusicDiscDescription();
     }
-
 }

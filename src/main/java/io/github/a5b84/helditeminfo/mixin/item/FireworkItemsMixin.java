@@ -14,5 +14,4 @@ public abstract class FireworkItemsMixin implements GenericTooltipAppender {
     public boolean heldItemInfo_shouldAppendTooltip() {
         return config.showFireworkAttributes();
     }
-
 }

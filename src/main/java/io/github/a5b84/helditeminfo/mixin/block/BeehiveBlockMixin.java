@@ -28,5 +28,4 @@ public abstract class BeehiveBlockMixin implements TooltipAppender {
             builder.append(Text.translatable("container.shulkerBox.itemCount", Text.translatable("entity.minecraft.bee"), beeData.size()).formatted(TooltipBuilder.DEFAULT_COLOR));
         }
     }
-
 }

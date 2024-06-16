@@ -9,6 +9,7 @@ The following can be displayed when holding an item:
 - Commands inside of command blocks
 - Firework attributes (flight duration, shape, color)
 - Number of bees inside Bee Nests/Beehives
+- Entity spawned by Spawners
 - Projectiles in a crossbow
 - Lore
 - `Unbreakable` tag

@@ -34,5 +34,4 @@ public abstract class ItemsWithPotionEffectsMixin implements GenericTooltipAppen
 
         return tooltip;
     }
-
 }

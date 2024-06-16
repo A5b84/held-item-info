@@ -13,5 +13,4 @@ public abstract class EntityBucketItemMixin implements GenericTooltipAppender {
     public boolean heldItemInfo_shouldAppendTooltip() {
         return config.showEntityBucketContent();
     }
-
 }

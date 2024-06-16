@@ -13,5 +13,4 @@ public abstract class WrittenBookItemMixin implements GenericTooltipAppender {
     public boolean heldItemInfo_shouldAppendTooltip() {
         return config.showBookMeta();
     }
-
 }

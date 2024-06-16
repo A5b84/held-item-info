@@ -14,5 +14,4 @@ public abstract class ItemsWithBannerMixin implements GenericTooltipAppender {
     public boolean heldItemInfo_shouldAppendTooltip() {
         return config.showBannerPatterns();
     }
-
 }

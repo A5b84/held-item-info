@@ -43,6 +43,7 @@ public class HeldItemInfoDebugCommand {
         String[] items = {
                 "minecraft:diamond_sword[minecraft:enchantments={levels: {\"minecraft:looting\": 3, \"minecraft:sharpness\": 5, \"minecraft:fire_aspect\": 2}}]",
                 "minecraft:potion[minecraft:potion_contents={potion: \"minecraft:strong_turtle_master\"}]",
+                "minecraft:ominous_bottle",
                 "minecraft:shulker_box[minecraft:container=[{item: {count: 32, id: \"minecraft:redstone_ore\"}, slot: 0}, {item: {count: 32, id: \"minecraft:stone\"}, slot: 1}, {item: {count: 1, components: {\"minecraft:item_name\": '{\"extra\":[{\"color\":\"#FF00FF\",\"text\":\"def\",\"underlined\":true}],\"text\":\"abc \"}'}, id: \"minecraft:golden_sword\"}, slot: 2}, {item: {count: 32, id: \"minecraft:stone\"}, slot: 3}, {item: {count: 64, id: \"minecraft:stone\"}, slot: 4}, {item: {count: 64, id: \"minecraft:redstone_ore\"}, slot: 5}, {item: {count: 64, id: \"minecraft:stone\"}, slot: 6}, {item: {count: 64, id: \"minecraft:stone\"}, slot: 7}, {item: {count: 64, id: \"minecraft:stone\"}, slot: 8}, {item: {count: 64, id: \"minecraft:stone\"}, slot: 9}, {item: {count: 1, components: {\"minecraft:enchantments\": {levels: {\"minecraft:sharpness\": 5}}}, id: \"minecraft:iron_sword\"}, slot: 10}, {item: {count: 64, id: \"minecraft:stone\"}, slot: 11}, {item: {count: 1, components: {\"minecraft:enchantments\": {levels: {\"minecraft:sharpness\": 5}}}, id: \"minecraft:iron_sword\"}, slot: 12}, {item: {count: 64, id: \"minecraft:stone\"}, slot: 13}, {item: {count: 32, id: \"minecraft:stone\"}, slot: 14}, {item: {count: 64, id: \"minecraft:redstone_ore\"}, slot: 18}, {item: {count: 64, id: \"minecraft:stone\"}, slot: 19}, {item: {count: 64, id: \"minecraft:stone\"}, slot: 20}, {item: {count: 1, components: {\"minecraft:item_name\": '{\"extra\":[{\"color\":\"#FF00FF\",\"text\":\"def\",\"underlined\":true}],\"text\":\"abc \"}'}, id: \"minecraft:golden_sword\"}, slot: 21}, {item: {count: 64, id: \"minecraft:diamond_ore\"}, slot: 22}, {item: {count: 64, id: \"minecraft:diamond_ore\"}, slot: 23}, {item: {count: 64, id: \"minecraft:diamond_ore\"}, slot: 24}]]",
                 "minecraft:chiseled_bookshelf[minecraft:container=[{item: {count: 1, id: \"minecraft:book\"}, slot: 0}, {item: {count: 1, id: \"minecraft:book\"}, slot: 2}, {item: {count: 1, id: \"minecraft:book\"}, slot: 4}]]",
                 "minecraft:bundle[minecraft:bundle_contents=[{count: 3, id: \"minecraft:gold_block\"}, {count: 2, id: \"minecraft:iron_block\"}]]",
@@ -62,6 +63,8 @@ public class HeldItemInfoDebugCommand {
                 "minecraft:filled_map[minecraft:map_id=0]",
                 "minecraft:creeper_banner_pattern",
                 "minecraft:tropical_fish_bucket[minecraft:bucket_entity_data={BucketVariantTag: 185466881}]",
+                "minecraft:spawner[minecraft:block_entity_data={SpawnData: {entity: {id: \"minecraft:pig\"}}, id: \"minecraft:spawner\"}]",
+                "minecraft:trial_spawner[block_entity_data={id:\"minecraft:trial_spawner\",spawn_data:{entity:{id:\"minecraft:pig\"}}}]",
         };
 
         ClientPlayNetworkHandler networkHandler = context.getSource().getPlayer().networkHandler;

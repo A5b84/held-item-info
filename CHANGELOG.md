@@ -1,5 +1,9 @@
 # Changelog
 
+### [1.7.0] (1.21+)
+- Added tooltips for Spawners and Ominous Bottles
+- Fixed tooltip background color ([#28](https://github.com/A5b84/held-item-info/issues/28))
+
 ### [1.6.1] (1.21+)
 - Updated to 1.21-pre4
 
@@ -68,3 +72,4 @@
 [1.5.0]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.5.0
 [1.6.0]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.6.0
 [1.6.1]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.6.1
+[1.7.0]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.7.0

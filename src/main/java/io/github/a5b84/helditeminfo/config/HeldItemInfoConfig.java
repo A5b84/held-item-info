@@ -39,6 +39,7 @@ public class HeldItemInfoConfig {
     public boolean showCommandBlockInfo() { return true; }
     public int maxCommandLines() { return 2; }
     public boolean showBeehiveContent() { return true; }
+    public boolean showSpawnerEntity() { return true; }
     public boolean showCrossbowProjectiles() { return true; }
     public boolean showLore() { return true; }
     public int maxLoreLines() { return 3; }
@@ -89,6 +90,7 @@ public class HeldItemInfoConfig {
         @BoundedDiscrete(max = 40)
         @Tooltip private int maxCommandLines = super.maxCommandLines();
         private boolean showBeehiveContent = super.showBeehiveContent();
+        private boolean showSpawnerEntity = super.showSpawnerEntity();
         private boolean showCrossbowProjectiles = super.showCrossbowProjectiles();
         private boolean showLore = super.showLore();
         @BoundedDiscrete(max = 40)
@@ -131,6 +133,7 @@ public class HeldItemInfoConfig {
         @Override public boolean showCommandBlockInfo() { return showCommandBlockInfo; }
         @Override public int maxCommandLines() { return maxCommandLines; }
         @Override public boolean showBeehiveContent() { return showBeehiveContent; }
+        @Override public boolean showSpawnerEntity() { return showSpawnerEntity; }
         @Override public boolean showCrossbowProjectiles() { return showCrossbowProjectiles; }
         @Override public boolean showLore() { return showLore; }
         @Override public int maxLoreLines() { return maxLoreLines; }

@@ -26,5 +26,4 @@ public abstract class BrushableBlockMixin implements TooltipAppender {
             Appenders.appendItem(builder, blockEntityData.getNbt().getCompound("item"));
         }
     }
-
 }

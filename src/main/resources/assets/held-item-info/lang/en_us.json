@@ -35,6 +35,7 @@
     "text.autoconfig.held-item-info.option.maxCommandLines": "Max number of command lines",
     "text.autoconfig.held-item-info.option.maxCommandLines.@Tooltip": "The maximum number of lines of a command mlock's command to display",
     "text.autoconfig.held-item-info.option.showBeehiveContent": "Beehive/bee nest content",
+    "text.autoconfig.held-item-info.option.showSpawnerEntity": "Spawner entity",
     "text.autoconfig.held-item-info.option.showCrossbowProjectiles": "Crossbow projectiles",
     "text.autoconfig.held-item-info.option.showLore": "Lore",
     "text.autoconfig.held-item-info.option.maxLoreLines": "Max number of lore lines",

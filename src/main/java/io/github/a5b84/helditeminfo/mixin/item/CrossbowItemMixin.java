@@ -24,5 +24,4 @@ public abstract class CrossbowItemMixin implements GenericTooltipAppender {
         Util.setAllToDefaultColor(tooltip);
         return tooltip;
     }
-
 }
