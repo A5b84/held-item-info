@@ -6,6 +6,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.component.type.JukeboxPlayableComponent;
 import net.minecraft.component.type.LoreComponent;
+import net.minecraft.component.type.OminousBottleAmplifierComponent;
 import net.minecraft.component.type.UnbreakableComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
@@ -133,6 +134,14 @@ public final class Appenders {
         UnbreakableComponent unbreakableComponent = builder.stack.get(DataComponentTypes.UNBREAKABLE);
         if (unbreakableComponent != null && !(config.respectHideFlags() && !unbreakableComponent.showInTooltip())) {
             builder.append(UNBREAKABLE_TEXT);
+        }
+    }
+
+
+    public static void appendOminousBottleAmplifier(TooltipBuilder builder) {
+        OminousBottleAmplifierComponent component = builder.stack.get(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER);
+        if (component != null) {
+            component.appendTooltip(builder.tooltipContext, builder::append, TooltipType.BASIC);
         }
     }
 }

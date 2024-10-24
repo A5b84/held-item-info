@@ -81,7 +81,7 @@ public class HeldItemInfoDebugCommand {
         FabricClientCommandSource source = context.getSource();
         ClientPlayerEntity player = source.getPlayer();
         ItemStack stack = player.getMainHandStack();
-        NbtCompound nbt = (NbtCompound) stack.encode(player.getRegistryManager());
+        NbtCompound nbt = (NbtCompound) stack.toNbt(player.getRegistryManager());
         MutableText result = Text.literal(nbt.getString("id"));
         NbtCompound components = nbt.getCompound("components");
 

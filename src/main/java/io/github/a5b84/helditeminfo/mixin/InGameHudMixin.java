@@ -176,6 +176,7 @@ public abstract class InGameHudMixin {
                 if (config.showContainerContent()) ContainerContentAppender.appendContainerContent(builder);
                 if (config.showLore()) Appenders.appendLore(builder);
                 if (config.showUnbreakable()) Appenders.appendUnbreakable(builder);
+                if (config.showPotionEffects()) Appenders.appendOminousBottleAmplifier(builder);
             }
 
             return builder.build();

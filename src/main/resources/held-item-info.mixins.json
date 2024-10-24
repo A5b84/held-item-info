@@ -17,7 +17,6 @@
 		"item.GoatHornItemMixin",
 		"item.ItemsWithBannerMixin",
 		"item.ItemsWithPotionEffectsMixin",
-		"item.OminousBottleItemMixin",
 		"item.SignItemMixin",
 		"item.WrittenBookItemMixin",
         "InGameHudMixin",
