@@ -1,10 +1,14 @@
 # Changelog
 
-### [1.7.0] (1.21+)
+### [1.7.1] (1.21.2+)
+- Updated `ru_ru` translation ([#29](https://github.com/A5b84/held-item-info/pull/29))
+- Added `zh_tw` translation ([#30](https://github.com/A5b84/held-item-info/pull/30))
+
+### [1.7.0] (1.21-1.21.1)
 - Added tooltips for Spawners and Ominous Bottles
 - Fixed tooltip background color ([#28](https://github.com/A5b84/held-item-info/issues/28))
 
-### [1.6.1] (1.21+)
+### [1.6.1] (1.21-1.21.1)
 - Updated to 1.21-pre4
 
 ### [1.6.0] (1.20.5-1.20.6)
@@ -73,3 +77,4 @@
 [1.6.0]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.6.0
 [1.6.1]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.6.1
 [1.7.0]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.7.0
+[1.7.1]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.7.1
