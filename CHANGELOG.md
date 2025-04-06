@@ -1,8 +1,8 @@
 # Changelog
 
 ### [1.7.2] (1.21.5+)
-- Updated to 1.21.5
-- Fixes components not being hidden when using `tooltip_display.hidden_components`
+- Updated to 1.21.5 ([#37](https://github.com/A5b84/held-item-info/pull/37))
+  - Fixes components not being hidden when using `tooltip_display.hidden_components` ([#32](https://github.com/A5b84/held-item-info/pull/32))
 
 ### [1.7.1] (1.21.2-1.21.4)
 - Updated to 1.21.2
