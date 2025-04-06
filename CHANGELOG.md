@@ -1,7 +1,11 @@
 # Changelog
 
-### [1.7.1] (1.21.2+)
- - Updated to 1.21.2
+### [1.7.2] (1.21.5+)
+- Updated to 1.21.5
+- Fixes components not being hidden when using `tooltip_display.hidden_components`
+
+### [1.7.1] (1.21.2-1.21.4)
+- Updated to 1.21.2
 - Updated `ru_ru` translation ([#29](https://github.com/A5b84/held-item-info/pull/29))
 - Added `zh_tw` translation ([#30](https://github.com/A5b84/held-item-info/pull/30))
 

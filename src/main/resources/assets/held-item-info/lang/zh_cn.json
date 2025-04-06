@@ -41,10 +41,6 @@
     "text.autoconfig.held-item-info.option.showGoatHornInstrument": "山羊角乐器",
     "text.autoconfig.held-item-info.option.showBookMeta": "书的作者和副本级别",
     "text.autoconfig.held-item-info.option.showFilledMapId": "地图ID",
-    "text.autoconfig.held-item-info.option.showBannerPatternName": "旗帜图案名称",
-    "text.autoconfig.held-item-info.option.showBannerPatternName.@Tooltip": "只影响到旗帜图案物品，而不是实际的旗帜",
-    "text.autoconfig.held-item-info.option.showBannerPatterns": "旗帜图案",
-    "text.autoconfig.held-item-info.option.showBannerPatterns.@Tooltip": "只影响旗帜和盾牌，不影响旗帜图案物品",
     "text.autoconfig.held-item-info.option.showEntityBucketContent": "桶中实体类型",
     "text.autoconfig.held-item-info.option.showHiddenLinesCount": "显示多出的行数",
 

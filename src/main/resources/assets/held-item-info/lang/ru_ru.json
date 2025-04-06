@@ -46,10 +46,6 @@
     "text.autoconfig.held-item-info.option.showGoatHornInstrument": "Инструмент козьего рога",
     "text.autoconfig.held-item-info.option.showBookMeta": "Автор и поколение книги",
     "text.autoconfig.held-item-info.option.showFilledMapId": "Идентификатор заполненной карты",
-    "text.autoconfig.held-item-info.option.showBannerPatternName": "Название узора флага",
-    "text.autoconfig.held-item-info.option.showBannerPatternName.@Tooltip": "Влияет только на предметы узоров флага, не на сами флаги",
-    "text.autoconfig.held-item-info.option.showBannerPatterns": "Узоры флагов",
-    "text.autoconfig.held-item-info.option.showBannerPatterns.@Tooltip": "Влияет только на флаги и щиты, не на предметы узоров флагов",
     "text.autoconfig.held-item-info.option.showEntityBucketContent": "Вид сущности в вёдрах",
     "text.autoconfig.held-item-info.option.showHiddenLinesCount": "Показывать количество дополнительных строк",
 

@@ -7,6 +7,7 @@ import net.minecraft.block.TrialSpawnerBlock;
 import net.minecraft.block.entity.Spawner;
 import net.minecraft.block.spawner.MobSpawnerLogic;
 import net.minecraft.block.spawner.TrialSpawnerData;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 
@@ -25,10 +26,12 @@ public class SpawnerBlocksMixin implements TooltipAppender {
         String spawnDataKey = ((Object) this instanceof TrialSpawnerBlock)
                 ? TrialSpawnerData.SPAWN_DATA_KEY
                 : MobSpawnerLogic.SPAWN_DATA_KEY;
-        Text text = Spawner.getSpawnedEntityText(builder.stack, spawnDataKey);
-
-        if (text != null) {
-            builder.append(text);
-        }
+        builder.getComponentForDisplay(DataComponentTypes.BLOCK_ENTITY_DATA)
+                .ifPresent(blockEntityData -> {
+                    Text text = Spawner.getSpawnedEntityText(blockEntityData, spawnDataKey);
+                    if (text != null) {
+                        builder.append(text);
+                    }
+                });
     }
 }

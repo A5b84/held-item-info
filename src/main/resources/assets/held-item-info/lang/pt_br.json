@@ -41,10 +41,6 @@
     "text.autoconfig.held-item-info.option.showGoatHornInstrument": "Instrumento de chifre de cabra",
     "text.autoconfig.held-item-info.option.showBookMeta": "Autor do livro e geração",
     "text.autoconfig.held-item-info.option.showFilledMapId": "ID do mapa preenchido",
-    "text.autoconfig.held-item-info.option.showBannerPatternName": "Nome do padrão de banner",
-    "text.autoconfig.held-item-info.option.showBannerPatternName.@Tooltip": "Afeta apenas os itens de padrão de banner, não os banners reais",
-    "text.autoconfig.held-item-info.option.showBannerPatterns": "Padrões do banner",
-    "text.autoconfig.held-item-info.option.showBannerPatterns.@Tooltip": "Afeta apenas estandartes e escudos, não itens de padrão de estandarte",
     "text.autoconfig.held-item-info.option.showEntityBucketContent": "Tipo de entidade em baldes",
     "text.autoconfig.held-item-info.option.showHiddenLinesCount": "Mostrar o número de linhas extras",
 

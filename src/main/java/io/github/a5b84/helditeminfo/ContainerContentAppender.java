@@ -1,50 +1,48 @@
 package io.github.a5b84.helditeminfo;
 
 import com.google.common.collect.Iterables;
-import io.github.a5b84.helditeminfo.mixin.ShulkerBoxBlockAccessor;
-import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.component.ComponentsAccess;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 public final class ContainerContentAppender {
 
     private ContainerContentAppender() {}
 
     /**
-     * @see ShulkerBoxBlock#appendTooltip(ItemStack, Item.TooltipContext, List, TooltipType)
+     * @see ContainerComponent#appendTooltip(Item.TooltipContext, Consumer, TooltipType, ComponentsAccess)
      */
     public static void appendContainerContent(TooltipBuilder builder) {
-        if (builder.stack.contains(DataComponentTypes.CONTAINER_LOOT)) {
-            builder.append(ShulkerBoxBlockAccessor.getUnknownContentsText());
-        }
+        builder.appendComponent(DataComponentTypes.CONTAINER_LOOT);
 
-        for (ContainerEntry innerStack : getContainerEntries(builder.stack)) {
-            builder.append(() -> Text.translatable("container.shulkerBox.itemCount", innerStack.getName(), innerStack.getCount())
+        for (ContainerEntry innerStack : getContainerEntries(builder)) {
+            builder.append(() -> Text.translatable("item.container.item_count", innerStack.getName(), innerStack.getCount())
                     .formatted(TooltipBuilder.DEFAULT_COLOR));
         }
     }
 
-    private static Iterable<? extends ContainerEntry> getContainerEntries(ItemStack containerStack) {
+    private static Iterable<? extends ContainerEntry> getContainerEntries(TooltipBuilder builder) {
         Iterable<ItemStack> stacks = Collections.emptyList();
 
-        ContainerComponent containerComponent = containerStack.get(DataComponentTypes.CONTAINER);
-        if (containerComponent != null) {
-            stacks = containerComponent.iterateNonEmpty();
+        Optional<ContainerComponent> containerComponent = builder.getComponentForDisplay(DataComponentTypes.CONTAINER);
+        if (containerComponent.isPresent()) {
+            stacks = containerComponent.get().iterateNonEmpty();
         }
 
-        BundleContentsComponent bundleContents = containerStack.get(DataComponentTypes.BUNDLE_CONTENTS);
-        if (bundleContents != null) {
-            stacks = Iterables.concat(stacks, bundleContents.iterate());
+        Optional<BundleContentsComponent> bundleContents = builder.getComponentForDisplay(DataComponentTypes.BUNDLE_CONTENTS);
+        if (bundleContents.isPresent()) {
+            stacks = Iterables.concat(stacks, bundleContents.get().iterate());
         }
 
         if (HeldItemInfo.config.mergeSimilarContainerItems()) {

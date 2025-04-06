@@ -1,5 +1,6 @@
 package io.github.a5b84.helditeminfo;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.item.Item;
 import net.minecraft.text.Text;
@@ -13,9 +14,10 @@ import java.util.List;
 public interface GenericTooltipAppender extends TooltipAppender {
 
     default void heldItemInfo_appendTooltip(TooltipBuilder builder) {
-        Item item = builder.stack.getItem();
+        ItemStack stack = builder.getStack();
+        Item item = stack.getItem();
         List<Text> tooltip = new ArrayList<>();
-        item.appendTooltip(builder.stack, builder.tooltipContext, tooltip, TooltipType.Default.BASIC);
+        item.appendTooltip(stack, builder.getTooltipContext(), builder.getDisplayComponent(), tooltip::add, TooltipType.Default.BASIC);
         tooltip = heldItemInfo_postProcess(builder, tooltip);
         builder.appendAll(tooltip);
     }

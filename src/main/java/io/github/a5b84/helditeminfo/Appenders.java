@@ -2,12 +2,10 @@ package io.github.a5b84.helditeminfo;
 
 import io.github.a5b84.helditeminfo.mixin.ItemEnchantmentsComponentAccessor;
 import net.minecraft.component.ComponentType;
+import net.minecraft.component.ComponentsAccess;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.component.type.JukeboxPlayableComponent;
-import net.minecraft.component.type.LoreComponent;
-import net.minecraft.component.type.OminousBottleAmplifierComponent;
-import net.minecraft.component.type.UnbreakableComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -15,6 +13,7 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.EnchantmentTags;
@@ -25,7 +24,9 @@ import net.minecraft.text.Texts;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
@@ -38,18 +39,32 @@ public final class Appenders {
     private Appenders() {}
 
 
+    public static void appendPotionEffects(TooltipBuilder builder) {
+        // Using the vanilla tooltip and removing the 'When applied: ...' lines (everything after the first blank line)
+        AtomicBoolean shouldAddLine = new AtomicBoolean(true);
+        builder.appendComponent(DataComponentTypes.POTION_CONTENTS,
+                text -> {
+                    if (Util.isBlank(text)) {
+                        shouldAddLine.set(false);
+                    } else if (shouldAddLine.get()) {
+                        builder.append(text);
+                    }
+                });
+    }
+
+
     /**
      * @see JukeboxPlayableComponent#appendTooltip
      */
     public static void appendMusicDiscDescription(TooltipBuilder builder) {
-        JukeboxPlayableComponent songComponent = builder.stack.get(DataComponentTypes.JUKEBOX_PLAYABLE);
-        if (songComponent != null && (!config.respectHideFlags() || songComponent.showInTooltip())) {
-            //noinspection DataFlowIssue ("Argument 'builder.tooltipContext.getRegistryLookup()' might be null")
-            songComponent.song().getEntry(builder.tooltipContext.getRegistryLookup()).ifPresent(entry -> builder.append(() -> {
-                MutableText description = entry.value().description().copy();
-                return Texts.setStyleIfAbsent(description, Style.EMPTY.withColor(TooltipBuilder.DEFAULT_COLOR));
-            }));
-        }
+        builder.getComponentForDisplay(DataComponentTypes.JUKEBOX_PLAYABLE)
+                .ifPresent(songComponent -> {
+                    RegistryWrapper.WrapperLookup registryLookup = Objects.requireNonNull(builder.getTooltipContext().getRegistryLookup());
+                    songComponent.song().resolveEntry(registryLookup).ifPresent(entry -> builder.append(() -> {
+                        MutableText description = entry.value().description().copy();
+                        return Texts.setStyleIfAbsent(description, Style.EMPTY.withColor(TooltipBuilder.DEFAULT_COLOR));
+                    }));
+                });
     }
 
 
@@ -59,34 +74,30 @@ public final class Appenders {
     }
 
     /**
-     * @see ItemEnchantmentsComponent#appendTooltip(Item.TooltipContext, Consumer, TooltipType)
+     * @see ItemEnchantmentsComponent#appendTooltip(Item.TooltipContext, Consumer, TooltipType, ComponentsAccess)
      */
     private static void appendEnchantments(TooltipBuilder builder, ComponentType<ItemEnchantmentsComponent> componentType) {
-        ItemEnchantmentsComponent enchantments = builder.stack.get(componentType);
-        if (enchantments == null
-                || enchantments.isEmpty()
-                || config.respectHideFlags() && !((ItemEnchantmentsComponentAccessor) enchantments).getShowInTooltip()) {
-            return;
-        }
+        builder.getComponentForDisplay(componentType)
+                .ifPresent(enchantments -> {
+                    RegistryEntryList<Enchantment> tooltipOrder = ItemEnchantmentsComponentAccessor.callGetTooltipOrderList(builder.getTooltipContext().getRegistryLookup(), RegistryKeys.ENCHANTMENT, EnchantmentTags.TOOLTIP_ORDER);
 
-        RegistryEntryList<Enchantment> tooltipOrder = ItemEnchantmentsComponentAccessor.callGetTooltipOrderList(builder.tooltipContext.getRegistryLookup(), RegistryKeys.ENCHANTMENT, EnchantmentTags.TOOLTIP_ORDER);
+                    for (RegistryEntry<Enchantment> enchantment : tooltipOrder) {
+                        int level = enchantments.getLevel(enchantment);
+                        if (level > 0 && shouldShowEnchantment(enchantment)) {
+                            builder.append(() -> Enchantment.getName(enchantment, level));
+                        }
+                    }
 
-        for (RegistryEntry<Enchantment> enchantment : tooltipOrder) {
-            int level = enchantments.getLevel(enchantment);
-            if (level > 0 && shouldShowEnchantment(enchantment)) {
-                builder.append(() -> Enchantment.getName(enchantment, level));
-            }
-        }
-
-        for (var mapEntry : enchantments.getEnchantmentEntries()) {
-            RegistryEntry<Enchantment> enchantment = mapEntry.getKey();
-            if (!tooltipOrder.contains(enchantment) && shouldShowEnchantment(enchantment)) {
-                builder.append(() -> {
-                    int level = mapEntry.getIntValue();
-                    return Enchantment.getName(enchantment, level);
-                });
-            }
-        }
+                    for (var mapEntry : enchantments.getEnchantmentEntries()) {
+                        RegistryEntry<Enchantment> enchantment = mapEntry.getKey();
+                        if (!tooltipOrder.contains(enchantment) && shouldShowEnchantment(enchantment)) {
+                            builder.append(() -> {
+                                int level = mapEntry.getIntValue();
+                                return Enchantment.getName(enchantment, level);
+                            });
+                        }
+                    }
+        });
     }
 
     private static boolean shouldShowEnchantment(RegistryEntry<Enchantment> entry) {
@@ -104,44 +115,34 @@ public final class Appenders {
         if (itemNbt == null || itemNbt.isEmpty()) return;
 
         //noinspection DataFlowIssue (Argument 'builder.tooltipContext.getRegistryLookup()' might be null)
-        Optional<ItemStack> optionalStack = ItemStack.fromNbt(builder.tooltipContext.getRegistryLookup(), itemNbt);
+        Optional<ItemStack> optionalStack = ItemStack.fromNbt(builder.getTooltipContext().getRegistryLookup(), itemNbt);
         ItemStack stack;
         if (optionalStack.isEmpty() || (stack = optionalStack.get()).isEmpty()) return;
 
-        builder.append(() -> Text.translatable("container.shulkerBox.itemCount", stack.getName(), stack.getCount())
+        builder.append(() -> Text.translatable("item.container.item_count", stack.getName(), stack.getCount())
                 .formatted(TooltipBuilder.DEFAULT_COLOR));
     }
 
 
     public static void appendLore(TooltipBuilder builder) {
-        LoreComponent loreComponent = builder.stack.get(DataComponentTypes.LORE);
-        if (loreComponent != null) {
-            int currentLoreLines = 0;
+        builder.getComponentForDisplay(DataComponentTypes.LORE)
+                .ifPresent(loreComponent -> {
+                    int currentLoreLines = 0;
 
-            for (Text line : loreComponent.lines()) {
-                int maxLines = Math.min(config.maxLoreLines() - currentLoreLines, builder.getRemainingLines());
-                List<MutableText> wrappedLine = Util.wrapLines(line, maxLines);
+                    for (Text line : loreComponent.lines()) {
+                        int maxLines = Math.min(config.maxLoreLines() - currentLoreLines, builder.getRemainingLines());
+                        List<MutableText> wrappedLine = Util.wrapLines(line, maxLines);
 
-                for (MutableText linePart : wrappedLine) {
-                    builder.append(() -> Texts.setStyleIfAbsent(linePart, LORE_STYLE));
-                }
-            }
-        }
+                        for (MutableText linePart : wrappedLine) {
+                            builder.append(() -> Texts.setStyleIfAbsent(linePart, LORE_STYLE));
+                        }
+                    }
+                });
     }
 
 
     public static void appendUnbreakable(TooltipBuilder builder) {
-        UnbreakableComponent unbreakableComponent = builder.stack.get(DataComponentTypes.UNBREAKABLE);
-        if (unbreakableComponent != null && !(config.respectHideFlags() && !unbreakableComponent.showInTooltip())) {
-            builder.append(UNBREAKABLE_TEXT);
-        }
-    }
-
-
-    public static void appendOminousBottleAmplifier(TooltipBuilder builder) {
-        OminousBottleAmplifierComponent component = builder.stack.get(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER);
-        if (component != null) {
-            component.appendTooltip(builder.tooltipContext, builder::append, TooltipType.BASIC);
-        }
+        builder.getComponentForDisplay(DataComponentTypes.UNBREAKABLE)
+                .ifPresent(component -> builder.append(UNBREAKABLE_TEXT));
     }
 }

@@ -23,21 +23,19 @@ public abstract class CommandBlockMixin implements TooltipAppender {
 
     @Override
     public void heldItemInfo_appendTooltip(TooltipBuilder builder) {
-        NbtComponent blockEntityData = builder.stack.get(DataComponentTypes.BLOCK_ENTITY_DATA);
-        if (blockEntityData == null) return;
-
         //noinspection deprecation (getNbt)
-        String command = blockEntityData.getNbt().getString("Command");
-        if (command == null) return;
+        builder.getComponentForDisplay(DataComponentTypes.BLOCK_ENTITY_DATA)
+                .flatMap(blockEntityData -> blockEntityData.getNbt().getString("Command"))
+                .ifPresent(command -> {
+                    command = command.trim();
+                    if (!command.isEmpty()) {
+                        int maxLines = Math.min(config.maxCommandLines(), builder.getRemainingLines());
+                        List<MutableText> lines = Util.wrapLines(command, maxLines);
 
-        command = command.trim();
-        if (command.isEmpty()) return;
-
-        int maxLines = Math.min(config.maxCommandLines(), builder.getRemainingLines());
-        List<MutableText> lines = Util.wrapLines(command, maxLines);
-
-        for (MutableText text : lines) {
-            builder.append(() -> text.formatted(TooltipBuilder.DEFAULT_COLOR));
-        }
+                        for (MutableText text : lines) {
+                            builder.append(() -> text.formatted(TooltipBuilder.DEFAULT_COLOR));
+                        }
+                    }
+                });
     }
 }

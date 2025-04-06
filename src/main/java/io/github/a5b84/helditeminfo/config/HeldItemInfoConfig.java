@@ -50,9 +50,8 @@ public class HeldItemInfoConfig {
     public boolean showGoatHornInstrument() { return true; }
     public boolean showBookMeta() { return true; }
     public boolean showFilledMapId() { return false; }
-    public boolean showBannerPatternName() { return true; }
-    public boolean showBannerPatterns() { return false; }
     public boolean showEntityBucketContent() { return true; }
+    public boolean showBlockState() { return true; }
     public boolean showHiddenLinesCount() { return true; }
 
 
@@ -102,9 +101,8 @@ public class HeldItemInfoConfig {
         private boolean showGoatHornInstrument = super.showGoatHornInstrument();
         private boolean showBookMeta = super.showBookMeta();
         private boolean showFilledMapId = super.showFilledMapId();
-        @Tooltip private boolean showBannerPatternName = super.showBannerPatternName();
-        @Tooltip private boolean showBannerPatterns = super.showBannerPatterns();
         private boolean showEntityBucketContent = super.showEntityBucketContent();
+        @Tooltip private boolean showBlockState = super.showBlockState();
         private boolean showHiddenLinesCount = super.showHiddenLinesCount();
 
         @Category("enchantments")
@@ -144,9 +142,8 @@ public class HeldItemInfoConfig {
         @Override public boolean showGoatHornInstrument() { return showGoatHornInstrument; }
         @Override public boolean showBookMeta() { return showBookMeta; }
         @Override public boolean showFilledMapId() { return showFilledMapId; }
-        @Override public boolean showBannerPatternName() { return showBannerPatternName; }
-        @Override public boolean showBannerPatterns() { return showBannerPatterns; }
         @Override public boolean showEntityBucketContent() { return showEntityBucketContent; }
+        @Override public boolean showBlockState() { return showBlockState; }
         @Override public boolean showHiddenLinesCount() { return showHiddenLinesCount; }
 
         @Override public boolean showOnlyFilteredEnchantments() { return showOnlyFilteredEnchantments; }

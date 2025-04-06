@@ -24,6 +24,14 @@ public final class Util {
     private Util() {}
 
 
+    public static MutableText withDefaultColor(Text line) {
+        if (line instanceof MutableText mutableLine) {
+            return mutableLine.formatted(TooltipBuilder.DEFAULT_COLOR);
+        } else {
+            return line.copy().formatted(TooltipBuilder.DEFAULT_COLOR);
+        }
+    }
+
     public static void setAllToDefaultColor(List<Text> lines) {
         for (Text line : lines) {
             if (line instanceof MutableText mutableLine) {

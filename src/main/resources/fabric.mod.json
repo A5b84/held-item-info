@@ -5,7 +5,7 @@
 	"name": "Held Item Info",
 	"description": "Shows information about the held item under its name",
 	"authors": [
-		"Neecko5b84"
+		"A5b84"
 	],
 	"contributors": [
 		"Cccc-owo",
@@ -37,8 +37,8 @@
 		}
 	],
 	"depends": {
-		"minecraft": ">=1.21.2-",
-		"fabricloader": ">=0.16.2"
+		"minecraft": ">=1.21.5-",
+		"fabricloader": ">=0.16.10"
 	},
 	"suggests": {
 		"modmenu": "*",

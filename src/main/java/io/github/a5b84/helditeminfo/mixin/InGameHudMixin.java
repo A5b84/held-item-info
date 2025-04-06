@@ -5,6 +5,7 @@ import io.github.a5b84.helditeminfo.ContainerContentAppender;
 import io.github.a5b84.helditeminfo.TooltipAppender;
 import io.github.a5b84.helditeminfo.TooltipBuilder;
 import io.github.a5b84.helditeminfo.TooltipLine;
+import io.github.a5b84.helditeminfo.Util;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -140,13 +141,12 @@ public abstract class InGameHudMixin {
         if (stack.isEmpty()) {
             return Collections.emptyList();
         } else {
-            Item.TooltipContext tooltipContext = Item.TooltipContext.create(client.world);
-            TooltipBuilder builder = new TooltipBuilder(stack, tooltipContext, config.maxLines());
+            TooltipBuilder builder = new TooltipBuilder(stack);
 
             // Stack name
             if (config.showName()) {
-                // See ItemStack.getTooltip
-                MutableText stackName = Text.empty() // Prevents overwriting the name formatting
+                // Using Text.empty().append(...).formatted(...) because formatted(...) mutates the object (see ItemStack.getTooltip)
+                MutableText stackName = Text.empty()
                         .append(stack.getName())
                         .formatted(stack.getRarity().getFormatting());
                 if (stack.contains(DataComponentTypes.CUSTOM_NAME)) {
@@ -156,7 +156,7 @@ public abstract class InGameHudMixin {
                 builder.append(stackName);
             }
 
-            if (!(config.respectHideFlags() && stack.contains(DataComponentTypes.HIDE_TOOLTIP))) {
+            if (builder.shouldDisplayComponents()) {
                 // Item-specific tooltip
                 Item item = stack.getItem();
                 if (item instanceof TooltipAppender appender
@@ -171,16 +171,25 @@ public abstract class InGameHudMixin {
                 }
 
                 // Component-related lines
+                if (config.showEntityBucketContent()) builder.appendComponent(DataComponentTypes.TROPICAL_FISH_PATTERN);
+                if (config.showGoatHornInstrument()) builder.appendComponent(DataComponentTypes.INSTRUMENT);
+                if (config.showFilledMapId()) builder.appendComponent(DataComponentTypes.MAP_ID);
+                if (config.showBeehiveContent()) builder.appendComponent(DataComponentTypes.BEES);
+                if (config.showContainerContent()) ContainerContentAppender.appendContainerContent(builder);
+                if (config.showBookMeta()) builder.appendComponent(DataComponentTypes.WRITTEN_BOOK_CONTENT);
+                if (config.showCrossbowProjectiles()) builder.appendComponent(DataComponentTypes.CHARGED_PROJECTILES, Util::withDefaultColor);
+                if (config.showFireworkAttributes()) builder.appendComponent(DataComponentTypes.FIREWORKS);
+                if (config.showFireworkAttributes()) builder.appendComponent(DataComponentTypes.FIREWORK_EXPLOSION);
+                if (config.showPotionEffects()) Appenders.appendPotionEffects(builder);
                 if (config.showMusicDiscDescription()) Appenders.appendMusicDiscDescription(builder);
                 if (config.showEnchantments()) Appenders.appendEnchantments(builder);
-                if (config.showContainerContent()) ContainerContentAppender.appendContainerContent(builder);
                 if (config.showLore()) Appenders.appendLore(builder);
                 if (config.showUnbreakable()) Appenders.appendUnbreakable(builder);
-                if (config.showPotionEffects()) Appenders.appendOminousBottleAmplifier(builder);
+                if (config.showPotionEffects()) builder.appendComponent(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER);
+                if (config.showBlockState()) builder.appendComponent(DataComponentTypes.BLOCK_STATE);
             }
 
             return builder.build();
         }
     }
-
 }

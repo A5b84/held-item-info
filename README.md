@@ -19,7 +19,6 @@ The following can be displayed when holding an item:
 - Instrument of Goat Horns
 - Author and generation of Written Books
 - Filled map identifier
-- Banner Pattern (both for banner pattern items and actual banners or shields)
 - Type of tropical fish inside a bucket
 
 Each of these can be toggled individually in-game if both Mod Menu ([CurseForge](https://www.curseforge.com/minecraft/mc-mods/modmenu) / [Modrinth](https://modrinth.com/mod/modmenu)) and a recent version of Cloth Config ([CurseForge](https://www.curseforge.com/minecraft/mc-mods/cloth-config) / [Modrinth](https://modrinth.com/mod/cloth-config)) are installed.

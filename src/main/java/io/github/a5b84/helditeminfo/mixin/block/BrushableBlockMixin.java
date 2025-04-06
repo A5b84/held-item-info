@@ -3,9 +3,9 @@ package io.github.a5b84.helditeminfo.mixin.block;
 import io.github.a5b84.helditeminfo.Appenders;
 import io.github.a5b84.helditeminfo.TooltipAppender;
 import io.github.a5b84.helditeminfo.TooltipBuilder;
+import io.github.a5b84.helditeminfo.mixin.BrushableBlockEntityAccessor;
 import net.minecraft.block.BrushableBlock;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.NbtComponent;
 import org.spongepowered.asm.mixin.Mixin;
 
 import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
@@ -20,10 +20,9 @@ public abstract class BrushableBlockMixin implements TooltipAppender {
 
     @Override
     public void heldItemInfo_appendTooltip(TooltipBuilder builder) {
-        NbtComponent blockEntityData = builder.stack.get(DataComponentTypes.BLOCK_ENTITY_DATA);
-        if (blockEntityData != null) {
-            //noinspection deprecation (getNbt)
-            Appenders.appendItem(builder, blockEntityData.getNbt().getCompound("item"));
-        }
+        //noinspection deprecation (getNbt)
+        builder.getComponentForDisplay(DataComponentTypes.BLOCK_ENTITY_DATA)
+                .flatMap(blockEntityData -> blockEntityData.getNbt().getCompound(BrushableBlockEntityAccessor.getItemNbtKey()))
+                .ifPresent(itemNbt -> Appenders.appendItem(builder, itemNbt));
     }
 }
