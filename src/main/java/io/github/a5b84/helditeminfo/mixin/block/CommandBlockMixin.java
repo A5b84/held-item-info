@@ -5,7 +5,6 @@ import io.github.a5b84.helditeminfo.TooltipBuilder;
 import io.github.a5b84.helditeminfo.Util;
 import net.minecraft.block.CommandBlock;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.NbtComponent;
 import net.minecraft.text.MutableText;
 import org.spongepowered.asm.mixin.Mixin;
 

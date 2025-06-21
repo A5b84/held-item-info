@@ -18,6 +18,9 @@ import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
 
 public final class Util {
 
+    /**
+     * @see TextRenderer#fontHeight
+     */
     public static final int FONT_HEIGHT = 9;
     private static final double CHARACTER_WIDTH = 6;
 

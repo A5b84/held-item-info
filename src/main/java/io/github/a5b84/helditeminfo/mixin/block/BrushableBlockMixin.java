@@ -1,12 +1,20 @@
 package io.github.a5b84.helditeminfo.mixin.block;
 
 import io.github.a5b84.helditeminfo.Appenders;
+import io.github.a5b84.helditeminfo.HeldItemInfo;
 import io.github.a5b84.helditeminfo.TooltipAppender;
 import io.github.a5b84.helditeminfo.TooltipBuilder;
 import io.github.a5b84.helditeminfo.mixin.BrushableBlockEntityAccessor;
 import net.minecraft.block.BrushableBlock;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.storage.NbtReadView;
+import net.minecraft.util.ErrorReporter;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
+
+import java.util.Optional;
 
 import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
 
@@ -22,7 +30,16 @@ public abstract class BrushableBlockMixin implements TooltipAppender {
     public void heldItemInfo_appendTooltip(TooltipBuilder builder) {
         //noinspection deprecation (getNbt)
         builder.getComponentForDisplay(DataComponentTypes.BLOCK_ENTITY_DATA)
-                .flatMap(blockEntityData -> blockEntityData.getNbt().getCompound(BrushableBlockEntityAccessor.getItemNbtKey()))
-                .ifPresent(itemNbt -> Appenders.appendItem(builder, itemNbt));
+                .flatMap(blockEntityData -> readStack(builder, blockEntityData.getNbt()))
+                .ifPresent(stack -> Appenders.appendStack(builder, stack));
+    }
+
+    @Unique
+    private Optional<ItemStack> readStack(TooltipBuilder builder, NbtCompound data) {
+        try (ErrorReporter.Logging reporter = new ErrorReporter.Logging(HeldItemInfo.LOGGER)) {
+            //noinspection DataFlowIssue (Argument 'builder.tooltipContext.getRegistryLookup()' might be null)
+            return NbtReadView.create(reporter, builder.getTooltipContext().getRegistryLookup(), data)
+                    .read(BrushableBlockEntityAccessor.getItemNbtKey(), ItemStack.CODEC);
+        }
     }
 }

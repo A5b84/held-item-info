@@ -10,8 +10,9 @@
 		"item.DiscFragmentItemMixin",
 		"item.SignItemMixin",
 		"BrushableBlockEntityAccessor",
-        "InGameHudMixin",
-		"ItemEnchantmentsComponentAccessor"
+		"InGameHudMixin",
+		"ItemEnchantmentsComponentAccessor",
+		"TrialSpawnerDataAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

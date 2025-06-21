@@ -67,8 +67,8 @@ public abstract class InGameHudMixin {
 
     /** Replaces vanilla rendering with the mod's */
     @Redirect(method = "renderHeldItemTooltip",
-            at = @At(value = "INVOKE", target = "net/minecraft/client/gui/DrawContext.drawTextWithBackground(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;IIII)I"))
-    private int drawTextProxy(DrawContext context, TextRenderer textRenderer, Text text, int _x, int _y, int width, int color) {
+            at = @At(value = "INVOKE", target = "net/minecraft/client/gui/DrawContext.drawTextWithBackground(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;IIII)V"))
+    private void drawTextProxy(DrawContext context, TextRenderer textRenderer, Text text, int _x, int _y, int width, int color) {
         int backgroundColor = client.options.getTextBackgroundColor(0);
 
         if ((backgroundColor & 0xff000000) != 0) {
@@ -105,8 +105,6 @@ public abstract class InGameHudMixin {
             }
             i++;
         }
-
-        return 0;
     }
 
 

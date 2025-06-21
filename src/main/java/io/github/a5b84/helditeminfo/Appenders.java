@@ -10,7 +10,6 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
@@ -25,7 +24,6 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -111,16 +109,11 @@ public final class Appenders {
     }
 
 
-    public static void appendItem(TooltipBuilder builder, NbtCompound itemNbt) {
-        if (itemNbt == null || itemNbt.isEmpty()) return;
-
-        //noinspection DataFlowIssue (Argument 'builder.tooltipContext.getRegistryLookup()' might be null)
-        Optional<ItemStack> optionalStack = ItemStack.fromNbt(builder.getTooltipContext().getRegistryLookup(), itemNbt);
-        ItemStack stack;
-        if (optionalStack.isEmpty() || (stack = optionalStack.get()).isEmpty()) return;
-
-        builder.append(() -> Text.translatable("item.container.item_count", stack.getName(), stack.getCount())
-                .formatted(TooltipBuilder.DEFAULT_COLOR));
+    public static void appendStack(TooltipBuilder builder, ItemStack stack) {
+        if (!stack.isEmpty()) {
+            builder.append(() -> Text.translatable("item.container.item_count", stack.getName(), stack.getCount())
+                    .formatted(TooltipBuilder.DEFAULT_COLOR));
+        }
     }
 
 

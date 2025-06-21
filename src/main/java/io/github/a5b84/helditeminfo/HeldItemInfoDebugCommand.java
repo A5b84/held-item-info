@@ -14,8 +14,11 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.storage.NbtWriteView;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.ErrorReporter;
 
 import java.util.Optional;
 
@@ -88,7 +91,7 @@ public class HeldItemInfoDebugCommand {
         FabricClientCommandSource source = context.getSource();
         ClientPlayerEntity player = source.getPlayer();
         ItemStack stack = player.getMainHandStack();
-        NbtCompound nbt = (NbtCompound) stack.toNbt(player.getRegistryManager());
+        NbtCompound nbt = toNbt(stack, player.getRegistryManager());
         MutableText result = Text.literal(nbt.getString("id").orElseThrow());
         Optional<NbtCompound> components = nbt.getCompound("components");
 
@@ -109,6 +112,14 @@ public class HeldItemInfoDebugCommand {
 
         source.sendFeedback(result);
         return Command.SINGLE_SUCCESS;
+    }
+
+    private static NbtCompound toNbt(ItemStack stack, WrapperLookup registries) {
+        try (ErrorReporter.Logging reporter = new ErrorReporter.Logging(HeldItemInfo.LOGGER)) {
+            NbtWriteView view = NbtWriteView.create(reporter, registries);
+            view.put("stack", ItemStack.CODEC, stack);
+            return view.getNbt().getCompound("stack").orElseThrow();
+        }
     }
 
     private static int executeShowItem(CommandContext<FabricClientCommandSource> context) {
