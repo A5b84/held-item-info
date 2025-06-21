@@ -11,6 +11,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.gui.hud.bar.Bar;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -32,37 +34,74 @@ import java.util.Collections;
 import java.util.List;
 
 import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
+import static io.github.a5b84.helditeminfo.Util.FONT_HEIGHT;
 
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin {
 
-    @Shadow private @Final MinecraftClient client;
-    @Shadow private int heldItemTooltipFade;
-    @Shadow private ItemStack currentStack;
+    /**
+     * Value in 1.21.6: 59.
+     *
+     * @see InGameHud#renderHeldItemTooltip(DrawContext)
+     */
+    @SuppressWarnings("JavadocReference")
+    @Unique
+    private static final int VANILLA_TOOLTIP_Y_OFFSET =
+            Bar.VERTICAL_OFFSET // Bottom of experience bar to bottom of screen
+                    + Bar.HEIGHT
+                    + 2 * InGameHudAccessor.getLineHeight()
+                    + 1 // Spacing between armor bar and item name
+                    + FONT_HEIGHT;
 
-    @Unique private List<TooltipLine> tooltip = Collections.emptyList();
-    @Unique private ItemStack stackBeforeTick;
+    @Shadow
+    private @Final MinecraftClient client;
+    @Shadow
+    private int heldItemTooltipFade;
+    @Shadow
+    private ItemStack currentStack;
 
-    /** Width of the longest line, or some negative number if not computed yet */
-    @Unique private int maxWidth = -1;
+    @Unique
+    private List<TooltipLine> tooltip = Collections.emptyList();
+    @Unique
+    private ItemStack stackBeforeTick;
+
+    /**
+     * Width of the longest line, or some negative number if not computed yet
+     */
+    @Unique
+    private int maxWidth = -1;
+
+    /**
+     * Y coordinate of the top of the tooltip if it has been rendered this frame,
+     * some negative number otherwise.
+     */
+    @Unique
+    private int lastTooltipY;
 
 
-    /** Replaces vanilla rendering with the mod's */
+    @Inject(method = "render", at = @At("HEAD"))
+    private void onBeforeRender(CallbackInfo ci) {
+        lastTooltipY = -1;
+    }
+
+
+    /**
+     * Replaces vanilla rendering with the mod's
+     */
     @Redirect(method = "renderHeldItemTooltip",
             at = @At(value = "INVOKE", target = "net/minecraft/client/gui/DrawContext.drawTextWithBackground(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;IIII)V"))
     private void drawTextProxy(DrawContext context, TextRenderer textRenderer, Text text, int _x, int y, int width, int color) {
-        y -= (int) ((config.lineHeight() - config.offsetPerExtraLine()) * (tooltip.size() - 1))
+        int lineHeight = config.lineHeight();
+        y -= (int) ((lineHeight - config.offsetPerExtraLine()) * (tooltip.size() - 1))
                 + config.verticalOffset();
-
         if (config.showName() && tooltip.size() > 1) {
             y -= config.itemNameSpacing();
         }
+        lastTooltipY = y;
 
         drawBackground(context, y);
 
-        int lineHeight = config.lineHeight();
         int i = 0;
-
         for (TooltipLine line : tooltip) {
             int x = (context.getScaledWindowWidth() - line.width) / 2;
             context.drawTextWithShadow(textRenderer, line.text, x, y, color);
@@ -109,14 +148,29 @@ public abstract class InGameHudMixin {
     }
 
 
+    @Inject(method = "renderOverlayMessage",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithBackground(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;IIII)V"))
+    private void onDrawOverlayMessage(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
+        if (lastTooltipY >= 0) {
+            int tooltipYOffset = context.getScaledWindowHeight() - lastTooltipY;
+            int difference = VANILLA_TOOLTIP_Y_OFFSET - tooltipYOffset;
+            if (difference < 0) {
+                context.getMatrices().translate(0, difference);
+            }
+        }
+    }
+
+
     @Inject(method = "tick()V", at = @At("HEAD"))
-    public void onBeforeTick(CallbackInfo ci) {
+    private void onBeforeTick(CallbackInfo ci) {
         stackBeforeTick = currentStack;
     }
 
-    /** Rebuilds the tooltip */
+    /**
+     * Rebuilds the tooltip
+     */
     @Inject(method = "tick()V", at = @At("RETURN"))
-    public void onAfterTick(CallbackInfo ci) {
+    private void onAfterTick(CallbackInfo ci) {
         if (client.player == null || currentStack == stackBeforeTick) {
             return;
         }
@@ -176,7 +230,8 @@ public abstract class InGameHudMixin {
                 if (config.showBeehiveContent()) builder.appendComponent(DataComponentTypes.BEES);
                 if (config.showContainerContent()) ContainerContentAppender.appendContainerContent(builder);
                 if (config.showBookMeta()) builder.appendComponent(DataComponentTypes.WRITTEN_BOOK_CONTENT);
-                if (config.showCrossbowProjectiles()) builder.appendComponent(DataComponentTypes.CHARGED_PROJECTILES, Util::withDefaultColor);
+                if (config.showCrossbowProjectiles())
+                    builder.appendComponent(DataComponentTypes.CHARGED_PROJECTILES, Util::withDefaultColor);
                 if (config.showFireworkAttributes()) builder.appendComponent(DataComponentTypes.FIREWORKS);
                 if (config.showFireworkAttributes()) builder.appendComponent(DataComponentTypes.FIREWORK_EXPLOSION);
                 if (config.showPotionEffects()) Appenders.appendPotionEffects(builder);

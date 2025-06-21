@@ -1,8 +1,12 @@
 # Changelog
 
-### [1.7.2] (1.21.5+)
+### Unreleased
+- Updated to 1.21.6
+- Overlay messages are now moved up when they would overlap with the tooltip ([#36](https://github.com/A5b84/held-item-info/issues/36))
+
+### [1.7.2] (1.21.5)
 - Updated to 1.21.5 ([#37](https://github.com/A5b84/held-item-info/pull/37))
-  - Fixes components not being hidden when using `tooltip_display.hidden_components` ([#32](https://github.com/A5b84/held-item-info/pull/32))
+  - Fixes components not being hidden when using `tooltip_display.hidden_components` ([#32](https://github.com/A5b84/held-item-info/issues/32))
 
 ### [1.7.1] (1.21.2-1.21.4)
 - Updated to 1.21.2
