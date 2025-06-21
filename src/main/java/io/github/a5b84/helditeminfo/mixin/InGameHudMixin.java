@@ -11,6 +11,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.gui.hud.bar.Bar;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -52,12 +53,19 @@ public abstract class InGameHudMixin {
     @Inject(method = "renderHeldItemTooltip",
             at = @At(value = "INVOKE", target = "net/minecraft/client/font/TextRenderer.getWidth(Lnet/minecraft/text/StringVisitable;)I"))
     public void onBeforeRenderHeldItemTooltip(DrawContext context, CallbackInfo ci) {
-        y = context.getScaledWindowHeight() - 50 - FONT_HEIGHT // Vanilla value (50 = 32 (hotbar) + 14 (health & xp) + 4 (spacing))
+        y = context.getScaledWindowHeight()
+                - Bar.VERTICAL_OFFSET // Bottom of experience bar to bottom of screen
+                - Bar.HEIGHT
+                - 2 * InGameHudAccessor.getLineHeight()
+                - 1 // Spacing between armor bar and item name
+                - FONT_HEIGHT
                 - (int) ((config.lineHeight() - config.offsetPerExtraLine()) * (tooltip.size() - 1))
                 - config.verticalOffset();
 
         //noinspection ConstantConditions
-        if (!this.client.interactionManager.hasStatusBars()) y += 14;
+        if (!this.client.interactionManager.hasStatusBars()) {
+            y += 14; // See InGameHud#renderHeldItemTooltip
+        }
 
         if (config.showName() && tooltip.size() > 1) {
             y -= config.itemNameSpacing();
