@@ -33,7 +33,7 @@
     "text.autoconfig.held-item-info.option.showFireworkAttributes": "Firework rocket attributes",
     "text.autoconfig.held-item-info.option.showCommandBlockInfo": "Command block command",
     "text.autoconfig.held-item-info.option.maxCommandLines": "Max number of command lines",
-    "text.autoconfig.held-item-info.option.maxCommandLines.@Tooltip": "The maximum number of lines of a command mlock's command to display",
+    "text.autoconfig.held-item-info.option.maxCommandLines.@Tooltip": "The maximum number of lines of a command block's command to display",
     "text.autoconfig.held-item-info.option.showBeehiveContent": "Beehive/bee nest content",
     "text.autoconfig.held-item-info.option.showSpawnerEntity": "Spawner entity",
     "text.autoconfig.held-item-info.option.showCrossbowProjectiles": "Crossbow projectiles",
