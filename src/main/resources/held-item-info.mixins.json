@@ -10,7 +10,6 @@
 		"item.DiscFragmentItemMixin",
 		"item.SignItemMixin",
 		"BrushableBlockEntityAccessor",
-		"InGameHudAccessor",
 		"InGameHudMixin",
 		"ItemEnchantmentsComponentAccessor",
 		"TrialSpawnerDataAccessor"
