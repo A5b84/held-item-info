@@ -27,6 +27,7 @@ public class HeldItemInfoConfig {
     public int verticalOffset() { return 0; }
     public float baseFadeDuration() { return 2; }
     public float fadeDurationPerExtraLine() { return 0.2f; }
+    public boolean preventOverlap() { return true; }
 
     // Toggles
 
@@ -77,6 +78,7 @@ public class HeldItemInfoConfig {
         private int verticalOffset = super.verticalOffset();
         @Tooltip private float baseFadeDuration = super.baseFadeDuration();
         @Tooltip private float fadeDurationPerExtraLine = super.fadeDurationPerExtraLine();
+        @Tooltip(count = 2) private boolean preventOverlap = super.preventOverlap();
 
         @PrefixText
         private boolean showName = super.showName();
@@ -121,6 +123,7 @@ public class HeldItemInfoConfig {
         @Override public int verticalOffset() { return verticalOffset; }
         @Override public float baseFadeDuration() { return baseFadeDuration; }
         @Override public float fadeDurationPerExtraLine() { return fadeDurationPerExtraLine; }
+        @Override public boolean preventOverlap() { return preventOverlap; }
 
         @Override public boolean showName() { return showName; }
         @Override public boolean showEnchantments() { return showEnchantments; }

@@ -14,6 +14,8 @@ import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.hud.bar.Bar;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -21,6 +23,8 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -53,12 +57,13 @@ public abstract class InGameHudMixin {
                     + 1 // Spacing between armor bar and item name
                     + FONT_HEIGHT;
 
-    @Shadow
-    private @Final MinecraftClient client;
-    @Shadow
-    private int heldItemTooltipFade;
-    @Shadow
-    private ItemStack currentStack;
+    @Shadow @Final private MinecraftClient client;
+    @Shadow private int heldItemTooltipFade;
+    @Shadow private ItemStack currentStack;
+    @Shadow private int lastHealthValue;
+    @Shadow private int renderHealthValue;
+
+    @Shadow @Nullable protected abstract PlayerEntity getCameraPlayer();
 
     @Unique
     private List<TooltipLine> tooltip = Collections.emptyList();
@@ -92,11 +97,22 @@ public abstract class InGameHudMixin {
             at = @At(value = "INVOKE", target = "net/minecraft/client/gui/DrawContext.drawTextWithBackground(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;IIII)V"))
     private void drawTextProxy(DrawContext context, TextRenderer textRenderer, Text text, int _x, int y, int width, int color) {
         int lineHeight = config.lineHeight();
+
         y -= (int) ((lineHeight - config.offsetPerExtraLine()) * (tooltip.size() - 1))
                 + config.verticalOffset();
+
         if (config.showName() && tooltip.size() > 1) {
             y -= config.itemNameSpacing();
         }
+
+        //noinspection DataFlowIssue ("Method invocation 'hasStatusBars' may produce 'NullPointerException'")
+        if (config.preventOverlap() && client.interactionManager.hasStatusBars()) {
+            PlayerEntity player = getCameraPlayer();
+            if (player != null) {
+                y -= getHealthBarsTotalHeight(player) - InGameHudAccessor.getLineHeight();
+            }
+        }
+
         lastTooltipY = y;
 
         drawBackground(context, y);
@@ -112,6 +128,25 @@ public abstract class InGameHudMixin {
             }
             i++;
         }
+    }
+
+    /**
+     * @see InGameHud#renderStatusBars(DrawContext)
+     */
+    @SuppressWarnings("JavadocReference")
+    @Unique
+    private int getHealthBarsTotalHeight(PlayerEntity player) {
+        float totalHalfHearts = Math.max(
+                (float) player.getAttributeValue(EntityAttributes.MAX_HEALTH),
+                Math.max(lastHealthValue, renderHealthValue)
+        ) + MathHelper.ceil(player.getAbsorptionAmount());
+        int rows = MathHelper.ceil(totalHalfHearts / 2 / InGameHudAccessor.getNumHeartsPerRow());
+        int lineHeight = InGameHudAccessor.getLineHeight();
+        int rowOffset = Math.max(
+                lineHeight - (rows - 2),
+                3
+        );
+        return lineHeight + (rows - 1) * rowOffset;
     }
 
     @Unique
@@ -151,7 +186,7 @@ public abstract class InGameHudMixin {
     @Inject(method = "renderOverlayMessage",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithBackground(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;IIII)V"))
     private void onDrawOverlayMessage(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-        if (lastTooltipY >= 0) {
+        if (config.preventOverlap() && lastTooltipY >= 0) {
             int tooltipYOffset = context.getScaledWindowHeight() - lastTooltipY;
             int difference = VANILLA_TOOLTIP_Y_OFFSET - tooltipYOffset;
             if (difference < 0) {

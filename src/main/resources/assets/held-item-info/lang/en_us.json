@@ -23,6 +23,9 @@
     "text.autoconfig.held-item-info.option.baseFadeDuration.@Tooltip": "The time in seconds it takes for a one line tooltip to disappear",
     "text.autoconfig.held-item-info.option.fadeDurationPerExtraLine": "Additional fade duration per extra line",
     "text.autoconfig.held-item-info.option.fadeDurationPerExtraLine.@Tooltip": "The additional time before the tooltip fades out per extra line",
+    "text.autoconfig.held-item-info.option.preventOverlap": "Prevent overlap",
+    "text.autoconfig.held-item-info.option.preventOverlap.@Tooltip[0]": "Move the tooltip and overlay messages",
+    "text.autoconfig.held-item-info.option.preventOverlap.@Tooltip[1]": "to prevent overlap with other UI elements",
 
     "text.autoconfig.held-item-info.option.showName.@PrefixText": "Content toggles",
     "text.autoconfig.held-item-info.option.showName": "Item name",
