@@ -1,6 +1,6 @@
 # Changelog
 
-### Unreleased
+### [1.8.0] (1.21.6+)
 - Updated to 1.21.6
 - The tooltip and overlay messages are now moved up when they would overlap with each other or with the health bar ([#36](https://github.com/A5b84/held-item-info/issues/36))
 
@@ -87,3 +87,5 @@
 [1.6.1]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.6.1
 [1.7.0]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.7.0
 [1.7.1]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.7.1
+[1.7.2]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.7.2
+[1.8.0]: https://github.com/A5b84/dark-loading-screen/releases/tag/v1.8.0
