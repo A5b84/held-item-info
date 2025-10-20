@@ -5,9 +5,8 @@ import io.github.a5b84.helditeminfo.TooltipAppender;
 import io.github.a5b84.helditeminfo.TooltipBuilder;
 import net.minecraft.block.entity.SignText;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.SignItem;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryOps;
@@ -32,7 +31,7 @@ public abstract class SignItemMixin implements TooltipAppender {
 
     @Override
     public void heldItemInfo_appendTooltip(TooltipBuilder builder) {
-        builder.getComponentForDisplay(DataComponentTypes.BLOCK_ENTITY_DATA)
+        builder.getBlockEntityData()
                 .ifPresent(blockEntityData -> {
                     //noinspection DataFlowIssue ("Method invocation 'getOps' may produce 'NullPointerException'")
                     RegistryOps<NbtElement> dynamicOps = builder.getTooltipContext().getRegistryLookup().getOps(NbtOps.INSTANCE);
@@ -53,9 +52,8 @@ public abstract class SignItemMixin implements TooltipAppender {
     }
 
     @Unique
-    private List<MutableText> buildSide(NbtComponent blockEntityData, String sideKey, RegistryOps<NbtElement> dynamicOps) {
-        //noinspection deprecation (getNbt)
-        return blockEntityData.getNbt()
+    private List<MutableText> buildSide(NbtCompound blockEntityNbt, String sideKey, RegistryOps<NbtElement> dynamicOps) {
+        return blockEntityNbt
                 .getCompound(sideKey)
                 .flatMap(sideData -> SignText.CODEC.parse(dynamicOps, sideData).resultOrPartial(HeldItemInfo.LOGGER::error))
                 .map(signText -> {

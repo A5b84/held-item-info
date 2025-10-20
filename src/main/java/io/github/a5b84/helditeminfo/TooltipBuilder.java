@@ -4,10 +4,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.TooltipDisplayComponent;
+import net.minecraft.entity.TypedEntityData;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipAppender;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -71,6 +73,10 @@ public class TooltipBuilder {
         } else {
             return Optional.empty();
         }
+    }
+
+    public Optional<NbtCompound> getBlockEntityData() {
+        return getComponentForDisplay(DataComponentTypes.BLOCK_ENTITY_DATA).map(TypedEntityData::copyNbtWithoutId);
     }
 
     public <T extends TooltipAppender> void appendComponent(ComponentType<T> componentType) {

@@ -3,19 +3,22 @@
 	"package": "io.github.a5b84.helditeminfo.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
+		"BrushableBlockEntityAccessor",
+		"InGameHudAccessor",
+		"InGameHudMixin",
+		"ItemEnchantmentsComponentAccessor",
+		"TrialSpawnerDataAccessor",
 		"block.BrushableBlockMixin",
 		"block.CommandBlockMixin",
 		"block.SpawnerBlocksMixin",
 		"item.DecorationItemMixin",
 		"item.DiscFragmentItemMixin",
-		"item.SignItemMixin",
-		"BrushableBlockEntityAccessor",
-		"InGameHudAccessor",
-		"InGameHudMixin",
-		"ItemEnchantmentsComponentAccessor",
-		"TrialSpawnerDataAccessor"
+		"item.SignItemMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
 	}
 }

@@ -4,7 +4,6 @@ import io.github.a5b84.helditeminfo.TooltipAppender;
 import io.github.a5b84.helditeminfo.TooltipBuilder;
 import io.github.a5b84.helditeminfo.Util;
 import net.minecraft.block.CommandBlock;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.text.MutableText;
 import org.spongepowered.asm.mixin.Mixin;
 
@@ -22,9 +21,8 @@ public abstract class CommandBlockMixin implements TooltipAppender {
 
     @Override
     public void heldItemInfo_appendTooltip(TooltipBuilder builder) {
-        //noinspection deprecation (getNbt)
-        builder.getComponentForDisplay(DataComponentTypes.BLOCK_ENTITY_DATA)
-                .flatMap(blockEntityData -> blockEntityData.getNbt().getString("Command"))
+        builder.getBlockEntityData()
+                .flatMap(blockEntityData -> blockEntityData.getString("Command"))
                 .ifPresent(command -> {
                     command = command.trim();
                     if (!command.isEmpty()) {
