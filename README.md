@@ -26,7 +26,7 @@ Each of these can be toggled individually in-game if both Mod Menu ([CurseForge]
 ## Credits
 - `pt_br` translation by [FITFC](https://github.com/FITFC)
 - `ru_ru` translation by [DrHesperus](https://github.com/DrHesperus) and [mpustovoi](https://github.com/mpustovoi)
-- `zh_cn` translation by [Cccc-owo](https://github.com/Cccc-owo)
+- `zh_cn` translation by [Cccc-owo](https://github.com/Cccc-owo) and [Moralts](https://github.com/Moralts)
 - `zh_tw` translation by [yichifauzi](https://github.com/yichifauzi)
 
 Links: [CurseForge](https://www.curseforge.com/minecraft/mc-mods/held-item-info) · [GitHub](https://github.com/A5b84/held-item-info) · [Modrinth](https://modrinth.com/mod/held-item-info)
