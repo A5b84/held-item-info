@@ -1,6 +1,7 @@
 # Changelog
 
 ### [1.9.0](https://github.com/A5b84/dark-loading-screen/releases/tag/v1.8.0) (1.21.9+)
+- Added a setting to control when the tooltip background is visible ([#45](https://github.com/A5b84/held-item-info/issues/45)).
 - Fixed crashes when holding signs or command blocks in 1.21.9+ ([#46](https://github.com/A5b84/held-item-info/issues/46)).
 
 ### [1.8.0](https://github.com/A5b84/dark-loading-screen/releases/tag/v1.8.0) (1.21.6-1.21.8)

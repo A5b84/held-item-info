@@ -151,7 +151,7 @@ public abstract class InGameHudMixin {
 
     @Unique
     private void drawBackground(DrawContext context, int y) {
-        int backgroundColor = client.options.getTextBackgroundColor(0);
+        int backgroundColor = getBackgroundColor();
 
         if (ColorHelper.getAlpha(backgroundColor) != 0) {
             int scaledWidth = context.getScaledWindowWidth();
@@ -169,6 +169,15 @@ public abstract class InGameHudMixin {
                     y + height + padding,
                     backgroundColor);
         }
+    }
+
+    @Unique
+    private int getBackgroundColor() {
+        return switch (config.tooltipBackgroundVisibility()) {
+            case VANILLA -> client.options.getTextBackgroundColor(0);
+            case ALWAYS ->  ColorHelper.fromFloats(client.options.getTextBackgroundOpacity().getValue().floatValue(), 0, 0, 0);
+            case NEVER -> 0;
+        };
     }
 
     @Unique

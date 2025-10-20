@@ -73,7 +73,7 @@ public class HeldItemInfoDebugCommand {
                 "minecraft:written_book[minecraft:written_book_content={generation: 3, title: {raw: \"Title title\"}, author: \"@me\"}]",
                 "minecraft:filled_map[minecraft:map_id=0]",
                 "minecraft:tropical_fish_bucket[minecraft:tropical_fish/pattern_color=\"blue\",minecraft:tropical_fish/base_color=\"red\",minecraft:tropical_fish/pattern=\"flopper\"]",
-                "minecraft:spawner[minecraft:block_entity_data={SpawnData: {entity: {id: \"minecraft:pig\"}}, id: \"minecraft:spawner\"}]",
+                "minecraft:spawner[minecraft:block_entity_data={SpawnData: {entity: {id: \"minecraft:pig\"}}, id: \"minecraft:mob_spawner\"}]",
                 "minecraft:trial_spawner[block_entity_data={id:\"minecraft:trial_spawner\",spawn_data:{entity:{id:\"minecraft:pig\"}}}]",
         };
 

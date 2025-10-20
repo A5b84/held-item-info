@@ -10,7 +10,6 @@
     "text.autoconfig.held-item-info.option.maxLineLength.@Tooltip[1]": "§iThis only affects lore and command blocks",
     "text.autoconfig.held-item-info.option.respectHideFlags": "Respect component visibility",
     "text.autoconfig.held-item-info.option.respectHideFlags.@Tooltip": "Only display components visible in the inventory tooltip",
-
     "text.autoconfig.held-item-info.option.lineHeight": "Line height",
     "text.autoconfig.held-item-info.option.lineHeight.@Tooltip": "The height of each line in pixels",
     "text.autoconfig.held-item-info.option.offsetPerExtraLine": "Vertical offset per extra line",
@@ -25,7 +24,12 @@
     "text.autoconfig.held-item-info.option.fadeDurationPerExtraLine.@Tooltip": "The additional time before the tooltip fades out per extra line",
     "text.autoconfig.held-item-info.option.preventOverlap": "Prevent overlap",
     "text.autoconfig.held-item-info.option.preventOverlap.@Tooltip[0]": "Move the tooltip and overlay messages",
-    "text.autoconfig.held-item-info.option.preventOverlap.@Tooltip[1]": "to prevent overlap with other UI elements",
+    "text.autoconfig.held-item-info.option.tooltipBackgroundVisibility": "Tooltip background visibility",
+    "text.autoconfig.held-item-info.option.tooltipBackgroundVisibility.@Tooltip[0]": "When to show the tooltip background",
+    "text.autoconfig.held-item-info.option.tooltipBackgroundVisibility.@Tooltip[1]": "By default this uses the 'Text Background' accessibility setting",
+    "text.autoconfig.held-item-info.option.tooltipBackgroundVisibility.VANILLA": "Vanilla",
+    "text.autoconfig.held-item-info.option.tooltipBackgroundVisibility.ALWAYS": "Always",
+    "text.autoconfig.held-item-info.option.tooltipBackgroundVisibility.NEVER": "Never",
 
     "text.autoconfig.held-item-info.option.showName.@PrefixText": "Content toggles",
     "text.autoconfig.held-item-info.option.showName": "Item name",

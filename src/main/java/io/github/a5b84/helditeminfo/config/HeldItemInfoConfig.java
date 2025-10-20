@@ -3,10 +3,12 @@ package io.github.a5b84.helditeminfo.config;
 import io.github.a5b84.helditeminfo.HeldItemInfo;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
+import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.BoundedDiscrete;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Category;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.PrefixText;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.Tooltip;
+import net.minecraft.client.resource.language.I18n;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,6 +30,7 @@ public class HeldItemInfoConfig {
     public float baseFadeDuration() { return 2; }
     public float fadeDurationPerExtraLine() { return 0.2f; }
     public boolean preventOverlap() { return true; }
+    public TextBackgroundVisiblity tooltipBackgroundVisibility() { return TextBackgroundVisiblity.VANILLA; }
 
     // Toggles
 
@@ -55,11 +58,20 @@ public class HeldItemInfoConfig {
     public boolean showBlockState() { return true; }
     public boolean showHiddenLinesCount() { return true; }
 
-
     // Enchantments
 
     public boolean showOnlyFilteredEnchantments() { return false; }
 
+    public enum TextBackgroundVisiblity {
+        VANILLA,
+        ALWAYS,
+        NEVER;
+
+        @Override
+        public String toString() {
+            return I18n.translate("text.autoconfig.held-item-info.option.tooltipBackgroundVisibility." + name());
+        }
+    }
 
     /** Config class usable by / requiring AutoConfig */
     @SuppressWarnings("FieldMayBeFinal")
@@ -67,9 +79,11 @@ public class HeldItemInfoConfig {
     public static class HeldItemInfoAutoConfig extends HeldItemInfoConfig implements ConfigData {
 
         @BoundedDiscrete(min = 0, max = 40)
-        @Tooltip private int maxLines = super.maxLines();
+        @Tooltip
+        private int maxLines = super.maxLines();
         @BoundedDiscrete(max = 240)
-        @Tooltip(count = 2) private int maxLineLength = super.maxLineLength();
+        @Tooltip(count = 2)
+        private int maxLineLength = super.maxLineLength();
         @Tooltip private boolean respectHideFlags = super.respectHideFlags();
 
         @Tooltip private int lineHeight = super.lineHeight();
@@ -79,6 +93,9 @@ public class HeldItemInfoConfig {
         @Tooltip private float baseFadeDuration = super.baseFadeDuration();
         @Tooltip private float fadeDurationPerExtraLine = super.fadeDurationPerExtraLine();
         @Tooltip(count = 2) private boolean preventOverlap = super.preventOverlap();
+        @Tooltip(count = 2)
+        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.BUTTON)
+        private TextBackgroundVisiblity tooltipBackgroundVisibility = super.tooltipBackgroundVisibility();
 
         @PrefixText
         private boolean showName = super.showName();
@@ -112,7 +129,6 @@ public class HeldItemInfoConfig {
         @Category("enchantments")
         @Tooltip(count = 2) private List<String> filteredEnchantments = Collections.emptyList();
 
-
         @Override public int maxLines() { return maxLines; }
         @Override public int maxLineLength() { return maxLineLength; }
         @Override public boolean respectHideFlags() { return respectHideFlags; }
@@ -124,6 +140,7 @@ public class HeldItemInfoConfig {
         @Override public float baseFadeDuration() { return baseFadeDuration; }
         @Override public float fadeDurationPerExtraLine() { return fadeDurationPerExtraLine; }
         @Override public boolean preventOverlap() { return preventOverlap; }
+        @Override public TextBackgroundVisiblity tooltipBackgroundVisibility() { return tooltipBackgroundVisibility; }
 
         @Override public boolean showName() { return showName; }
         @Override public boolean showEnchantments() { return showEnchantments; }
