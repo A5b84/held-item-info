@@ -1,18 +1,16 @@
 package io.github.a5b84.helditeminfo.mixin.block;
 
-import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
-
 import io.github.a5b84.helditeminfo.Appenders;
 import io.github.a5b84.helditeminfo.HeldItemInfo;
 import io.github.a5b84.helditeminfo.TooltipAppender;
 import io.github.a5b84.helditeminfo.TooltipBuilder;
 import io.github.a5b84.helditeminfo.mixin.BrushableBlockEntityAccessor;
 import java.util.Optional;
-import net.minecraft.block.BrushableBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.storage.NbtReadView;
-import net.minecraft.util.ErrorReporter;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.BrushableBlock;
+import net.minecraft.world.level.storage.TagValueInput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
@@ -21,7 +19,7 @@ public abstract class BrushableBlockMixin implements TooltipAppender {
 
   @Override
   public boolean heldItemInfo_shouldAppendTooltip() {
-    return config.showContainerContent();
+    return HeldItemInfo.config.showContainerContent();
   }
 
   @Override
@@ -33,12 +31,12 @@ public abstract class BrushableBlockMixin implements TooltipAppender {
   }
 
   @Unique
-  private Optional<ItemStack> readStack(TooltipBuilder builder, NbtCompound data) {
-    try (ErrorReporter.Logging reporter = new ErrorReporter.Logging(HeldItemInfo.LOGGER)) {
-      //noinspection DataFlowIssue (Argument 'builder.tooltipContext.getRegistryLookup()' might be
-      // null)
-      return NbtReadView.create(reporter, builder.getTooltipContext().getRegistryLookup(), data)
-          .read(BrushableBlockEntityAccessor.getItemNbtKey(), ItemStack.CODEC);
+  private Optional<ItemStack> readStack(TooltipBuilder builder, CompoundTag data) {
+    try (ProblemReporter.ScopedCollector reporter =
+        new ProblemReporter.ScopedCollector(HeldItemInfo.LOGGER)) {
+      //noinspection DataFlowIssue
+      return TagValueInput.create(reporter, builder.getTooltipContext().registries(), data)
+          .read(BrushableBlockEntityAccessor.getItemTagKey(), ItemStack.CODEC);
     }
   }
 }

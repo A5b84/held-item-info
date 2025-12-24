@@ -6,56 +6,56 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
-import net.minecraft.component.ComponentsAccess;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.BundleContentsComponent;
-import net.minecraft.component.type.ContainerComponent;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.BundleContents;
+import net.minecraft.world.item.component.ItemContainerContents;
 
 public final class ContainerContentAppender {
 
   private ContainerContentAppender() {}
 
   /**
-   * @see ContainerComponent#appendTooltip(Item.TooltipContext, Consumer, TooltipType,
-   *     ComponentsAccess)
+   * @see ItemContainerContents#addToTooltip(Item.TooltipContext, Consumer, TooltipFlag,
+   *     DataComponentGetter)
    */
   public static void appendContainerContent(TooltipBuilder builder) {
-    builder.appendComponent(DataComponentTypes.CONTAINER_LOOT);
+    builder.appendComponent(DataComponents.CONTAINER_LOOT);
 
     for (ContainerEntry innerStack : getContainerEntries(builder)) {
       builder.append(
           () ->
-              Text.translatable(
+              Component.translatable(
                       "item.container.item_count", innerStack.getName(), innerStack.getCount())
-                  .formatted(TooltipBuilder.DEFAULT_COLOR));
+                  .withStyle(TooltipBuilder.DEFAULT_COLOR));
     }
   }
 
   private static Iterable<? extends ContainerEntry> getContainerEntries(TooltipBuilder builder) {
     Iterable<ItemStack> stacks = Collections.emptyList();
 
-    Optional<ContainerComponent> containerComponent =
-        builder.getComponentForDisplay(DataComponentTypes.CONTAINER);
+    Optional<ItemContainerContents> containerComponent =
+        builder.getComponentForDisplay(DataComponents.CONTAINER);
     if (containerComponent.isPresent()) {
-      stacks = containerComponent.get().iterateNonEmpty();
+      stacks = containerComponent.get().nonEmptyItems();
     }
 
-    Optional<BundleContentsComponent> bundleContents =
-        builder.getComponentForDisplay(DataComponentTypes.BUNDLE_CONTENTS);
+    Optional<BundleContents> bundleContents =
+        builder.getComponentForDisplay(DataComponents.BUNDLE_CONTENTS);
     if (bundleContents.isPresent()) {
-      stacks = Iterables.concat(stacks, bundleContents.get().iterate());
+      stacks = Iterables.concat(stacks, bundleContents.get().items());
     }
 
     if (HeldItemInfo.config.mergeSimilarContainerItems()) {
-      Map<Text, MergedContainerEntry> entries = new LinkedHashMap<>();
+      Map<Component, MergedContainerEntry> entries = new LinkedHashMap<>();
 
       for (ItemStack stack : stacks) {
         entries.compute(
-            stack.getName(),
+            stack.getHoverName(),
             (name, entry) -> {
               if (entry == null) {
                 entry = new MergedContainerEntry(name);
@@ -73,7 +73,7 @@ public final class ContainerContentAppender {
   }
 
   private abstract static class ContainerEntry {
-    public abstract Text getName();
+    public abstract Component getName();
 
     public abstract int getCount();
   }
@@ -86,8 +86,8 @@ public final class ContainerContentAppender {
     }
 
     @Override
-    public Text getName() {
-      return stack.getName();
+    public Component getName() {
+      return stack.getHoverName();
     }
 
     @Override
@@ -97,15 +97,15 @@ public final class ContainerContentAppender {
   }
 
   private static class MergedContainerEntry extends ContainerEntry {
-    private final Text name;
+    private final Component name;
     private int count = 0;
 
-    private MergedContainerEntry(Text name) {
+    private MergedContainerEntry(Component name) {
       this.name = name;
     }
 
     @Override
-    public Text getName() {
+    public Component getName() {
       return name;
     }
 

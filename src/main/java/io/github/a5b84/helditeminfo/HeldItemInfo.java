@@ -11,7 +11,7 @@ import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ public class HeldItemInfo implements ClientModInitializer {
       FabricLoader.getInstance().isModLoaded("cloth-config2");
 
   public static HeldItemInfoConfig config;
-  public static List<Identifier> filteredEnchantments;
+  public static List<ResourceLocation> filteredEnchantments;
 
   @Override
   public void onInitializeClient() {

@@ -9,20 +9,20 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import java.util.Optional;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.component.type.TooltipDisplayComponent;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.storage.NbtWriteView;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.ErrorReporter;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.HolderLookup.Provider;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.level.storage.TagValueOutput;
 
 public class HeldItemInfoDebugCommand {
   public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher) {
@@ -76,11 +76,11 @@ public class HeldItemInfoDebugCommand {
       "minecraft:trial_spawner[block_entity_data={id:\"minecraft:trial_spawner\",spawn_data:{entity:{id:\"minecraft:pig\"}}}]",
     };
 
-    ClientPlayNetworkHandler networkHandler = context.getSource().getPlayer().networkHandler;
+    ClientPacketListener networkHandler = context.getSource().getPlayer().connection;
     end = Math.min(end, items.length);
 
     for (int i = start; i < end; i++) {
-      networkHandler.sendChatCommand("give @s " + items[i]);
+      networkHandler.sendCommand("give @s " + items[i]);
     }
 
     return Command.SINGLE_SUCCESS;
@@ -88,21 +88,21 @@ public class HeldItemInfoDebugCommand {
 
   private static int executeGenerate(CommandContext<FabricClientCommandSource> context) {
     FabricClientCommandSource source = context.getSource();
-    ClientPlayerEntity player = source.getPlayer();
-    ItemStack stack = player.getMainHandStack();
-    NbtCompound nbt = toNbt(stack, player.getRegistryManager());
-    MutableText result = Text.literal(nbt.getString("id").orElseThrow());
-    Optional<NbtCompound> components = nbt.getCompound("components");
+    LocalPlayer player = source.getPlayer();
+    ItemStack stack = player.getMainHandItem();
+    CompoundTag nbt = toNbt(stack, player.registryAccess());
+    MutableComponent result = Component.literal(nbt.getString("id").orElseThrow());
+    Optional<CompoundTag> components = nbt.getCompound("components");
 
     if (components.isPresent()) {
       boolean isFirstComponent = true;
 
       result.append("[");
 
-      for (String key : components.get().getKeys()) {
-        NbtElement component = components.get().get(key);
+      for (String key : components.get().keySet()) {
+        Tag component = components.get().get(key);
         result.append((isFirstComponent ? "" : ",") + key + "=");
-        result.append(NbtHelper.toPrettyPrintedText(component));
+        result.append(NbtUtils.toPrettyComponent(component));
         isFirstComponent = false;
       }
 
@@ -113,30 +113,31 @@ public class HeldItemInfoDebugCommand {
     return Command.SINGLE_SUCCESS;
   }
 
-  private static NbtCompound toNbt(ItemStack stack, WrapperLookup registries) {
-    try (ErrorReporter.Logging reporter = new ErrorReporter.Logging(HeldItemInfo.LOGGER)) {
-      NbtWriteView view = NbtWriteView.create(reporter, registries);
-      view.put("stack", ItemStack.CODEC, stack);
-      return view.getNbt().getCompound("stack").orElseThrow();
+  private static CompoundTag toNbt(ItemStack stack, Provider registries) {
+    try (ProblemReporter.ScopedCollector reporter =
+        new ProblemReporter.ScopedCollector(HeldItemInfo.LOGGER)) {
+      TagValueOutput view = TagValueOutput.createWithContext(reporter, registries);
+      view.store("stack", ItemStack.CODEC, stack);
+      return view.buildResult().getCompound("stack").orElseThrow();
     }
   }
 
   private static int executeShowItem(CommandContext<FabricClientCommandSource> context) {
     FabricClientCommandSource source = context.getSource();
-    Item item = source.getPlayer().getMainHandStack().getItem();
-    source.sendFeedback(Text.literal(item.getClass().getName()));
+    Item item = source.getPlayer().getMainHandItem().getItem();
+    source.sendFeedback(Component.literal(item.getClass().getName()));
     return Command.SINGLE_SUCCESS;
   }
 
   private static int executeTraceTooltipLines(CommandContext<FabricClientCommandSource> context) {
     FabricClientCommandSource source = context.getSource();
-    ItemStack stack = source.getPlayer().getMainHandStack();
+    ItemStack stack = source.getPlayer().getMainHandItem();
 
-    stack.appendTooltip(
-        Item.TooltipContext.create(source.getWorld()),
-        TooltipDisplayComponent.DEFAULT,
+    stack.addDetailsToTooltip(
+        Item.TooltipContext.of(source.getWorld()),
+        TooltipDisplay.DEFAULT,
         source.getPlayer(),
-        TooltipType.BASIC,
+        TooltipFlag.NORMAL,
         line -> {
           source.sendFeedback(line);
           StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
@@ -150,7 +151,7 @@ public class HeldItemInfoDebugCommand {
             } else {
               className = className.substring(className.lastIndexOf('.') + 1);
               source.sendFeedback(
-                  Text.literal(
+                  Component.literal(
                       "  at "
                           + className
                           + '.'

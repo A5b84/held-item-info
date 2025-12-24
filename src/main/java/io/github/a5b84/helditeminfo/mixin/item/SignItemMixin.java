@@ -1,22 +1,20 @@
 package io.github.a5b84.helditeminfo.mixin.item;
 
-import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
-
 import io.github.a5b84.helditeminfo.HeldItemInfo;
 import io.github.a5b84.helditeminfo.TooltipAppender;
 import io.github.a5b84.helditeminfo.TooltipBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import net.minecraft.block.entity.SignText;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.SignItem;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.RegistryOps;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.RegistryOps;
+import net.minecraft.world.item.SignItem;
+import net.minecraft.world.level.block.entity.SignText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
@@ -25,7 +23,7 @@ public abstract class SignItemMixin implements TooltipAppender {
 
   @Override
   public boolean heldItemInfo_shouldAppendTooltip() {
-    return config.showSignText();
+    return HeldItemInfo.config.showSignText();
   }
 
   @Override
@@ -34,47 +32,55 @@ public abstract class SignItemMixin implements TooltipAppender {
         .getBlockEntityData()
         .ifPresent(
             blockEntityData -> {
-              //noinspection DataFlowIssue ("Method invocation 'getOps' may produce
-              // 'NullPointerException'")
-              RegistryOps<NbtElement> dynamicOps =
-                  builder.getTooltipContext().getRegistryLookup().getOps(NbtOps.INSTANCE);
-              List<MutableText> frontLines = buildSide(blockEntityData, "front_text", dynamicOps);
-              List<MutableText> backLines = buildSide(blockEntityData, "back_text", dynamicOps);
+              //noinspection DataFlowIssue
+              RegistryOps<Tag> dynamicOps =
+                  builder
+                      .getTooltipContext()
+                      .registries()
+                      .createSerializationContext(NbtOps.INSTANCE);
+              List<MutableComponent> frontLines =
+                  buildSide(blockEntityData, "front_text", dynamicOps);
+              List<MutableComponent> backLines =
+                  buildSide(blockEntityData, "back_text", dynamicOps);
 
               if (!frontLines.isEmpty()) {
                 builder.appendAll(frontLines);
-                if (!backLines.isEmpty()) {
-                  builder.append(Text.literal("-------").formatted(TooltipBuilder.DEFAULT_COLOR));
-                }
               }
 
               if (!backLines.isEmpty()) {
+                if (!frontLines.isEmpty()) {
+                  builder.append(
+                      Component.translatable("held_item_info.tooltip.sign_side_separator")
+                          .withStyle(TooltipBuilder.DEFAULT_COLOR));
+                }
+
                 builder.appendAll(backLines);
               }
             });
   }
 
   @Unique
-  private List<MutableText> buildSide(
-      NbtCompound blockEntityNbt, String sideKey, RegistryOps<NbtElement> dynamicOps) {
+  private List<MutableComponent> buildSide(
+      CompoundTag blockEntityNbt, String sideKey, RegistryOps<Tag> dynamicOps) {
     return blockEntityNbt
         .getCompound(sideKey)
         .flatMap(
             sideData ->
-                SignText.CODEC
+                SignText.DIRECT_CODEC
                     .parse(dynamicOps, sideData)
                     .resultOrPartial(HeldItemInfo.LOGGER::error))
         .map(
             signText -> {
-              Text[] messages =
-                  signText.getMessages(MinecraftClient.getInstance().shouldFilterText());
-              List<MutableText> lines = new ArrayList<>(messages.length);
+              Component[] messages =
+                  signText.getMessages(Minecraft.getInstance().isTextFilteringEnabled());
+              List<MutableComponent> lines = new ArrayList<>(messages.length);
 
-              for (Text message : messages) {
+              for (Component message : messages) {
                 if (message != null) {
                   String messageStr = message.getString();
                   if (!messageStr.isBlank()) {
-                    lines.add(Text.literal(messageStr).formatted(TooltipBuilder.DEFAULT_COLOR));
+                    lines.add(
+                        Component.literal(messageStr).withStyle(TooltipBuilder.DEFAULT_COLOR));
                   }
                 }
               }

@@ -12,7 +12,7 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry.BoundedDiscrete;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Category;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.PrefixText;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.Tooltip;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.resources.language.I18n;
 
 public class HeldItemInfoConfig {
 
@@ -169,7 +169,7 @@ public class HeldItemInfoConfig {
 
     @Override
     public String toString() {
-      return I18n.translate(
+      return I18n.get(
           "text.autoconfig.held-item-info.option.tooltipBackgroundVisibility." + name());
     }
   }

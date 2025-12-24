@@ -1,36 +1,34 @@
 package io.github.a5b84.helditeminfo;
 
-import static io.github.a5b84.helditeminfo.HeldItemInfo.config;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.component.ComponentType;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.TooltipDisplayComponent;
-import net.minecraft.entity.TypedEntityData;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipAppender;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.component.TooltipProvider;
+import net.minecraft.world.item.component.TypedEntityData;
 
 public class TooltipBuilder {
 
-  public static final Formatting DEFAULT_COLOR = Formatting.GRAY;
+  public static final ChatFormatting DEFAULT_COLOR = ChatFormatting.GRAY;
 
   private final Item.TooltipContext tooltipContext =
-      Item.TooltipContext.create(MinecraftClient.getInstance().world);
+      Item.TooltipContext.of(Minecraft.getInstance().level);
   private final ItemStack stack;
-  private final TooltipDisplayComponent displayComponent;
-  private final int maxSize = config.maxLines();
-  private final List<Text> lines;
+  private final TooltipDisplay displayComponent;
+  private final int maxSize = HeldItemInfo.config.maxLines();
+  private final List<Component> lines;
 
   /**
    * Real number of lines including the ones that are hidden because they would exceed {@link
@@ -41,10 +39,9 @@ public class TooltipBuilder {
   public TooltipBuilder(ItemStack stack) {
     this.stack = stack;
     this.displayComponent =
-        config.respectHideFlags()
-            ? stack.getOrDefault(
-                DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplayComponent.DEFAULT)
-            : TooltipDisplayComponent.DEFAULT;
+        HeldItemInfo.config.respectHideFlags()
+            ? stack.getOrDefault(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT)
+            : TooltipDisplay.DEFAULT;
     lines = new ArrayList<>(maxSize);
   }
 
@@ -56,7 +53,7 @@ public class TooltipBuilder {
     return stack;
   }
 
-  public TooltipDisplayComponent getDisplayComponent() {
+  public TooltipDisplay getDisplayComponent() {
     return displayComponent;
   }
 
@@ -67,26 +64,26 @@ public class TooltipBuilder {
   /**
    * @return the requested component if it is present on the stack and should be displayed.
    */
-  public <T> Optional<T> getComponentForDisplay(ComponentType<T> componentType) {
+  public <T> Optional<T> getComponentForDisplay(DataComponentType<T> componentType) {
     T component = getStack().get(componentType);
-    if (component != null && displayComponent.shouldDisplay(componentType)) {
+    if (component != null && displayComponent.shows(componentType)) {
       return Optional.of(component);
     } else {
       return Optional.empty();
     }
   }
 
-  public Optional<NbtCompound> getBlockEntityData() {
-    return getComponentForDisplay(DataComponentTypes.BLOCK_ENTITY_DATA)
-        .map(TypedEntityData::copyNbtWithoutId);
+  public Optional<CompoundTag> getBlockEntityData() {
+    return getComponentForDisplay(DataComponents.BLOCK_ENTITY_DATA)
+        .map(TypedEntityData::copyTagWithoutId);
   }
 
-  public <T extends TooltipAppender> void appendComponent(ComponentType<T> componentType) {
-    appendComponent(componentType, (Consumer<Text>) this::append);
+  public <T extends TooltipProvider> void appendComponent(DataComponentType<T> componentType) {
+    appendComponent(componentType, (Consumer<Component>) this::append);
   }
 
-  public <T extends TooltipAppender> void appendComponent(
-      ComponentType<T> componentType, UnaryOperator<Text> transformation) {
+  public <T extends TooltipProvider> void appendComponent(
+      DataComponentType<T> componentType, UnaryOperator<Component> transformation) {
     appendComponent(
         componentType,
         text -> {
@@ -94,15 +91,15 @@ public class TooltipBuilder {
         });
   }
 
-  public <T extends TooltipAppender> void appendComponent(
-      ComponentType<T> componentType, Consumer<Text> textConsumer) {
+  public <T extends TooltipProvider> void appendComponent(
+      DataComponentType<T> componentType, Consumer<Component> textConsumer) {
     getComponentForDisplay(componentType)
         .ifPresent(
             component ->
-                component.appendTooltip(
+                component.addToTooltip(
                     getTooltipContext(),
                     textConsumer,
-                    TooltipType.BASIC,
+                    TooltipFlag.NORMAL,
                     getStack().getComponents()));
   }
 
@@ -117,36 +114,36 @@ public class TooltipBuilder {
     return maxSize - lines.size();
   }
 
-  public void append(Text text) {
+  public void append(Component text) {
     realSize++;
     if (canAdd()) {
       lines.add(text);
     }
   }
 
-  public void append(Supplier<Text> textSupplier) {
+  public void append(Supplier<Component> textSupplier) {
     realSize++;
     if (canAdd()) {
       lines.add(textSupplier.get());
     }
   }
 
-  public void appendAll(List<? extends Text> newLines) {
+  public void appendAll(List<? extends Component> newLines) {
     realSize += newLines.size();
 
     if (canAdd()) {
-      for (Text line : newLines) {
+      for (Component line : newLines) {
         lines.add(line);
         if (!canAdd()) break;
       }
     }
   }
 
-  public List<Text> build() {
-    if (realSize > maxSize && config.showHiddenLinesCount()) {
-      Text moreText =
-          Text.translatable("item.container.more_items", realSize - maxSize + 1)
-              .formatted(DEFAULT_COLOR, Formatting.ITALIC);
+  public List<Component> build() {
+    if (realSize > maxSize && HeldItemInfo.config.showHiddenLinesCount()) {
+      Component moreText =
+          Component.translatable("item.container.more_items", realSize - maxSize + 1)
+              .withStyle(DEFAULT_COLOR, ChatFormatting.ITALIC);
       lines.set(lines.size() - 1, moreText);
     }
 

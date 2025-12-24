@@ -1,4 +1,5 @@
 {
+	"held_item_info.tooltip.sign_side_separator": "-------",
 	"text.autoconfig.held-item-info.title": "Held Item Info Config",
 	"text.autoconfig.held-item-info.category.default": "General Settings",
 	"text.autoconfig.held-item-info.option.maxLines": "Max number of lines",

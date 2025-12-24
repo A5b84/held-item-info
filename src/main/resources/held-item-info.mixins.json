@@ -4,15 +4,15 @@
 	"compatibilityLevel": "JAVA_21",
 	"client": [
 		"BrushableBlockEntityAccessor",
-		"InGameHudAccessor",
-		"InGameHudMixin",
-		"ItemEnchantmentsComponentAccessor",
-		"TrialSpawnerDataAccessor",
+		"GuiAccessor",
+		"GuiMixin",
+		"ItemEnchantmentsAccessor",
+		"TrialSpawnerStateDataAccessor",
 		"block.BrushableBlockMixin",
 		"block.CommandBlockMixin",
 		"block.SpawnerBlocksMixin",
-		"item.DecorationItemMixin",
 		"item.DiscFragmentItemMixin",
+		"item.HangingEntityItemMixin",
 		"item.SignItemMixin"
 	],
 	"injectors": {
