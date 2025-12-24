@@ -6,8 +6,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(TrialSpawnerData.class)
 public interface TrialSpawnerDataAccessor {
-    @Accessor("SPAWN_DATA_KEY")
-    static String getSpawnDataKey() {
-        throw new AssertionError();
-    }
+  @Accessor("SPAWN_DATA_KEY")
+  static String getSpawnDataKey() {
+    throw new AssertionError();
+  }
 }

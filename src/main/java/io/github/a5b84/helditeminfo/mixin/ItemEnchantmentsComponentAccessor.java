@@ -12,8 +12,11 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(ItemEnchantmentsComponent.class)
 public interface ItemEnchantmentsComponentAccessor {
-    @Invoker
-    static <T> RegistryEntryList<T> callGetTooltipOrderList(@Nullable RegistryWrapper.WrapperLookup registryLookup, RegistryKey<Registry<T>> registryRef, TagKey<T> tooltipOrderTag) {
-        throw new AssertionError();
-    }
+  @Invoker
+  static <T> RegistryEntryList<T> callGetTooltipOrderList(
+      @Nullable RegistryWrapper.WrapperLookup registryLookup,
+      RegistryKey<Registry<T>> registryRef,
+      TagKey<T> tooltipOrderTag) {
+    throw new AssertionError();
+  }
 }
