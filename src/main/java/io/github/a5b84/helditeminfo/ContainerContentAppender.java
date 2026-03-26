@@ -11,6 +11,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.item.component.ItemContainerContents;
@@ -36,39 +37,39 @@ public final class ContainerContentAppender {
   }
 
   private static Iterable<? extends ContainerEntry> getContainerEntries(TooltipBuilder builder) {
-    Iterable<ItemStack> stacks = Collections.emptyList();
+    Iterable<ItemStackTemplate> stackTemplates = Collections.emptyList();
 
     Optional<ItemContainerContents> containerComponent =
         builder.getComponentForDisplay(DataComponents.CONTAINER);
     if (containerComponent.isPresent()) {
-      stacks = containerComponent.get().nonEmptyItems();
+      stackTemplates = containerComponent.get().nonEmptyItems();
     }
 
     Optional<BundleContents> bundleContents =
         builder.getComponentForDisplay(DataComponents.BUNDLE_CONTENTS);
     if (bundleContents.isPresent()) {
-      stacks = Iterables.concat(stacks, bundleContents.get().items());
+      stackTemplates = Iterables.concat(stackTemplates, bundleContents.get().items());
     }
 
     if (HeldItemInfo.config.mergeSimilarContainerItems()) {
       Map<Component, MergedContainerEntry> entries = new LinkedHashMap<>();
 
-      for (ItemStack stack : stacks) {
+      for (ItemStackTemplate stackTemplate : stackTemplates) {
         entries.compute(
-            stack.getHoverName(),
+            stackTemplate.create().getHoverName(),
             (name, entry) -> {
               if (entry == null) {
                 entry = new MergedContainerEntry(name);
               }
 
-              entry.count += stack.getCount();
+              entry.count += stackTemplate.count();
               return entry;
             });
       }
 
       return entries.values();
     } else {
-      return Iterables.transform(stacks, ItemStackContainerEntry::new);
+      return Iterables.transform(stackTemplates, ItemStackContainerEntry::new);
     }
   }
 
@@ -81,8 +82,8 @@ public final class ContainerContentAppender {
   private static class ItemStackContainerEntry extends ContainerEntry {
     private final ItemStack stack;
 
-    public ItemStackContainerEntry(ItemStack stack) {
-      this.stack = stack;
+    public ItemStackContainerEntry(ItemStackTemplate stackTemplate) {
+      stack = stackTemplate.create();
     }
 
     @Override

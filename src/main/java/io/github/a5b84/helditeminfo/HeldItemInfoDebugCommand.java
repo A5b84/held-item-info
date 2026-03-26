@@ -1,12 +1,13 @@
 package io.github.a5b84.helditeminfo;
 
-import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
-import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import java.util.Objects;
 import java.util.Optional;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -100,7 +101,7 @@ public class HeldItemInfoDebugCommand {
       result.append("[");
 
       for (String key : components.get().keySet()) {
-        Tag component = components.get().get(key);
+        Tag component = Objects.requireNonNull(components.get().get(key));
         result.append((isFirstComponent ? "" : ",") + key + "=");
         result.append(NbtUtils.toPrettyComponent(component));
         isFirstComponent = false;
@@ -134,7 +135,7 @@ public class HeldItemInfoDebugCommand {
     ItemStack stack = source.getPlayer().getMainHandItem();
 
     stack.addDetailsToTooltip(
-        Item.TooltipContext.of(source.getWorld()),
+        Item.TooltipContext.of(source.getLevel()),
         TooltipDisplay.DEFAULT,
         source.getPlayer(),
         TooltipFlag.NORMAL,

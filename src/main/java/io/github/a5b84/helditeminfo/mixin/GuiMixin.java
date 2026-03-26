@@ -15,7 +15,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.contextualbar.ContextualBarRenderer;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -43,7 +43,7 @@ public abstract class GuiMixin {
   /**
    * Value in 1.21.6: 59.
    *
-   * @see Gui#renderSelectedItemName(GuiGraphics)
+   * @see Gui#renderSelectedItemName(GuiGraphicsExtractor)
    */
   @SuppressWarnings("JavadocReference")
   @Unique
@@ -76,21 +76,27 @@ public abstract class GuiMixin {
    */
   @Unique private int lastTooltipY;
 
-  @Inject(method = "render", at = @At("HEAD"))
-  private void onBeforeRender(CallbackInfo ci) {
+  @Inject(method = "extractRenderState", at = @At("HEAD"))
+  private void beforeExtractRenderState(CallbackInfo ci) {
     lastTooltipY = -1;
   }
 
   /** Replaces vanilla rendering with the mod's */
   @Redirect(
-      method = "renderSelectedItemName",
+      method = "extractSelectedItemName",
       at =
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V"))
+                  "Lnet/minecraft/client/gui/GuiGraphicsExtractor;textWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V"))
   private void drawTextProxy(
-      GuiGraphics graphics, Font font, Component text, int _x, int y, int width, int color) {
+      GuiGraphicsExtractor graphics,
+      Font font,
+      Component text,
+      int _x,
+      int y,
+      int width,
+      int color) {
     int lineHeight = HeldItemInfo.config.lineHeight();
 
     y -=
@@ -116,7 +122,7 @@ public abstract class GuiMixin {
     int i = 0;
     for (TooltipLine line : tooltip) {
       int x = (graphics.guiWidth() - line.width) / 2;
-      graphics.drawString(font, line.text, x, y, color);
+      graphics.text(font, line.text, x, y, color);
       y += lineHeight;
 
       if (i == 0 && HeldItemInfo.config.showName()) {
@@ -127,7 +133,7 @@ public abstract class GuiMixin {
   }
 
   /**
-   * @see Gui#renderPlayerHealth(GuiGraphics)
+   * @see Gui#renderPlayerHealth(GuiGraphicsExtractor)
    */
   @SuppressWarnings("JavadocReference")
   @Unique
@@ -144,7 +150,7 @@ public abstract class GuiMixin {
   }
 
   @Unique
-  private void drawBackground(GuiGraphics graphics, int y) {
+  private void drawBackground(GuiGraphicsExtractor graphics, int y) {
     int backgroundColor = getBackgroundColor();
 
     if (ARGB.alpha(backgroundColor) != 0) {
@@ -188,14 +194,14 @@ public abstract class GuiMixin {
   }
 
   @Inject(
-      method = "renderOverlayMessage",
+      method = "extractOverlayMessage",
       at =
           @At(
               value = "INVOKE",
               target =
-                  "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V"))
-  private void onDrawOverlayMessage(
-      GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+                  "Lnet/minecraft/client/gui/GuiGraphicsExtractor;textWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V"))
+  private void onExtractOverlayMessage(
+      GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
     if (HeldItemInfo.config.preventOverlap() && lastTooltipY >= 0) {
       int tooltipYOffset = graphics.guiHeight() - lastTooltipY;
       int difference = VANILLA_TOOLTIP_Y_OFFSET - tooltipYOffset;

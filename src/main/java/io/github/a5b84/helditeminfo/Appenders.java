@@ -2,11 +2,9 @@ package io.github.a5b84.helditeminfo;
 
 import io.github.a5b84.helditeminfo.mixin.ItemEnchantmentsAccessor;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentType;
@@ -16,8 +14,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -58,20 +56,11 @@ public final class Appenders {
         .getComponentForDisplay(DataComponents.JUKEBOX_PLAYABLE)
         .ifPresent(
             songComponent -> {
-              HolderLookup.Provider registryLookup =
-                  Objects.requireNonNull(builder.getTooltipContext().registries());
-              songComponent
-                  .song()
-                  .unwrap(registryLookup)
-                  .ifPresent(
-                      entry ->
-                          builder.append(
-                              () -> {
-                                MutableComponent description = entry.value().description().copy();
-                                return ComponentUtils.mergeStyles(
-                                    description,
-                                    Style.EMPTY.withColor(TooltipBuilder.DEFAULT_COLOR));
-                              }));
+              builder.append(
+                  () ->
+                      ComponentUtils.mergeStyles(
+                          songComponent.song().value().description(),
+                          Style.EMPTY.withColor(TooltipBuilder.DEFAULT_COLOR)));
             });
   }
 
@@ -117,11 +106,11 @@ public final class Appenders {
   }
 
   private static boolean shouldShowEnchantment(Holder<Enchantment> entry) {
-    List<ResourceLocation> filters = HeldItemInfo.filteredEnchantments;
+    List<Identifier> filters = HeldItemInfo.filteredEnchantments;
     if (filters.isEmpty()) {
       return true;
     } else {
-      ResourceLocation id = entry.unwrapKey().map(ResourceKey::location).orElse(null);
+      Identifier id = entry.unwrapKey().map(ResourceKey::identifier).orElse(null);
       return filters.contains(id) == HeldItemInfo.config.showOnlyFilteredEnchantments();
     }
   }

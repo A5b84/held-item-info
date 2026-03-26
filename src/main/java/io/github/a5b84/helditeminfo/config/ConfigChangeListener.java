@@ -7,8 +7,8 @@ import io.github.a5b84.helditeminfo.config.HeldItemInfoConfig.HeldItemInfoAutoCo
 import java.util.ArrayList;
 import java.util.List;
 import me.shedaniel.autoconfig.ConfigHolder;
-import net.minecraft.ResourceLocationException;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.IdentifierException;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionResult;
 
 public class ConfigChangeListener {
@@ -22,11 +22,11 @@ public class ConfigChangeListener {
       ConfigHolder<HeldItemInfoAutoConfig> holder, HeldItemInfoAutoConfig config) {
     // Recreate enchantment filters
     List<String> idStrings = config.filteredEnchantments();
-    List<ResourceLocation> ids = new ArrayList<>(idStrings.size());
+    List<Identifier> ids = new ArrayList<>(idStrings.size());
     for (String idString : idStrings) {
       try {
-        ids.add(ResourceLocation.parse(idString));
-      } catch (ResourceLocationException e) {
+        ids.add(Identifier.parse(idString));
+      } catch (IdentifierException e) {
         LOGGER.error("[Held Item Info] Invalid enchantment identifier '" + idString + "'", e);
       }
     }
