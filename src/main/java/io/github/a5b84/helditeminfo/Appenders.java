@@ -131,12 +131,12 @@ public final class Appenders {
         .ifPresent(
             loreComponent -> {
               HeldItemInfoConfig config = HeldItemInfo.getConfig();
-              int currentLoreLines = 0; // TODO: never modified, probably bugged
+              int maxRemainingLoreLines = config.maxLoreLines();
 
               for (Component line : loreComponent.lines()) {
-                int maxLines =
-                    Math.min(config.maxLoreLines() - currentLoreLines, builder.getRemainingLines());
+                int maxLines = Math.min(maxRemainingLoreLines, builder.getRemainingLines());
                 List<MutableComponent> wrappedLine = Util.wrapLines(line, maxLines);
+                maxRemainingLoreLines -= wrappedLine.size();
 
                 for (MutableComponent linePart : wrappedLine) {
                   builder.append(() -> ComponentUtils.mergeStyles(linePart, LORE_STYLE));

@@ -3,6 +3,7 @@
 ## [1.9.2](https://github.com/A5b84/dark-loading-screen/releases/tag/v1.9.2) (26.1+)
 
 - Updated to 26.2.
+- Fixed the 'Max lore lines' config option having no effect.
 
 ## [1.9.1](https://github.com/A5b84/dark-loading-screen/releases/tag/v1.9.1) (26.1-26.1.2)
 
