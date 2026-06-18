@@ -63,7 +63,7 @@ public final class Util {
     // Shortening
     if (maxLines <= 0) return Collections.emptyList();
 
-    double maxLength = 1.25 * maxLines * HeldItemInfo.config.maxLineLength();
+    double maxLength = 1.25 * maxLines * HeldItemInfo.getConfig().maxLineLength();
     // ^ add 25% to avoid truncating too much when using many narrow characters (e.g. 'i')
     if (maxLength <= 0) return Collections.emptyList();
     if (maxLength > Integer.MAX_VALUE) maxLength = Integer.MAX_VALUE;
@@ -75,7 +75,7 @@ public final class Util {
     // Splitting
     final List<MutableComponent> lines = new ArrayList<>(maxLines);
     final String finalString = s; // final copy to refer to it in the lambda
-    double maxWidth = HeldItemInfo.config.maxLineLength() * CHARACTER_WIDTH;
+    double maxWidth = HeldItemInfo.getConfig().maxLineLength() * CHARACTER_WIDTH;
     if (maxWidth > Integer.MAX_VALUE) maxWidth = Integer.MAX_VALUE;
     //      ^ In case the user messed with their config (could crash)
     Font textRenderer = Minecraft.getInstance().font;
@@ -110,7 +110,7 @@ public final class Util {
     // TODO somehow make this not yeet styles
     if (maxLines <= 0) return Collections.emptyList();
 
-    double maxWidth = HeldItemInfo.config.maxLineLength() * CHARACTER_WIDTH;
+    double maxWidth = HeldItemInfo.getConfig().maxLineLength() * CHARACTER_WIDTH;
     if (maxWidth > Integer.MAX_VALUE) maxWidth = Integer.MAX_VALUE;
     //      ^ In case the user messed with their config (could crash)
     Font textRenderer = Minecraft.getInstance().font;

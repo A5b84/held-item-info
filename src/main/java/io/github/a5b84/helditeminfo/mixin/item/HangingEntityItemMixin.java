@@ -14,7 +14,7 @@ public abstract class HangingEntityItemMixin implements GenericTooltipAppender {
 
   @Override
   public boolean heldItemInfo_shouldAppendTooltip() {
-    return HeldItemInfo.config.showPaintingDescription();
+    return HeldItemInfo.getConfig().showPaintingDescription();
   }
 
   @Override

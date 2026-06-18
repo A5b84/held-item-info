@@ -1,5 +1,6 @@
 package io.github.a5b84.helditeminfo;
 
+import io.github.a5b84.helditeminfo.config.HeldItemInfoConfig;
 import io.github.a5b84.helditeminfo.mixin.ItemEnchantmentsAccessor;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -105,12 +106,12 @@ public final class Appenders {
   }
 
   private static boolean shouldShowEnchantment(Holder<Enchantment> entry) {
-    List<Identifier> filters = HeldItemInfo.filteredEnchantments;
+    List<Identifier> filters = HeldItemInfo.getFilteredEnchantments();
     if (filters.isEmpty()) {
       return true;
     } else {
       Identifier id = entry.unwrapKey().map(ResourceKey::identifier).orElse(null);
-      return filters.contains(id) == HeldItemInfo.config.showOnlyFilteredEnchantments();
+      return filters.contains(id) == HeldItemInfo.getConfig().showOnlyFilteredEnchantments();
     }
   }
 
@@ -129,13 +130,12 @@ public final class Appenders {
         .getComponentForDisplay(DataComponents.LORE)
         .ifPresent(
             loreComponent -> {
-              int currentLoreLines = 0;
+              HeldItemInfoConfig config = HeldItemInfo.getConfig();
+              int currentLoreLines = 0; // TODO: never modified, probably bugged
 
               for (Component line : loreComponent.lines()) {
                 int maxLines =
-                    Math.min(
-                        HeldItemInfo.config.maxLoreLines() - currentLoreLines,
-                        builder.getRemainingLines());
+                    Math.min(config.maxLoreLines() - currentLoreLines, builder.getRemainingLines());
                 List<MutableComponent> wrappedLine = Util.wrapLines(line, maxLines);
 
                 for (MutableComponent linePart : wrappedLine) {
@@ -148,6 +148,6 @@ public final class Appenders {
   public static void appendUnbreakable(TooltipBuilder builder) {
     builder
         .getComponentForDisplay(DataComponents.UNBREAKABLE)
-        .ifPresent(component -> builder.append(UNBREAKABLE_TEXT));
+        .ifPresent(_ -> builder.append(UNBREAKABLE_TEXT));
   }
 }

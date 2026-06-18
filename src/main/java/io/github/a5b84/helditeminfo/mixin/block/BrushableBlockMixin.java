@@ -19,7 +19,7 @@ public abstract class BrushableBlockMixin implements TooltipAppender {
 
   @Override
   public boolean heldItemInfo_shouldAppendTooltip() {
-    return HeldItemInfo.config.showContainerContent();
+    return HeldItemInfo.getConfig().showContainerContent();
   }
 
   @Override

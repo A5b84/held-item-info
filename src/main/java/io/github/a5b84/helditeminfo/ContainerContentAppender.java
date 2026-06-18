@@ -51,7 +51,7 @@ public final class ContainerContentAppender {
       stackTemplates = Iterables.concat(stackTemplates, bundleContents.get().items());
     }
 
-    if (HeldItemInfo.config.mergeSimilarContainerItems()) {
+    if (HeldItemInfo.getConfig().mergeSimilarContainerItems()) {
       Map<Component, MergedContainerEntry> entries = new LinkedHashMap<>();
 
       for (ItemStackTemplate stackTemplate : stackTemplates) {

@@ -14,7 +14,7 @@ public abstract class CommandBlockMixin implements TooltipAppender {
 
   @Override
   public boolean heldItemInfo_shouldAppendTooltip() {
-    return HeldItemInfo.config.showCommandBlockInfo();
+    return HeldItemInfo.getConfig().showCommandBlockInfo();
   }
 
   @Override
@@ -27,7 +27,8 @@ public abstract class CommandBlockMixin implements TooltipAppender {
               command = command.trim();
               if (!command.isEmpty()) {
                 int maxLines =
-                    Math.min(HeldItemInfo.config.maxCommandLines(), builder.getRemainingLines());
+                    Math.min(
+                        HeldItemInfo.getConfig().maxCommandLines(), builder.getRemainingLines());
                 List<MutableComponent> lines = Util.wrapLines(command, maxLines);
 
                 for (MutableComponent text : lines) {

@@ -10,6 +10,6 @@ public abstract class DiscFragmentItemMixin implements GenericTooltipAppender {
 
   @Override
   public boolean heldItemInfo_shouldAppendTooltip() {
-    return HeldItemInfo.config.showMusicDiscDescription();
+    return HeldItemInfo.getConfig().showMusicDiscDescription();
   }
 }

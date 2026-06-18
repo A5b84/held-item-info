@@ -27,7 +27,7 @@ public class TooltipBuilder {
       Item.TooltipContext.of(Minecraft.getInstance().level);
   private final ItemStack stack;
   private final TooltipDisplay displayComponent;
-  private final int maxSize = HeldItemInfo.config.maxLines();
+  private final int maxSize = HeldItemInfo.getConfig().maxLines();
   private final List<Component> lines;
 
   /**
@@ -39,7 +39,7 @@ public class TooltipBuilder {
   public TooltipBuilder(ItemStack stack) {
     this.stack = stack;
     this.displayComponent =
-        HeldItemInfo.config.respectHideFlags()
+        HeldItemInfo.getConfig().respectHideFlags()
             ? stack.getOrDefault(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT)
             : TooltipDisplay.DEFAULT;
     lines = new ArrayList<>(maxSize);
@@ -140,7 +140,7 @@ public class TooltipBuilder {
   }
 
   public List<Component> build() {
-    if (realSize > maxSize && HeldItemInfo.config.showHiddenLinesCount()) {
+    if (realSize > maxSize && HeldItemInfo.getConfig().showHiddenLinesCount()) {
       Component moreText =
           Component.translatable("item.container.more_items", realSize - maxSize + 1)
               .withStyle(DEFAULT_COLOR, ChatFormatting.ITALIC);

@@ -17,7 +17,7 @@ public class SpawnerBlocksMixin implements TooltipAppender {
 
   @Override
   public boolean heldItemInfo_shouldAppendTooltip() {
-    return HeldItemInfo.config.showSpawnerEntity();
+    return HeldItemInfo.getConfig().showSpawnerEntity();
   }
 
   @Override

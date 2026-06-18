@@ -23,7 +23,7 @@ public abstract class SignItemMixin implements TooltipAppender {
 
   @Override
   public boolean heldItemInfo_shouldAppendTooltip() {
-    return HeldItemInfo.config.showSignText();
+    return HeldItemInfo.getConfig().showSignText();
   }
 
   @Override
@@ -76,12 +76,9 @@ public abstract class SignItemMixin implements TooltipAppender {
               List<MutableComponent> lines = new ArrayList<>(messages.length);
 
               for (Component message : messages) {
-                if (message != null) {
-                  String messageStr = message.getString();
-                  if (!messageStr.isBlank()) {
-                    lines.add(
-                        Component.literal(messageStr).withStyle(TooltipBuilder.DEFAULT_COLOR));
-                  }
+                String messageStr = message.getString();
+                if (!messageStr.isBlank()) {
+                  lines.add(Component.literal(messageStr).withStyle(TooltipBuilder.DEFAULT_COLOR));
                 }
               }
 

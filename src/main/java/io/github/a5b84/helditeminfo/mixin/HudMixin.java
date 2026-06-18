@@ -7,6 +7,7 @@ import io.github.a5b84.helditeminfo.TooltipAppender;
 import io.github.a5b84.helditeminfo.TooltipBuilder;
 import io.github.a5b84.helditeminfo.TooltipLine;
 import io.github.a5b84.helditeminfo.Util;
+import io.github.a5b84.helditeminfo.config.HeldItemInfoConfig;
 import java.util.Collections;
 import java.util.List;
 import net.minecraft.ChatFormatting;
@@ -65,7 +66,7 @@ public abstract class HudMixin {
   protected abstract Player getCameraPlayer();
 
   @Unique private List<TooltipLine> tooltip = Collections.emptyList();
-  @Unique private ItemStack stackBeforeTick;
+  @Unique @Nullable private ItemStack stackBeforeTick;
 
   /** Width of the longest line, or some negative number if not computed yet */
   @Unique private int maxWidth = -1;
@@ -97,18 +98,19 @@ public abstract class HudMixin {
       int textY,
       int textWidth,
       int textColor) {
-    int lineHeight = HeldItemInfo.config.lineHeight();
+    HeldItemInfoConfig config = HeldItemInfo.getConfig();
+    int lineHeight = config.lineHeight();
 
     textY -=
-        (int) ((lineHeight - HeldItemInfo.config.offsetPerExtraLine()) * (tooltip.size() - 1))
-            + HeldItemInfo.config.verticalOffset();
+        (int) ((lineHeight - config.offsetPerExtraLine()) * (tooltip.size() - 1))
+            + config.verticalOffset();
 
-    if (HeldItemInfo.config.showName() && tooltip.size() > 1) {
-      textY -= HeldItemInfo.config.itemNameSpacing();
+    if (config.showName() && tooltip.size() > 1) {
+      textY -= config.itemNameSpacing();
     }
 
     //noinspection DataFlowIssue
-    if (HeldItemInfo.config.preventOverlap() && minecraft.gameMode.canHurtPlayer()) {
+    if (config.preventOverlap() && minecraft.gameMode.canHurtPlayer()) {
       Player player = getCameraPlayer();
       if (player != null) {
         textY -= getHealthBarsTotalHeight(player) - HudAccessor.getLineHeight();
@@ -125,8 +127,8 @@ public abstract class HudMixin {
       graphics.text(font, line.text, x, textY, textColor);
       textY += lineHeight;
 
-      if (i == 0 && HeldItemInfo.config.showName()) {
-        textY += HeldItemInfo.config.itemNameSpacing();
+      if (i == 0 && config.showName()) {
+        textY += config.itemNameSpacing();
       }
       i++;
     }
@@ -154,10 +156,11 @@ public abstract class HudMixin {
     int backgroundColor = getBackgroundColor();
 
     if (ARGB.alpha(backgroundColor) != 0) {
+      HeldItemInfoConfig config = HeldItemInfo.getConfig();
       int scaledWidth = graphics.guiWidth();
-      int height = HeldItemInfo.config.lineHeight() * tooltip.size();
-      if (HeldItemInfo.config.showName() && tooltip.size() > 1) {
-        height += HeldItemInfo.config.itemNameSpacing();
+      int height = config.lineHeight() * tooltip.size();
+      if (config.showName() && tooltip.size() > 1) {
+        height += config.itemNameSpacing();
       }
       int padding = 2;
       computeMaxWidth();
@@ -173,7 +176,7 @@ public abstract class HudMixin {
 
   @Unique
   private int getBackgroundColor() {
-    return switch (HeldItemInfo.config.tooltipBackgroundVisibility()) {
+    return switch (HeldItemInfo.getConfig().tooltipBackgroundVisibility()) {
       case VANILLA -> minecraft.options.getBackgroundColor(0);
       case ALWAYS ->
           ARGB.colorFromFloat(
@@ -202,7 +205,7 @@ public abstract class HudMixin {
                   "Lnet/minecraft/client/gui/GuiGraphicsExtractor;textWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V"))
   private void onExtractOverlayMessage(
       GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-    if (HeldItemInfo.config.preventOverlap() && lastTooltipY >= 0) {
+    if (HeldItemInfo.getConfig().preventOverlap() && lastTooltipY >= 0) {
       int tooltipYOffset = graphics.guiHeight() - lastTooltipY;
       int difference = VANILLA_TOOLTIP_Y_OFFSET - tooltipYOffset;
       if (difference < 0) {
@@ -230,13 +233,14 @@ public abstract class HudMixin {
       List<Component> newInfo = buildTooltip(lastToolHighlight);
 
       if (!TooltipLine.areEquivalent(tooltip, newInfo)) {
+        HeldItemInfoConfig config = HeldItemInfo.getConfig();
         tooltip = TooltipLine.from(newInfo);
         maxWidth = -1;
         toolHighlightTimer =
             (int)
                 (SharedConstants.TICKS_PER_SECOND
-                    * (HeldItemInfo.config.baseFadeDuration()
-                        + HeldItemInfo.config.fadeDurationPerExtraLine() * (tooltip.size() - 1)));
+                    * (config.baseFadeDuration()
+                        + config.fadeDurationPerExtraLine() * (tooltip.size() - 1)));
       }
     }
   }
@@ -246,9 +250,10 @@ public abstract class HudMixin {
     if (stack.isEmpty()) {
       return Collections.emptyList();
     } else {
+      HeldItemInfoConfig config = HeldItemInfo.getConfig();
       TooltipBuilder builder = new TooltipBuilder(stack);
 
-      if (HeldItemInfo.config.showName()) {
+      if (config.showName()) {
         appendStackName(stack, builder);
       }
 
@@ -267,67 +272,68 @@ public abstract class HudMixin {
         }
 
         // Component-related lines
-        if (HeldItemInfo.config.showEntityBucketContent()) {
+        if (config.showEntityBucketContent()) {
           builder.appendComponent(DataComponents.TROPICAL_FISH_PATTERN);
         }
 
-        if (HeldItemInfo.config.showGoatHornInstrument()) {
+        if (config.showGoatHornInstrument()) {
           builder.appendComponent(DataComponents.INSTRUMENT);
         }
 
-        if (HeldItemInfo.config.showFilledMapId()) {
+        if (config.showFilledMapId()) {
           builder.appendComponent(DataComponents.MAP_ID);
         }
 
-        if (HeldItemInfo.config.showBeehiveContent()) {
+        if (config.showBeehiveContent()) {
           builder.appendComponent(DataComponents.BEES);
         }
 
-        if (HeldItemInfo.config.showContainerContent()) {
+        if (config.showContainerContent()) {
           ContainerContentAppender.appendContainerContent(builder);
         }
 
-        if (HeldItemInfo.config.showBookMeta()) {
+        if (config.showBookMeta()) {
           builder.appendComponent(DataComponents.WRITTEN_BOOK_CONTENT);
         }
 
-        if (HeldItemInfo.config.showCrossbowProjectiles()) {
+        if (config.showCrossbowProjectiles()) {
+
           builder.appendComponent(DataComponents.CHARGED_PROJECTILES, Util::withDefaultColor);
         }
 
-        if (HeldItemInfo.config.showFireworkAttributes()) {
+        if (config.showFireworkAttributes()) {
           builder.appendComponent(DataComponents.FIREWORKS);
         }
 
-        if (HeldItemInfo.config.showFireworkAttributes()) {
+        if (config.showFireworkAttributes()) {
           builder.appendComponent(DataComponents.FIREWORK_EXPLOSION);
         }
 
-        if (HeldItemInfo.config.showPotionEffects()) {
+        if (config.showPotionEffects()) {
           Appenders.appendPotionEffects(builder);
         }
 
-        if (HeldItemInfo.config.showMusicDiscDescription()) {
+        if (config.showMusicDiscDescription()) {
           Appenders.appendMusicDiscDescription(builder);
         }
 
-        if (HeldItemInfo.config.showEnchantments()) {
+        if (config.showEnchantments()) {
           Appenders.appendEnchantments(builder);
         }
 
-        if (HeldItemInfo.config.showLore()) {
+        if (config.showLore()) {
           Appenders.appendLore(builder);
         }
 
-        if (HeldItemInfo.config.showUnbreakable()) {
+        if (config.showUnbreakable()) {
           Appenders.appendUnbreakable(builder);
         }
 
-        if (HeldItemInfo.config.showPotionEffects()) {
+        if (config.showPotionEffects()) {
           builder.appendComponent(DataComponents.OMINOUS_BOTTLE_AMPLIFIER);
         }
 
-        if (HeldItemInfo.config.showBlockState()) {
+        if (config.showBlockState()) {
           builder.appendComponent(DataComponents.BLOCK_STATE);
         }
       }
