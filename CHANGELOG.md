@@ -4,6 +4,7 @@
 
 - Updated to 26.2.
 - Fixed the 'Max lore lines' config option having no effect.
+- Removed the "Intangible" tooltip when holding a crossbow that was charged in creative mod.
 
 ## [1.9.1](https://github.com/A5b84/dark-loading-screen/releases/tag/v1.9.1) (26.1-26.1.2)
 

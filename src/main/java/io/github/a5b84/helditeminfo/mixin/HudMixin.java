@@ -297,8 +297,9 @@ public abstract class HudMixin {
         }
 
         if (config.showCrossbowProjectiles()) {
-
+          HeldItemInfo.getIntangibleProjectileVisibility().pushHidden();
           builder.appendComponent(DataComponents.CHARGED_PROJECTILES, Util::withDefaultColor);
+          HeldItemInfo.getIntangibleProjectileVisibility().popHidden();
         }
 
         if (config.showFireworkAttributes()) {

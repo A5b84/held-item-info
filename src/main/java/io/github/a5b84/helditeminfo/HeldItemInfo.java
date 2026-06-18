@@ -29,6 +29,9 @@ public class HeldItemInfo implements ClientModInitializer {
 
   private static final List<Identifier> filteredEnchantments = new ArrayList<>();
 
+  private static final ComponentVisibilityStack intangibleProjectileVisibility =
+      new ComponentVisibilityStack();
+
   @Override
   public void onInitializeClient() {
     if (USE_CLOTH_CONFIG) {
@@ -77,5 +80,9 @@ public class HeldItemInfo implements ClientModInitializer {
         LOGGER.error("[Held Item Info] Invalid enchantment identifier '{}'", id, e);
       }
     }
+  }
+
+  public static ComponentVisibilityStack getIntangibleProjectileVisibility() {
+    return intangibleProjectileVisibility;
   }
 }
