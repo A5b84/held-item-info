@@ -55,13 +55,12 @@ public final class Appenders {
     builder
         .getComponentForDisplay(DataComponents.JUKEBOX_PLAYABLE)
         .ifPresent(
-            songComponent -> {
-              builder.append(
-                  () ->
-                      ComponentUtils.mergeStyles(
-                          songComponent.song().value().description(),
-                          Style.EMPTY.withColor(TooltipBuilder.DEFAULT_COLOR)));
-            });
+            songComponent ->
+                builder.append(
+                    () ->
+                        ComponentUtils.mergeStyles(
+                            songComponent.song().value().description(),
+                            Style.EMPTY.withColor(TooltipBuilder.DEFAULT_COLOR))));
   }
 
   public static void appendEnchantments(TooltipBuilder builder) {

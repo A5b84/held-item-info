@@ -4,8 +4,8 @@
 	"compatibilityLevel": "JAVA_21",
 	"client": [
 		"BrushableBlockEntityAccessor",
-		"GuiAccessor",
-		"GuiMixin",
+		"HudAccessor",
+		"HudMixin",
 		"ItemEnchantmentsAccessor",
 		"TrialSpawnerStateDataAccessor",
 		"block.BrushableBlockMixin",

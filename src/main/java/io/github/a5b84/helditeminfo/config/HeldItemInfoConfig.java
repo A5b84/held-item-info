@@ -175,7 +175,7 @@ public class HeldItemInfoConfig {
   }
 
   /** Config class usable by / requiring AutoConfig */
-  @SuppressWarnings("FieldMayBeFinal")
+  @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
   @Config(name = HeldItemInfo.MOD_ID)
   public static class HeldItemInfoAutoConfig extends HeldItemInfoConfig implements ConfigData {
 

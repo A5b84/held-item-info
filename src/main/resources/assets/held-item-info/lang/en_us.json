@@ -23,6 +23,7 @@
 	"text.autoconfig.held-item-info.option.fadeDurationPerExtraLine.@Tooltip": "The additional time before the tooltip fades out per extra line",
 	"text.autoconfig.held-item-info.option.preventOverlap": "Prevent overlap",
 	"text.autoconfig.held-item-info.option.preventOverlap.@Tooltip[0]": "Move the tooltip and overlay messages",
+	"text.autoconfig.held-item-info.option.preventOverlap.@Tooltip[1]": "to prevent overlap with other UI elements",
 	"text.autoconfig.held-item-info.option.tooltipBackgroundVisibility": "Tooltip background visibility",
 	"text.autoconfig.held-item-info.option.tooltipBackgroundVisibility.@Tooltip[0]": "When to show the tooltip background",
 	"text.autoconfig.held-item-info.option.tooltipBackgroundVisibility.@Tooltip[1]": "By default this uses the 'Text Background' accessibility setting",

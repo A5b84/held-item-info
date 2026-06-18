@@ -27,7 +27,7 @@ public class ConfigChangeListener {
       try {
         ids.add(Identifier.parse(idString));
       } catch (IdentifierException e) {
-        LOGGER.error("[Held Item Info] Invalid enchantment identifier '" + idString + "'", e);
+        LOGGER.error("[Held Item Info] Invalid enchantment identifier '{}'", idString, e);
       }
     }
     HeldItemInfo.filteredEnchantments = ids;

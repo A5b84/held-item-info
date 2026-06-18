@@ -14,9 +14,9 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.contextualbar.ContextualBarRenderer;
+import net.minecraft.client.gui.Hud;
+import net.minecraft.client.gui.contextualbar.ContextualBar;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -37,20 +37,20 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Gui.class)
-public abstract class GuiMixin {
+@Mixin(Hud.class)
+public abstract class HudMixin {
 
   /**
    * Value in 1.21.6: 59.
    *
-   * @see Gui#renderSelectedItemName(GuiGraphicsExtractor)
+   * @see Hud#extractSelectedItemName(GuiGraphicsExtractor)
    */
   @SuppressWarnings("JavadocReference")
   @Unique
   private static final int VANILLA_TOOLTIP_Y_OFFSET =
-      ContextualBarRenderer.MARGIN_BOTTOM // Bottom of experience bar to bottom of screen
-          + ContextualBarRenderer.HEIGHT
-          + 2 * GuiAccessor.getLineHeight()
+      ContextualBar.MARGIN_BOTTOM // Bottom of experience bar to bottom of screen
+          + ContextualBar.HEIGHT
+          + 2 * HudAccessor.getLineHeight()
           + 1 // Spacing between armor bar and item name
           + Util.FONT_HEIGHT;
 
@@ -92,48 +92,48 @@ public abstract class GuiMixin {
   private void drawTextProxy(
       GuiGraphicsExtractor graphics,
       Font font,
-      Component text,
-      int _x,
-      int y,
-      int width,
-      int color) {
+      Component str,
+      int textX,
+      int textY,
+      int textWidth,
+      int textColor) {
     int lineHeight = HeldItemInfo.config.lineHeight();
 
-    y -=
+    textY -=
         (int) ((lineHeight - HeldItemInfo.config.offsetPerExtraLine()) * (tooltip.size() - 1))
             + HeldItemInfo.config.verticalOffset();
 
     if (HeldItemInfo.config.showName() && tooltip.size() > 1) {
-      y -= HeldItemInfo.config.itemNameSpacing();
+      textY -= HeldItemInfo.config.itemNameSpacing();
     }
 
     //noinspection DataFlowIssue
     if (HeldItemInfo.config.preventOverlap() && minecraft.gameMode.canHurtPlayer()) {
       Player player = getCameraPlayer();
       if (player != null) {
-        y -= getHealthBarsTotalHeight(player) - GuiAccessor.getLineHeight();
+        textY -= getHealthBarsTotalHeight(player) - HudAccessor.getLineHeight();
       }
     }
 
-    lastTooltipY = y;
+    lastTooltipY = textY;
 
-    drawBackground(graphics, y);
+    drawBackground(graphics, textY);
 
     int i = 0;
     for (TooltipLine line : tooltip) {
       int x = (graphics.guiWidth() - line.width) / 2;
-      graphics.text(font, line.text, x, y, color);
-      y += lineHeight;
+      graphics.text(font, line.text, x, textY, textColor);
+      textY += lineHeight;
 
       if (i == 0 && HeldItemInfo.config.showName()) {
-        y += HeldItemInfo.config.itemNameSpacing();
+        textY += HeldItemInfo.config.itemNameSpacing();
       }
       i++;
     }
   }
 
   /**
-   * @see Gui#renderPlayerHealth(GuiGraphicsExtractor)
+   * @see Hud#extractPlayerHealth(GuiGraphicsExtractor)
    */
   @SuppressWarnings("JavadocReference")
   @Unique
@@ -143,8 +143,8 @@ public abstract class GuiMixin {
                 (float) player.getAttributeValue(Attributes.MAX_HEALTH),
                 Math.max(lastHealth, displayHealth))
             + Mth.ceil(player.getAbsorptionAmount());
-    int rows = Mth.ceil(totalHalfHearts / 2 / GuiAccessor.getNumHeartsPerRow());
-    int lineHeight = GuiAccessor.getLineHeight();
+    int rows = Mth.ceil(totalHalfHearts / 2 / HudAccessor.getNumHeartsPerRow());
+    int lineHeight = HudAccessor.getLineHeight();
     int rowOffset = Math.max(lineHeight - (rows - 2), 3);
     return lineHeight + (rows - 1) * rowOffset;
   }
