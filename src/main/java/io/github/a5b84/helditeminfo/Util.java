@@ -86,7 +86,7 @@ public final class Util {
             (int) maxWidth,
             Style.EMPTY,
             false,
-            (style, start, end) -> lines.add(Component.literal(finalString.substring(start, end))));
+            (_, start, end) -> lines.add(Component.literal(finalString.substring(start, end))));
 
     // Truncating
     if (lines.size() > maxLines) {
