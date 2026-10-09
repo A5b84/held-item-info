@@ -6,10 +6,12 @@ import io.github.a5b84.helditeminfo.TooltipBuilder;
 import io.github.a5b84.helditeminfo.mixin.TrialSpawnerStateDataAccessor;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.component.TypedEntityData;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Spawner;
 import net.minecraft.world.level.block.SpawnerBlock;
 import net.minecraft.world.level.block.TrialSpawnerBlock;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin({SpawnerBlock.class, TrialSpawnerBlock.class})
@@ -26,14 +28,14 @@ public class SpawnerBlocksMixin implements TooltipAppender {
         ((Object) this instanceof TrialSpawnerBlock)
             ? TrialSpawnerStateDataAccessor.getSpawnDataKey()
             : BaseSpawner.SPAWN_DATA_TAG;
-    builder
-        .getComponentForDisplay(DataComponents.BLOCK_ENTITY_DATA)
-        .ifPresent(
-            blockEntityData -> {
-              Component text = Spawner.getSpawnEntityDisplayName(blockEntityData, spawnDataKey);
-              if (text != null) {
-                builder.append(text);
-              }
-            });
+    TypedEntityData<BlockEntityType<?>> blockEntityData =
+        builder.getComponentForDisplay(DataComponents.BLOCK_ENTITY_DATA);
+
+    if (blockEntityData != null) {
+      Component text = Spawner.getSpawnEntityDisplayName(blockEntityData, spawnDataKey);
+      if (text != null) {
+        builder.append(text);
+      }
+    }
   }
 }

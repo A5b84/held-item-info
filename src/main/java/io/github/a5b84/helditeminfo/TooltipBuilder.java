@@ -2,7 +2,6 @@ package io.github.a5b84.helditeminfo;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -18,6 +17,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.component.TooltipProvider;
 import net.minecraft.world.item.component.TypedEntityData;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import org.jspecify.annotations.Nullable;
 
 public class TooltipBuilder {
 
@@ -64,18 +65,19 @@ public class TooltipBuilder {
   /**
    * @return the requested component if it is present on the stack and should be displayed.
    */
-  public <T> Optional<T> getComponentForDisplay(DataComponentType<T> componentType) {
+  public <T> @Nullable T getComponentForDisplay(DataComponentType<T> componentType) {
     T component = getStack().get(componentType);
     if (component != null && displayComponent.shows(componentType)) {
-      return Optional.of(component);
+      return component;
     } else {
-      return Optional.empty();
+      return null;
     }
   }
 
-  public Optional<CompoundTag> getBlockEntityData() {
-    return getComponentForDisplay(DataComponents.BLOCK_ENTITY_DATA)
-        .map(TypedEntityData::copyTagWithoutId);
+  public @Nullable CompoundTag getBlockEntityData() {
+    TypedEntityData<BlockEntityType<?>> data =
+        getComponentForDisplay(DataComponents.BLOCK_ENTITY_DATA);
+    return data != null ? data.copyTagWithoutId() : null;
   }
 
   public <T extends TooltipProvider> void appendComponent(DataComponentType<T> componentType) {
@@ -93,14 +95,12 @@ public class TooltipBuilder {
 
   public <T extends TooltipProvider> void appendComponent(
       DataComponentType<T> componentType, Consumer<Component> textConsumer) {
-    getComponentForDisplay(componentType)
-        .ifPresent(
-            component ->
-                component.addToTooltip(
-                    getTooltipContext(),
-                    textConsumer,
-                    TooltipFlag.NORMAL,
-                    getStack().getComponents()));
+    T component = getComponentForDisplay(componentType);
+
+    if (component != null) {
+      component.addToTooltip(
+          getTooltipContext(), textConsumer, TooltipFlag.NORMAL, getStack().getComponents());
+    }
   }
 
   /**

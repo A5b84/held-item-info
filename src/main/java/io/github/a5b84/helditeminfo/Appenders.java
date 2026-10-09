@@ -24,6 +24,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.JukeboxPlayable;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.entity.SignText;
@@ -59,15 +60,15 @@ public final class Appenders {
    * @see JukeboxPlayable#addToTooltip
    */
   public static void appendMusicDiscDescription(TooltipBuilder builder) {
-    builder
-        .getComponentForDisplay(DataComponents.JUKEBOX_PLAYABLE)
-        .ifPresent(
-            songComponent ->
-                builder.append(
-                    () ->
-                        ComponentUtils.mergeStyles(
-                            songComponent.song().value().description(),
-                            Style.EMPTY.withColor(TooltipBuilder.DEFAULT_COLOR))));
+    JukeboxPlayable songComponent = builder.getComponentForDisplay(DataComponents.JUKEBOX_PLAYABLE);
+
+    if (songComponent != null) {
+      builder.append(
+          () ->
+              ComponentUtils.mergeStyles(
+                  songComponent.song().value().description(),
+                  Style.EMPTY.withColor(TooltipBuilder.DEFAULT_COLOR)));
+    }
   }
 
   public static void appendEnchantments(TooltipBuilder builder) {
@@ -81,34 +82,33 @@ public final class Appenders {
    */
   private static void appendEnchantments(
       TooltipBuilder builder, DataComponentType<ItemEnchantments> componentType) {
-    builder
-        .getComponentForDisplay(componentType)
-        .ifPresent(
-            enchantments -> {
-              HolderSet<Enchantment> tooltipOrder =
-                  ItemEnchantmentsAccessor.callGetTagOrEmpty(
-                      builder.getTooltipContext().registries(),
-                      Registries.ENCHANTMENT,
-                      EnchantmentTags.TOOLTIP_ORDER);
+    ItemEnchantments enchantments = builder.getComponentForDisplay(componentType);
 
-              for (Holder<Enchantment> enchantment : tooltipOrder) {
-                int level = enchantments.getLevel(enchantment);
-                if (level > 0 && shouldShowEnchantment(enchantment)) {
-                  builder.append(() -> Enchantment.getFullname(enchantment, level));
-                }
-              }
+    if (enchantments != null) {
+      HolderSet<Enchantment> tooltipOrder =
+          ItemEnchantmentsAccessor.callGetTagOrEmpty(
+              builder.getTooltipContext().registries(),
+              Registries.ENCHANTMENT,
+              EnchantmentTags.TOOLTIP_ORDER);
 
-              for (var mapEntry : enchantments.entrySet()) {
-                Holder<Enchantment> enchantment = mapEntry.getKey();
-                if (!tooltipOrder.contains(enchantment) && shouldShowEnchantment(enchantment)) {
-                  builder.append(
-                      () -> {
-                        int level = mapEntry.getIntValue();
-                        return Enchantment.getFullname(enchantment, level);
-                      });
-                }
-              }
-            });
+      for (Holder<Enchantment> enchantment : tooltipOrder) {
+        int level = enchantments.getLevel(enchantment);
+        if (level > 0 && shouldShowEnchantment(enchantment)) {
+          builder.append(() -> Enchantment.getFullname(enchantment, level));
+        }
+      }
+
+      for (var mapEntry : enchantments.entrySet()) {
+        Holder<Enchantment> enchantment = mapEntry.getKey();
+        if (!tooltipOrder.contains(enchantment) && shouldShowEnchantment(enchantment)) {
+          builder.append(
+              () -> {
+                int level = mapEntry.getIntValue();
+                return Enchantment.getFullname(enchantment, level);
+              });
+        }
+      }
+    }
   }
 
   private static boolean shouldShowEnchantment(Holder<Enchantment> entry) {
@@ -132,29 +132,28 @@ public final class Appenders {
   }
 
   public static void appendLore(TooltipBuilder builder) {
-    builder
-        .getComponentForDisplay(DataComponents.LORE)
-        .ifPresent(
-            loreComponent -> {
-              HeldItemInfoConfig config = HeldItemInfo.getConfig();
-              int maxRemainingLoreLines = config.maxLoreLines();
+    ItemLore loreComponent = builder.getComponentForDisplay(DataComponents.LORE);
 
-              for (Component line : loreComponent.lines()) {
-                int maxLines = Math.min(maxRemainingLoreLines, builder.getRemainingLines());
-                List<MutableComponent> wrappedLine = Util.wrapLines(line, maxLines);
-                maxRemainingLoreLines -= wrappedLine.size();
+    if (loreComponent != null) {
+      HeldItemInfoConfig config = HeldItemInfo.getConfig();
+      int maxRemainingLoreLines = config.maxLoreLines();
 
-                for (MutableComponent linePart : wrappedLine) {
-                  builder.append(() -> ComponentUtils.mergeStyles(linePart, LORE_STYLE));
-                }
-              }
-            });
+      for (Component line : loreComponent.lines()) {
+        int maxLines = Math.min(maxRemainingLoreLines, builder.getRemainingLines());
+        List<MutableComponent> wrappedLine = Util.wrapLines(line, maxLines);
+        maxRemainingLoreLines -= wrappedLine.size();
+
+        for (MutableComponent linePart : wrappedLine) {
+          builder.append(() -> ComponentUtils.mergeStyles(linePart, LORE_STYLE));
+        }
+      }
+    }
   }
 
   public static void appendUnbreakable(TooltipBuilder builder) {
-    builder
-        .getComponentForDisplay(DataComponents.UNBREAKABLE)
-        .ifPresent(_ -> builder.append(UNBREAKABLE_TEXT));
+    if (builder.getComponentForDisplay(DataComponents.UNBREAKABLE) != null) {
+      builder.append(UNBREAKABLE_TEXT);
+    }
   }
 
   public static void appendSignText(TooltipBuilder builder) {
@@ -176,23 +175,23 @@ public final class Appenders {
 
   private static List<MutableComponent> getSignSideText(
       TooltipBuilder builder, DataComponentType<SignText> componentType) {
-    return builder
-        .getComponentForDisplay(componentType)
-        .map(
-            signText -> {
-              List<Component> messages =
-                  signText.getMessages(Minecraft.getInstance().isTextFilteringEnabled());
-              List<MutableComponent> lines = new ArrayList<>(messages.size());
+    SignText signText = builder.getComponentForDisplay(componentType);
 
-              for (Component message : messages) {
-                String messageStr = message.getString();
-                if (!messageStr.isBlank()) {
-                  lines.add(Component.literal(messageStr).withStyle(TooltipBuilder.DEFAULT_COLOR));
-                }
-              }
+    if (signText != null) {
+      List<Component> messages =
+          signText.getMessages(Minecraft.getInstance().isTextFilteringEnabled());
+      List<MutableComponent> lines = new ArrayList<>(messages.size());
 
-              return lines;
-            })
-        .orElseGet(List::of);
+      for (Component message : messages) {
+        String messageStr = message.getString();
+        if (!messageStr.isBlank()) {
+          lines.add(Component.literal(messageStr).withStyle(TooltipBuilder.DEFAULT_COLOR));
+        }
+      }
+
+      return lines;
+    } else {
+      return List.of();
+    }
   }
 }

@@ -24,10 +24,11 @@ public abstract class BrushableBlockMixin implements TooltipAppender {
 
   @Override
   public void heldItemInfo_appendTooltip(TooltipBuilder builder) {
-    builder
-        .getBlockEntityData()
-        .flatMap(blockEntityData -> readStack(builder, blockEntityData))
-        .ifPresent(stack -> Appenders.appendStack(builder, stack));
+    CompoundTag blockEntityData = builder.getBlockEntityData();
+
+    if (blockEntityData != null) {
+      readStack(builder, blockEntityData).ifPresent(stack -> Appenders.appendStack(builder, stack));
+    }
   }
 
   @Unique

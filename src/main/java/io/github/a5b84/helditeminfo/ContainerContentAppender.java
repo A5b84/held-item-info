@@ -4,7 +4,6 @@ import com.google.common.collect.Iterables;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponents;
@@ -39,16 +38,15 @@ public final class ContainerContentAppender {
   private static Iterable<? extends ContainerEntry> getContainerEntries(TooltipBuilder builder) {
     Iterable<ItemStackTemplate> stackTemplates = Collections.emptyList();
 
-    Optional<ItemContainerContents> containerComponent =
+    ItemContainerContents containerComponent =
         builder.getComponentForDisplay(DataComponents.CONTAINER);
-    if (containerComponent.isPresent()) {
-      stackTemplates = containerComponent.get().nonEmptyItems();
+    if (containerComponent != null) {
+      stackTemplates = containerComponent.nonEmptyItems();
     }
 
-    Optional<BundleContents> bundleContents =
-        builder.getComponentForDisplay(DataComponents.BUNDLE_CONTENTS);
-    if (bundleContents.isPresent()) {
-      stackTemplates = Iterables.concat(stackTemplates, bundleContents.get().items());
+    BundleContents bundleContents = builder.getComponentForDisplay(DataComponents.BUNDLE_CONTENTS);
+    if (bundleContents != null) {
+      stackTemplates = Iterables.concat(stackTemplates, bundleContents.items());
     }
 
     if (HeldItemInfo.getConfig().mergeSimilarContainerItems()) {
