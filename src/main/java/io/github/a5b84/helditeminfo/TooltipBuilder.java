@@ -104,7 +104,7 @@ public class TooltipBuilder {
   }
 
   /**
-   * @return {@code true} iff at least one more line can be added.
+   * @return {@code true} if at least one more line can be added.
    */
   public boolean canAdd() {
     return lines.size() < maxSize;
@@ -131,10 +131,11 @@ public class TooltipBuilder {
   public void appendAll(List<? extends Component> newLines) {
     realSize += newLines.size();
 
-    if (canAdd()) {
-      for (Component line : newLines) {
+    for (Component line : newLines) {
+      if (canAdd()) {
         lines.add(line);
-        if (!canAdd()) break;
+      } else {
+        break;
       }
     }
   }

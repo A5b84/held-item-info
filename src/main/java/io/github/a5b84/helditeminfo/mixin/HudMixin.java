@@ -330,6 +330,10 @@ public abstract class HudMixin {
           Appenders.appendUnbreakable(builder);
         }
 
+        if (config.showSignText()) {
+          Appenders.appendSignText(builder);
+        }
+
         if (config.showPotionEffects()) {
           builder.appendComponent(DataComponents.OMINOUS_BOTTLE_AMPLIFIER);
         }

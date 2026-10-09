@@ -65,7 +65,7 @@ public class HeldItemInfoDebugCommand {
       "minecraft:bee_nest[minecraft:bees=[{ticks_in_hive: 0, entity_data: {id: \"minecraft:bee\"}, min_ticks_in_hive: 200}],minecraft:block_state={honey_level: \"3\"}]",
       "minecraft:crossbow[minecraft:charged_projectiles=[{count: 1, components: {\"minecraft:intangible_projectile\": {}}, id: \"minecraft:spectral_arrow\"}]]",
       "minecraft:book[minecraft:lore=[{color: \"blue\", extra: [\"consectetur adipiscing elit.\"], text: \"Lorem ipsum dolor sit amet, \"}, {text: \"Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\", italic: 1b}],minecraft:unbreakable={}]",
-      "minecraft:acacia_sign[minecraft:block_entity_data={back_text: {has_glowing_text: 1b, color: \"yellow\", messages: [\"\", \"back line 2\", \"\", {color: \"gold\", text: \"back line 4\"}]}, is_waxed: 0b, id: \"minecraft:sign\", front_text: {has_glowing_text: 0b, color: \"black\", messages: [\"front line 1\", \"\", {extra: [{color: \"light_purple\", bold: 1b, text: \"3\"}], text: \"front line \"}, \"\"]}}]",
+      "minecraft:acacia_sign[minecraft:sign_text_front={has_glowing_text: 0b, color: \"black\", messages: [\"front line 1\", \"\", {extra: [{color: \"light_purple\", text: \"3\", bold: 1b}], text: \"front line \"}, \"\"]},minecraft:sign_text_back={has_glowing_text: 1b, color: \"yellow\", messages: [\"\", \"back line 2\", \"\", {color: \"gold\", text: \"back line 4\"}]},minecraft:block_entity_data={allow_op_features: 1b, id: \"minecraft:sign\"}]",
       "minecraft:music_disc_13",
       "minecraft:disc_fragment_5",
       "minecraft:painting[minecraft:painting/variant=\"minecraft:kebab\"]",

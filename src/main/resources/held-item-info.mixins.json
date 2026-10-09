@@ -13,8 +13,7 @@
 		"block.CommandBlockMixin",
 		"block.SpawnerBlocksMixin",
 		"item.DiscFragmentItemMixin",
-		"item.HangingEntityItemMixin",
-		"item.SignItemMixin"
+		"item.HangingEntityItemMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

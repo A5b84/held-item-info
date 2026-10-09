@@ -2,9 +2,11 @@ package io.github.a5b84.helditeminfo;
 
 import io.github.a5b84.helditeminfo.config.HeldItemInfoConfig;
 import io.github.a5b84.helditeminfo.mixin.ItemEnchantmentsAccessor;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentGetter;
@@ -24,6 +26,7 @@ import net.minecraft.world.item.JukeboxPlayable;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.level.block.entity.SignText;
 
 public final class Appenders {
 
@@ -31,6 +34,9 @@ public final class Appenders {
       Style.EMPTY.withColor(TooltipBuilder.DEFAULT_COLOR).withItalic(true);
   private static final Component UNBREAKABLE_TEXT =
       Component.translatable("item.unbreakable").withStyle(TooltipBuilder.DEFAULT_COLOR);
+  private static final MutableComponent SIGN_SIDE_SEPARATOR =
+      Component.translatable("held_item_info.tooltip.sign_side_separator")
+          .withStyle(TooltipBuilder.DEFAULT_COLOR);
 
   private Appenders() {}
 
@@ -149,5 +155,44 @@ public final class Appenders {
     builder
         .getComponentForDisplay(DataComponents.UNBREAKABLE)
         .ifPresent(_ -> builder.append(UNBREAKABLE_TEXT));
+  }
+
+  public static void appendSignText(TooltipBuilder builder) {
+    List<MutableComponent> frontLines = getSignSideText(builder, DataComponents.SIGN_TEXT_FRONT);
+    List<MutableComponent> backLines = getSignSideText(builder, DataComponents.SIGN_TEXT_BACK);
+
+    if (!frontLines.isEmpty()) {
+      builder.appendAll(frontLines);
+    }
+
+    if (!backLines.isEmpty()) {
+      if (!frontLines.isEmpty()) {
+        builder.append(SIGN_SIDE_SEPARATOR);
+      }
+
+      builder.appendAll(backLines);
+    }
+  }
+
+  private static List<MutableComponent> getSignSideText(
+      TooltipBuilder builder, DataComponentType<SignText> componentType) {
+    return builder
+        .getComponentForDisplay(componentType)
+        .map(
+            signText -> {
+              List<Component> messages =
+                  signText.getMessages(Minecraft.getInstance().isTextFilteringEnabled());
+              List<MutableComponent> lines = new ArrayList<>(messages.size());
+
+              for (Component message : messages) {
+                String messageStr = message.getString();
+                if (!messageStr.isBlank()) {
+                  lines.add(Component.literal(messageStr).withStyle(TooltipBuilder.DEFAULT_COLOR));
+                }
+              }
+
+              return lines;
+            })
+        .orElseGet(List::of);
   }
 }
