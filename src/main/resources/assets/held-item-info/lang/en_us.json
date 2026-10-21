@@ -1,4 +1,5 @@
 {
+	"modmenu.descriptionTranslation.held-item-info": "A client-side Fabric/Quilt mod that shows information (like enchantments) about the held item under its name."
 	"held_item_info.tooltip.sign_side_separator": "-------",
 	"text.autoconfig.held-item-info.title": "Held Item Info Config",
 	"text.autoconfig.held-item-info.category.default": "General Settings",
