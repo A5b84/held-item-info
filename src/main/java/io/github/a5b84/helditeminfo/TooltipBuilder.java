@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.StringSplitter;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -25,10 +25,11 @@ public class TooltipBuilder {
 
   public static final ChatFormatting DEFAULT_COLOR = ChatFormatting.GRAY;
 
-  private final Item.TooltipContext tooltipContext =
-      Item.TooltipContext.of(Minecraft.getInstance().level);
   private final ItemStack stack;
   private final HeldItemInfoConfig config;
+  private final Item.TooltipContext tooltipContext;
+  private final StringSplitter stringSplitter;
+  private final boolean textFilteringEnabled;
   private final TooltipDisplay displayComponent;
   private final List<Component> lines;
 
@@ -38,18 +39,22 @@ public class TooltipBuilder {
    */
   private int realSize = 0;
 
-  public TooltipBuilder(ItemStack stack, HeldItemInfoConfig config) {
+  public TooltipBuilder(
+      ItemStack stack,
+      HeldItemInfoConfig config,
+      Item.TooltipContext tooltipContext,
+      StringSplitter stringSplitter,
+      boolean textFilteringEnabled) {
     this.stack = stack;
     this.config = config;
+    this.tooltipContext = tooltipContext;
+    this.stringSplitter = stringSplitter;
+    this.textFilteringEnabled = textFilteringEnabled;
     this.displayComponent =
         config.respectHideFlags()
             ? stack.getOrDefault(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT)
             : TooltipDisplay.DEFAULT;
     lines = new ArrayList<>(config.maxLines());
-  }
-
-  public Item.TooltipContext getTooltipContext() {
-    return tooltipContext;
   }
 
   public ItemStack getStack() {
@@ -58,6 +63,18 @@ public class TooltipBuilder {
 
   public HeldItemInfoConfig getConfig() {
     return config;
+  }
+
+  public Item.TooltipContext getTooltipContext() {
+    return tooltipContext;
+  }
+
+  public StringSplitter getStringSplitter() {
+    return stringSplitter;
+  }
+
+  public boolean isTextFilteringEnabled() {
+    return textFilteringEnabled;
   }
 
   public TooltipDisplay getDisplayComponent() {

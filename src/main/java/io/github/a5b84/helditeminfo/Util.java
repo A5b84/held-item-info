@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.ComponentRenderUtils;
@@ -13,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.util.Unit;
 
 public final class Util {
 
@@ -47,7 +47,7 @@ public final class Util {
           if (asString.isBlank()) {
             return Optional.empty();
           } else {
-            return Optional.of(0);
+            return Optional.of(Unit.INSTANCE);
           }
         })
         .isEmpty();
@@ -60,7 +60,7 @@ public final class Util {
    * @see StringSplitter#splitLines(String, int, Style)
    */
   public static List<MutableComponent> wrapLines(
-      String s, int maxLines, HeldItemInfoConfig config) {
+      String s, StringSplitter stringSplitter, int maxLines, HeldItemInfoConfig config) {
     // Shortening
     if (maxLines <= 0) {
       return Collections.emptyList();
@@ -84,15 +84,12 @@ public final class Util {
     final List<MutableComponent> lines = new ArrayList<>(maxLines);
     final String finalString = s; // final copy to refer to it in the lambda
     int maxWidth = getMaxWidth(config);
-    Font textRenderer = Minecraft.getInstance().font;
-    textRenderer
-        .getSplitter()
-        .splitLines(
-            s,
-            maxWidth,
-            Style.EMPTY,
-            false,
-            (_, start, end) -> lines.add(Component.literal(finalString.substring(start, end))));
+    stringSplitter.splitLines(
+        s,
+        maxWidth,
+        Style.EMPTY,
+        false,
+        (_, start, end) -> lines.add(Component.literal(finalString.substring(start, end))));
 
     // Truncating
     if (lines.size() > maxLines) {
@@ -112,15 +109,14 @@ public final class Util {
    * @see StringSplitter#splitLines(String, int, Style)
    */
   public static List<MutableComponent> wrapLines(
-      FormattedText s, int maxLines, HeldItemInfoConfig config) {
+      FormattedText s, StringSplitter stringSplitter, int maxLines, HeldItemInfoConfig config) {
     // TODO: somehow make this preserve styles
     if (maxLines <= 0) {
       return Collections.emptyList();
     }
 
     int maxWidth = getMaxWidth(config);
-    Font textRenderer = Minecraft.getInstance().font;
-    List<FormattedText> strings = textRenderer.getSplitter().splitLines(s, maxWidth, Style.EMPTY);
+    List<FormattedText> strings = stringSplitter.splitLines(s, maxWidth, Style.EMPTY);
 
     // Convert and truncate
     List<MutableComponent> lines = new ArrayList<>(maxLines);

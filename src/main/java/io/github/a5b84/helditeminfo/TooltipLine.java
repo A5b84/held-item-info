@@ -3,7 +3,6 @@ package io.github.a5b84.helditeminfo;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 
@@ -18,11 +17,11 @@ public class TooltipLine {
     width = textRenderer.width(text);
   }
 
-  public static List<TooltipLine> from(List<Component> texts) {
+  public static List<TooltipLine> from(List<Component> texts, Font font) {
     List<TooltipLine> result = new ArrayList<>(texts.size());
-    Font textRenderer = Minecraft.getInstance().font;
+
     for (Component text : texts) {
-      result.add(new TooltipLine(textRenderer, text));
+      result.add(new TooltipLine(font, text));
     }
 
     return result;

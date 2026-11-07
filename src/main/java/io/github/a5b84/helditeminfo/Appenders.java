@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentGetter;
@@ -45,101 +44,96 @@ public final class Appenders {
 
   private Appenders() {}
 
-  public static List<Component> buildTooltip(ItemStack stack, HeldItemInfoConfig config) {
-    if (stack.isEmpty()) {
-      return Collections.emptyList();
-    } else {
-      TooltipBuilder builder = new TooltipBuilder(stack, config);
+  public static void appendAll(TooltipBuilder builder) {
+    ItemStack stack = builder.getStack();
+    HeldItemInfoConfig config = builder.getConfig();
 
-      if (config.showName()) {
-        appendStackName(stack, builder);
+    if (config.showName()) {
+      appendStackName(stack, builder);
+    }
+
+    if (builder.shouldDisplayComponents()) {
+      Item item = stack.getItem();
+      if (item instanceof TooltipAppender appender
+          && appender.heldItemInfo_shouldAppendTooltip(config)) {
+        appender.heldItemInfo_appendTooltip(builder);
       }
 
-      if (builder.shouldDisplayComponents()) {
-        Item item = stack.getItem();
-        if (item instanceof TooltipAppender appender
-            && appender.heldItemInfo_shouldAppendTooltip(config)) {
-          appender.heldItemInfo_appendTooltip(builder);
-        }
-
-        if (item instanceof BlockItem blockItem
-            && blockItem.getBlock() instanceof TooltipAppender appender
-            && appender.heldItemInfo_shouldAppendTooltip(config)) {
-          appender.heldItemInfo_appendTooltip(builder);
-        }
-
-        if (config.showEntityBucketContent()) {
-          builder.appendComponent(DataComponents.TROPICAL_FISH_PATTERN);
-        }
-
-        if (config.showGoatHornInstrument()) {
-          builder.appendComponent(DataComponents.INSTRUMENT);
-        }
-
-        if (config.showFilledMapId()) {
-          builder.appendComponent(DataComponents.MAP_ID);
-        }
-
-        if (config.showBeehiveContent()) {
-          builder.appendComponent(DataComponents.BEES);
-        }
-
-        if (config.showContainerContent()) {
-          ContainerContentAppender.appendContainerContent(builder);
-        }
-
-        if (config.showBookMeta()) {
-          builder.appendComponent(DataComponents.WRITTEN_BOOK_CONTENT);
-        }
-
-        if (config.showCrossbowProjectiles()) {
-          HeldItemInfo.getIntangibleProjectileVisibility().pushHidden();
-          builder.appendComponent(DataComponents.CHARGED_PROJECTILES, Util::withDefaultColor);
-          HeldItemInfo.getIntangibleProjectileVisibility().popHidden();
-        }
-
-        if (config.showFireworkAttributes()) {
-          builder.appendComponent(DataComponents.FIREWORKS);
-        }
-
-        if (config.showFireworkAttributes()) {
-          builder.appendComponent(DataComponents.FIREWORK_EXPLOSION);
-        }
-
-        if (config.showPotionEffects()) {
-          appendPotionEffects(builder);
-        }
-
-        if (config.showMusicDiscDescription()) {
-          appendMusicDiscDescription(builder);
-        }
-
-        if (config.showEnchantments()) {
-          appendEnchantments(builder);
-        }
-
-        if (config.showLore()) {
-          appendLore(builder);
-        }
-
-        if (config.showUnbreakable()) {
-          appendUnbreakable(builder);
-        }
-
-        if (config.showSignText()) {
-          appendSignText(builder);
-        }
-
-        if (config.showPotionEffects()) {
-          builder.appendComponent(DataComponents.OMINOUS_BOTTLE_AMPLIFIER);
-        }
-
-        if (config.showBlockState()) {
-          builder.appendComponent(DataComponents.BLOCK_STATE);
-        }
+      if (item instanceof BlockItem blockItem
+          && blockItem.getBlock() instanceof TooltipAppender appender
+          && appender.heldItemInfo_shouldAppendTooltip(config)) {
+        appender.heldItemInfo_appendTooltip(builder);
       }
 
-      return builder.build();
+      if (config.showEntityBucketContent()) {
+        builder.appendComponent(DataComponents.TROPICAL_FISH_PATTERN);
+      }
+
+      if (config.showGoatHornInstrument()) {
+        builder.appendComponent(DataComponents.INSTRUMENT);
+      }
+
+      if (config.showFilledMapId()) {
+        builder.appendComponent(DataComponents.MAP_ID);
+      }
+
+      if (config.showBeehiveContent()) {
+        builder.appendComponent(DataComponents.BEES);
+      }
+
+      if (config.showContainerContent()) {
+        ContainerContentAppender.appendContainerContent(builder);
+      }
+
+      if (config.showBookMeta()) {
+        builder.appendComponent(DataComponents.WRITTEN_BOOK_CONTENT);
+      }
+
+      if (config.showCrossbowProjectiles()) {
+        HeldItemInfo.getIntangibleProjectileVisibility().pushHidden();
+        builder.appendComponent(DataComponents.CHARGED_PROJECTILES, Util::withDefaultColor);
+        HeldItemInfo.getIntangibleProjectileVisibility().popHidden();
+      }
+
+      if (config.showFireworkAttributes()) {
+        builder.appendComponent(DataComponents.FIREWORKS);
+      }
+
+      if (config.showFireworkAttributes()) {
+        builder.appendComponent(DataComponents.FIREWORK_EXPLOSION);
+      }
+
+      if (config.showPotionEffects()) {
+        appendPotionEffects(builder);
+      }
+
+      if (config.showMusicDiscDescription()) {
+        appendMusicDiscDescription(builder);
+      }
+
+      if (config.showEnchantments()) {
+        appendEnchantments(builder);
+      }
+
+      if (config.showLore()) {
+        appendLore(builder);
+      }
+
+      if (config.showUnbreakable()) {
+        appendUnbreakable(builder);
+      }
+
+      if (config.showSignText()) {
+        appendSignText(builder);
+      }
+
+      if (config.showPotionEffects()) {
+        builder.appendComponent(DataComponents.OMINOUS_BOTTLE_AMPLIFIER);
+      }
+
+      if (config.showBlockState()) {
+        builder.appendComponent(DataComponents.BLOCK_STATE);
+      }
     }
   }
 
@@ -254,7 +248,8 @@ public final class Appenders {
 
       for (Component line : loreComponent.lines()) {
         int maxLines = Math.min(maxRemainingLoreLines, builder.getRemainingLines());
-        List<MutableComponent> wrappedLine = Util.wrapLines(line, maxLines, config);
+        List<MutableComponent> wrappedLine =
+            Util.wrapLines(line, builder.getStringSplitter(), maxLines, config);
         maxRemainingLoreLines -= wrappedLine.size();
 
         for (MutableComponent linePart : wrappedLine) {
@@ -292,8 +287,7 @@ public final class Appenders {
     SignText signText = builder.getComponentForDisplay(componentType);
 
     if (signText != null) {
-      List<Component> messages =
-          signText.getMessages(Minecraft.getInstance().isTextFilteringEnabled());
+      List<Component> messages = signText.getMessages(builder.isTextFilteringEnabled());
       List<MutableComponent> lines = new ArrayList<>(messages.size());
 
       for (Component message : messages) {

@@ -30,7 +30,8 @@ public abstract class CommandBlockMixin implements TooltipAppender {
             if (!command.isEmpty()) {
               HeldItemInfoConfig config = builder.getConfig();
               int maxLines = Math.min(config.maxCommandLines(), builder.getRemainingLines());
-              List<MutableComponent> lines = Util.wrapLines(command, maxLines, config);
+              List<MutableComponent> lines =
+                  Util.wrapLines(command, builder.getStringSplitter(), maxLines, config);
 
               for (MutableComponent text : lines) {
                 builder.append(() -> text.withStyle(TooltipBuilder.DEFAULT_COLOR));

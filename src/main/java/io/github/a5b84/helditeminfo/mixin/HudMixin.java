@@ -2,6 +2,7 @@ package io.github.a5b84.helditeminfo.mixin;
 
 import io.github.a5b84.helditeminfo.Appenders;
 import io.github.a5b84.helditeminfo.HeldItemInfo;
+import io.github.a5b84.helditeminfo.TooltipBuilder;
 import io.github.a5b84.helditeminfo.TooltipLine;
 import io.github.a5b84.helditeminfo.Util;
 import io.github.a5b84.helditeminfo.config.HeldItemInfoConfig;
@@ -19,6 +20,7 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -222,10 +224,18 @@ public abstract class HudMixin {
     if (lastToolHighlight.isEmpty()) {
       tooltip = Collections.emptyList();
     } else {
-      List<Component> newInfo = Appenders.buildTooltip(lastToolHighlight, config);
+      TooltipBuilder builder =
+          new TooltipBuilder(
+              lastToolHighlight,
+              config,
+              Item.TooltipContext.of(minecraft.level),
+              minecraft.font.getSplitter(),
+              minecraft.isTextFilteringEnabled());
+      Appenders.appendAll(builder);
+      List<Component> newInfo = builder.build();
 
       if (!TooltipLine.areEquivalent(tooltip, newInfo)) {
-        tooltip = TooltipLine.from(newInfo);
+        tooltip = TooltipLine.from(newInfo, minecraft.font);
         maxWidth = -1;
         toolHighlightTimer =
             (int)
