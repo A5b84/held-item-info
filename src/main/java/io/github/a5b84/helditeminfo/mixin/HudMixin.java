@@ -1,16 +1,12 @@
 package io.github.a5b84.helditeminfo.mixin;
 
 import io.github.a5b84.helditeminfo.Appenders;
-import io.github.a5b84.helditeminfo.ContainerContentAppender;
 import io.github.a5b84.helditeminfo.HeldItemInfo;
-import io.github.a5b84.helditeminfo.TooltipAppender;
-import io.github.a5b84.helditeminfo.TooltipBuilder;
 import io.github.a5b84.helditeminfo.TooltipLine;
 import io.github.a5b84.helditeminfo.Util;
 import io.github.a5b84.helditeminfo.config.HeldItemInfoConfig;
 import java.util.Collections;
 import java.util.List;
-import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -18,15 +14,11 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.contextualbar.ContextualBar;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -230,7 +222,7 @@ public abstract class HudMixin {
     if (lastToolHighlight.isEmpty()) {
       tooltip = Collections.emptyList();
     } else {
-      List<Component> newInfo = buildTooltip(lastToolHighlight);
+      List<Component> newInfo = Appenders.buildTooltip(lastToolHighlight, config);
 
       if (!TooltipLine.areEquivalent(tooltip, newInfo)) {
         tooltip = TooltipLine.from(newInfo);
@@ -242,119 +234,5 @@ public abstract class HudMixin {
                         + config.fadeDurationPerExtraLine() * (tooltip.size() - 1)));
       }
     }
-  }
-
-  @Unique
-  private List<Component> buildTooltip(ItemStack stack) {
-    if (stack.isEmpty()) {
-      return Collections.emptyList();
-    } else {
-      TooltipBuilder builder = new TooltipBuilder(stack, config);
-
-      if (config.showName()) {
-        appendStackName(stack, builder);
-      }
-
-      if (builder.shouldDisplayComponents()) {
-        // Item-specific tooltip
-        Item item = stack.getItem();
-        if (item instanceof TooltipAppender appender
-            && appender.heldItemInfo_shouldAppendTooltip(config)) {
-          appender.heldItemInfo_appendTooltip(builder);
-        }
-
-        if (item instanceof BlockItem blockItem
-            && blockItem.getBlock() instanceof TooltipAppender appender
-            && appender.heldItemInfo_shouldAppendTooltip(config)) {
-          appender.heldItemInfo_appendTooltip(builder);
-        }
-
-        // Component-related lines
-        if (config.showEntityBucketContent()) {
-          builder.appendComponent(DataComponents.TROPICAL_FISH_PATTERN);
-        }
-
-        if (config.showGoatHornInstrument()) {
-          builder.appendComponent(DataComponents.INSTRUMENT);
-        }
-
-        if (config.showFilledMapId()) {
-          builder.appendComponent(DataComponents.MAP_ID);
-        }
-
-        if (config.showBeehiveContent()) {
-          builder.appendComponent(DataComponents.BEES);
-        }
-
-        if (config.showContainerContent()) {
-          ContainerContentAppender.appendContainerContent(builder);
-        }
-
-        if (config.showBookMeta()) {
-          builder.appendComponent(DataComponents.WRITTEN_BOOK_CONTENT);
-        }
-
-        if (config.showCrossbowProjectiles()) {
-          HeldItemInfo.getIntangibleProjectileVisibility().pushHidden();
-          builder.appendComponent(DataComponents.CHARGED_PROJECTILES, Util::withDefaultColor);
-          HeldItemInfo.getIntangibleProjectileVisibility().popHidden();
-        }
-
-        if (config.showFireworkAttributes()) {
-          builder.appendComponent(DataComponents.FIREWORKS);
-        }
-
-        if (config.showFireworkAttributes()) {
-          builder.appendComponent(DataComponents.FIREWORK_EXPLOSION);
-        }
-
-        if (config.showPotionEffects()) {
-          Appenders.appendPotionEffects(builder);
-        }
-
-        if (config.showMusicDiscDescription()) {
-          Appenders.appendMusicDiscDescription(builder);
-        }
-
-        if (config.showEnchantments()) {
-          Appenders.appendEnchantments(builder);
-        }
-
-        if (config.showLore()) {
-          Appenders.appendLore(builder);
-        }
-
-        if (config.showUnbreakable()) {
-          Appenders.appendUnbreakable(builder);
-        }
-
-        if (config.showSignText()) {
-          Appenders.appendSignText(builder);
-        }
-
-        if (config.showPotionEffects()) {
-          builder.appendComponent(DataComponents.OMINOUS_BOTTLE_AMPLIFIER);
-        }
-
-        if (config.showBlockState()) {
-          builder.appendComponent(DataComponents.BLOCK_STATE);
-        }
-      }
-
-      return builder.build();
-    }
-  }
-
-  @Unique
-  private void appendStackName(ItemStack stack, TooltipBuilder builder) {
-    // Using Component.empty().append(...).withStyle(...) because withStyle(...) mutates the object
-    // (see ItemStack.getStyledHoverName)
-    MutableComponent stackName =
-        Component.empty().append(stack.getHoverName()).withStyle(stack.getRarity().color());
-    if (stack.has(DataComponents.CUSTOM_NAME)) {
-      stackName.withStyle(ChatFormatting.ITALIC);
-    }
-
-    builder.append(stackName);
   }
 }

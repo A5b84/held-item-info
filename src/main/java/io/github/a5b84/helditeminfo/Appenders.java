@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -22,6 +23,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.EnchantmentTags;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.JukeboxPlayable;
@@ -43,7 +45,117 @@ public final class Appenders {
 
   private Appenders() {}
 
-  public static void appendPotionEffects(TooltipBuilder builder) {
+  public static List<Component> buildTooltip(ItemStack stack, HeldItemInfoConfig config) {
+    if (stack.isEmpty()) {
+      return Collections.emptyList();
+    } else {
+      TooltipBuilder builder = new TooltipBuilder(stack, config);
+
+      if (config.showName()) {
+        appendStackName(stack, builder);
+      }
+
+      if (builder.shouldDisplayComponents()) {
+        Item item = stack.getItem();
+        if (item instanceof TooltipAppender appender
+            && appender.heldItemInfo_shouldAppendTooltip(config)) {
+          appender.heldItemInfo_appendTooltip(builder);
+        }
+
+        if (item instanceof BlockItem blockItem
+            && blockItem.getBlock() instanceof TooltipAppender appender
+            && appender.heldItemInfo_shouldAppendTooltip(config)) {
+          appender.heldItemInfo_appendTooltip(builder);
+        }
+
+        if (config.showEntityBucketContent()) {
+          builder.appendComponent(DataComponents.TROPICAL_FISH_PATTERN);
+        }
+
+        if (config.showGoatHornInstrument()) {
+          builder.appendComponent(DataComponents.INSTRUMENT);
+        }
+
+        if (config.showFilledMapId()) {
+          builder.appendComponent(DataComponents.MAP_ID);
+        }
+
+        if (config.showBeehiveContent()) {
+          builder.appendComponent(DataComponents.BEES);
+        }
+
+        if (config.showContainerContent()) {
+          ContainerContentAppender.appendContainerContent(builder);
+        }
+
+        if (config.showBookMeta()) {
+          builder.appendComponent(DataComponents.WRITTEN_BOOK_CONTENT);
+        }
+
+        if (config.showCrossbowProjectiles()) {
+          HeldItemInfo.getIntangibleProjectileVisibility().pushHidden();
+          builder.appendComponent(DataComponents.CHARGED_PROJECTILES, Util::withDefaultColor);
+          HeldItemInfo.getIntangibleProjectileVisibility().popHidden();
+        }
+
+        if (config.showFireworkAttributes()) {
+          builder.appendComponent(DataComponents.FIREWORKS);
+        }
+
+        if (config.showFireworkAttributes()) {
+          builder.appendComponent(DataComponents.FIREWORK_EXPLOSION);
+        }
+
+        if (config.showPotionEffects()) {
+          appendPotionEffects(builder);
+        }
+
+        if (config.showMusicDiscDescription()) {
+          appendMusicDiscDescription(builder);
+        }
+
+        if (config.showEnchantments()) {
+          appendEnchantments(builder);
+        }
+
+        if (config.showLore()) {
+          appendLore(builder);
+        }
+
+        if (config.showUnbreakable()) {
+          appendUnbreakable(builder);
+        }
+
+        if (config.showSignText()) {
+          appendSignText(builder);
+        }
+
+        if (config.showPotionEffects()) {
+          builder.appendComponent(DataComponents.OMINOUS_BOTTLE_AMPLIFIER);
+        }
+
+        if (config.showBlockState()) {
+          builder.appendComponent(DataComponents.BLOCK_STATE);
+        }
+      }
+
+      return builder.build();
+    }
+  }
+
+  private static void appendStackName(ItemStack stack, TooltipBuilder builder) {
+    // Using Component.empty().append(...).withStyle(...) because withStyle(...) mutates the object
+    // (see ItemStack.getStyledHoverName)
+    MutableComponent stackName =
+        Component.empty().append(stack.getHoverName()).withStyle(stack.getRarity().color());
+    if (stack.has(DataComponents.CUSTOM_NAME)) {
+      stackName.withStyle(ChatFormatting.ITALIC);
+    }
+
+    builder.append(stackName);
+  }
+
+  private static void appendPotionEffects(TooltipBuilder builder) {
     // Using the vanilla tooltip and removing the 'When applied: ...' lines (everything after the
     // first blank line)
     AtomicBoolean shouldAddLine = new AtomicBoolean(true);
@@ -61,7 +173,7 @@ public final class Appenders {
   /**
    * @see JukeboxPlayable#addToTooltip
    */
-  public static void appendMusicDiscDescription(TooltipBuilder builder) {
+  private static void appendMusicDiscDescription(TooltipBuilder builder) {
     JukeboxPlayable songComponent = builder.getComponentForDisplay(DataComponents.JUKEBOX_PLAYABLE);
 
     if (songComponent != null) {
@@ -72,7 +184,7 @@ public final class Appenders {
     }
   }
 
-  public static void appendEnchantments(TooltipBuilder builder) {
+  private static void appendEnchantments(TooltipBuilder builder) {
     appendEnchantments(builder, DataComponents.STORED_ENCHANTMENTS);
     appendEnchantments(builder, DataComponents.ENCHANTMENTS);
   }
@@ -133,7 +245,7 @@ public final class Appenders {
     }
   }
 
-  public static void appendLore(TooltipBuilder builder) {
+  private static void appendLore(TooltipBuilder builder) {
     ItemLore loreComponent = builder.getComponentForDisplay(DataComponents.LORE);
 
     if (loreComponent != null) {
@@ -152,13 +264,13 @@ public final class Appenders {
     }
   }
 
-  public static void appendUnbreakable(TooltipBuilder builder) {
+  private static void appendUnbreakable(TooltipBuilder builder) {
     if (builder.getComponentForDisplay(DataComponents.UNBREAKABLE) != null) {
       builder.append(UNBREAKABLE_TEXT);
     }
   }
 
-  public static void appendSignText(TooltipBuilder builder) {
+  private static void appendSignText(TooltipBuilder builder) {
     List<MutableComponent> frontLines = getSignSideText(builder, DataComponents.SIGN_TEXT_FRONT);
     List<MutableComponent> backLines = getSignSideText(builder, DataComponents.SIGN_TEXT_BACK);
 
