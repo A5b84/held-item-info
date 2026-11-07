@@ -1,35 +1,22 @@
 package io.github.a5b84.helditeminfo;
 
 import io.github.a5b84.helditeminfo.config.HeldItemInfoConfig;
-import io.github.a5b84.helditeminfo.mixin.ItemEnchantmentsAccessor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.JukeboxPlayable;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemLore;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.entity.SignText;
 
 public final class Appenders {
@@ -47,6 +34,8 @@ public final class Appenders {
   public static void appendAll(TooltipBuilder builder) {
     ItemStack stack = builder.getStack();
     HeldItemInfoConfig config = builder.getConfig();
+    HeldItemTooltipContext context =
+        HeldItemTooltipContext.instance = new HeldItemTooltipContext(config);
 
     if (config.showName()) {
       appendStackName(stack, builder);
@@ -90,9 +79,9 @@ public final class Appenders {
       }
 
       if (config.showCrossbowProjectiles()) {
-        HeldItemInfo.getIntangibleProjectileVisibility().pushHidden();
+        context.hideIntangibleTooltip = true;
         builder.appendComponent(DataComponents.CHARGED_PROJECTILES, Util::withDefaultColor);
-        HeldItemInfo.getIntangibleProjectileVisibility().popHidden();
+        context.hideIntangibleTooltip = false;
       }
 
       if (config.showFireworkAttributes()) {
@@ -112,7 +101,10 @@ public final class Appenders {
       }
 
       if (config.showEnchantments()) {
-        appendEnchantments(builder);
+        context.filterEnchantments = true;
+        builder.appendComponent(DataComponents.ENCHANTMENTS);
+        context.filterEnchantments = false;
+        builder.appendComponent(DataComponents.STORED_ENCHANTMENTS);
       }
 
       if (config.showLore()) {
@@ -135,6 +127,8 @@ public final class Appenders {
         builder.appendComponent(DataComponents.BLOCK_STATE);
       }
     }
+
+    HeldItemTooltipContext.instance = null;
   }
 
   private static void appendStackName(ItemStack stack, TooltipBuilder builder) {
@@ -175,58 +169,6 @@ public final class Appenders {
           ComponentUtils.mergeStyles(
               songComponent.song().value().description(),
               Style.EMPTY.withColor(TooltipBuilder.DEFAULT_COLOR)));
-    }
-  }
-
-  private static void appendEnchantments(TooltipBuilder builder) {
-    appendEnchantments(builder, DataComponents.STORED_ENCHANTMENTS);
-    appendEnchantments(builder, DataComponents.ENCHANTMENTS);
-  }
-
-  /**
-   * @see ItemEnchantments#addToTooltip(Item.TooltipContext, Consumer, TooltipFlag,
-   *     DataComponentGetter)
-   */
-  private static void appendEnchantments(
-      TooltipBuilder builder, DataComponentType<ItemEnchantments> componentType) {
-    ItemEnchantments enchantments = builder.getComponentForDisplay(componentType);
-
-    if (enchantments != null) {
-      HolderSet<Enchantment> tooltipOrder =
-          ItemEnchantmentsAccessor.callGetTagOrEmpty(
-              builder.getTooltipContext().registries(),
-              Registries.ENCHANTMENT,
-              EnchantmentTags.TOOLTIP_ORDER);
-      HeldItemInfoConfig config = builder.getConfig();
-
-      for (Holder<Enchantment> enchantment : tooltipOrder) {
-        int level = enchantments.getLevel(enchantment);
-        if (level > 0 && shouldShowEnchantment(enchantment, config)) {
-          builder.append(() -> Enchantment.getFullname(enchantment, level));
-        }
-      }
-
-      for (var mapEntry : enchantments.entrySet()) {
-        Holder<Enchantment> enchantment = mapEntry.getKey();
-        if (!tooltipOrder.contains(enchantment) && shouldShowEnchantment(enchantment, config)) {
-          builder.append(() -> {
-            int level = mapEntry.getIntValue();
-            return Enchantment.getFullname(enchantment, level);
-          });
-        }
-      }
-    }
-  }
-
-  private static boolean shouldShowEnchantment(
-      Holder<Enchantment> entry, HeldItemInfoConfig config) {
-    Set<Identifier> filters = config.filteredEnchantments();
-
-    if (filters.isEmpty()) {
-      return true;
-    } else {
-      Identifier id = entry.unwrapKey().map(ResourceKey::identifier).orElse(null);
-      return filters.contains(id) == config.showOnlyFilteredEnchantments();
     }
   }
 

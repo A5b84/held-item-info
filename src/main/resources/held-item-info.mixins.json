@@ -6,7 +6,7 @@
 		"BrushableBlockEntityAccessor",
 		"HudAccessor",
 		"HudMixin",
-		"ItemEnchantmentsAccessor",
+		"ItemEnchantmentsMixin",
 		"ItemStackMixin",
 		"TrialSpawnerStateDataAccessor",
 		"block.BrushableBlockMixin",

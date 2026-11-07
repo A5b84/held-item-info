@@ -12,6 +12,7 @@ import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.BoundedDiscrete;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Category;
+import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.Excluded;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.PrefixText;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.Tooltip;
 import net.minecraft.IdentifierException;
@@ -255,7 +256,7 @@ public class HeldItemInfoConfig {
     private List<String> filteredEnchantments =
         super.filteredEnchantments().stream().map(Identifier::toString).toList();
 
-    private final transient Set<Identifier> filteredEnchantmentIds = new HashSet<>();
+    @Excluded private final transient Set<Identifier> filteredEnchantmentIds = new HashSet<>();
 
     @Override
     public int maxLines() {

@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Enchanted Books and similar items now always show all stored enchantments independently of the enchantment filters
+  configuration option.
+
 ## [1.9.3](https://github.com/A5b84/dark-loading-screen/releases/tag/v1.9.3) (26.3+)
 
 - Fixed sign tooltips not working in 26.3.

@@ -1,6 +1,6 @@
 package io.github.a5b84.helditeminfo.mixin;
 
-import io.github.a5b84.helditeminfo.HeldItemInfo;
+import io.github.a5b84.helditeminfo.HeldItemTooltipContext;
 import java.util.function.Consumer;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -22,9 +22,11 @@ public class ItemStackMixin {
       TooltipDisplay display,
       Consumer<Component> builder,
       CallbackInfo ci) {
-    if (dataComponentType == DataComponents.INTANGIBLE_PROJECTILE
-        && HeldItemInfo.getIntangibleProjectileVisibility().isHidden()) {
-      ci.cancel();
+    if (dataComponentType == DataComponents.INTANGIBLE_PROJECTILE) {
+      HeldItemTooltipContext context = HeldItemTooltipContext.instance;
+      if (context != null && context.hideIntangibleTooltip) {
+        ci.cancel();
+      }
     }
   }
 }

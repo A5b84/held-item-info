@@ -23,9 +23,6 @@ public class HeldItemInfo implements ClientModInitializer {
 
   @Nullable private static HeldItemInfoConfig config;
 
-  private static final ComponentVisibilityStack intangibleProjectileVisibility =
-      new ComponentVisibilityStack();
-
   @Override
   public void onInitializeClient() {
     if (USE_CLOTH_CONFIG) {
@@ -56,9 +53,5 @@ public class HeldItemInfo implements ClientModInitializer {
 
   public static HeldItemInfoConfig getConfig() {
     return Objects.requireNonNull(config);
-  }
-
-  public static ComponentVisibilityStack getIntangibleProjectileVisibility() {
-    return intangibleProjectileVisibility;
   }
 }

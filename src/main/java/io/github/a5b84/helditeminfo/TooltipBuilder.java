@@ -122,7 +122,7 @@ public class TooltipBuilder {
 
     if (component != null) {
       component.addToTooltip(
-          getTooltipContext(), textConsumer, TooltipFlag.NORMAL, getStack().getComponents());
+          tooltipContext, textConsumer, TooltipFlag.NORMAL, getStack().getComponents());
     }
   }
 
