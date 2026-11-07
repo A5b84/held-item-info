@@ -4,7 +4,9 @@ import static io.github.a5b84.helditeminfo.Util.FONT_HEIGHT;
 
 import io.github.a5b84.helditeminfo.HeldItemInfo;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
@@ -12,7 +14,9 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry.BoundedDiscrete;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Category;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.PrefixText;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.Tooltip;
+import net.minecraft.IdentifierException;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.resources.Identifier;
 
 public class HeldItemInfoConfig {
 
@@ -156,6 +160,10 @@ public class HeldItemInfoConfig {
     return true;
   }
 
+  public Set<Identifier> filteredEnchantments() {
+    return Collections.emptySet();
+  }
+
   // Enchantments
 
   public boolean showOnlyFilteredEnchantments() {
@@ -244,7 +252,10 @@ public class HeldItemInfoConfig {
 
     @Category("enchantments")
     @Tooltip(count = 2)
-    private List<String> filteredEnchantments = Collections.emptyList();
+    private List<String> filteredEnchantments =
+        super.filteredEnchantments().stream().map(Identifier::toString).toList();
+
+    private final transient Set<Identifier> filteredEnchantmentIds = new HashSet<>();
 
     @Override
     public int maxLines() {
@@ -421,8 +432,25 @@ public class HeldItemInfoConfig {
       return showOnlyFilteredEnchantments;
     }
 
-    public List<String> filteredEnchantments() {
-      return filteredEnchantments;
+    @Override
+    public Set<Identifier> filteredEnchantments() {
+      return filteredEnchantmentIds;
+    }
+
+    public void onSavedOrLoaded() {
+      updateFilteredEnchantmentIds();
+    }
+
+    private void updateFilteredEnchantmentIds() {
+      filteredEnchantmentIds.clear();
+
+      for (String id : filteredEnchantments) {
+        try {
+          filteredEnchantmentIds.add(Identifier.parse(id));
+        } catch (IdentifierException e) {
+          HeldItemInfo.LOGGER.error("[Held Item Info] Invalid enchantment identifier '{}'", id, e);
+        }
+      }
     }
   }
 }

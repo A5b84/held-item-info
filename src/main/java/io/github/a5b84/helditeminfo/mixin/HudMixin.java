@@ -55,6 +55,8 @@ public abstract class HudMixin {
           + 1 // Spacing between armor bar and item name
           + Util.FONT_HEIGHT;
 
+  @Unique private final HeldItemInfoConfig config = HeldItemInfo.getConfig();
+
   @Shadow @Final private Minecraft minecraft;
   @Shadow private int toolHighlightTimer;
   @Shadow private ItemStack lastToolHighlight;
@@ -98,7 +100,6 @@ public abstract class HudMixin {
       int textY,
       int textWidth,
       int textColor) {
-    HeldItemInfoConfig config = HeldItemInfo.getConfig();
     int lineHeight = config.lineHeight();
 
     textY -=
@@ -156,7 +157,6 @@ public abstract class HudMixin {
     int backgroundColor = getBackgroundColor();
 
     if (ARGB.alpha(backgroundColor) != 0) {
-      HeldItemInfoConfig config = HeldItemInfo.getConfig();
       int scaledWidth = graphics.guiWidth();
       int height = config.lineHeight() * tooltip.size();
       if (config.showName() && tooltip.size() > 1) {
@@ -176,7 +176,7 @@ public abstract class HudMixin {
 
   @Unique
   private int getBackgroundColor() {
-    return switch (HeldItemInfo.getConfig().tooltipBackgroundVisibility()) {
+    return switch (config.tooltipBackgroundVisibility()) {
       case VANILLA -> minecraft.options.getBackgroundColor(0);
       case ALWAYS ->
           ARGB.colorFromFloat(
@@ -205,7 +205,7 @@ public abstract class HudMixin {
                   "Lnet/minecraft/client/gui/GuiGraphicsExtractor;textWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V"))
   private void onExtractOverlayMessage(
       GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-    if (HeldItemInfo.getConfig().preventOverlap() && lastTooltipY >= 0) {
+    if (config.preventOverlap() && lastTooltipY >= 0) {
       int tooltipYOffset = graphics.guiHeight() - lastTooltipY;
       int difference = VANILLA_TOOLTIP_Y_OFFSET - tooltipYOffset;
       if (difference < 0) {
@@ -233,7 +233,6 @@ public abstract class HudMixin {
       List<Component> newInfo = buildTooltip(lastToolHighlight);
 
       if (!TooltipLine.areEquivalent(tooltip, newInfo)) {
-        HeldItemInfoConfig config = HeldItemInfo.getConfig();
         tooltip = TooltipLine.from(newInfo);
         maxWidth = -1;
         toolHighlightTimer =
@@ -250,8 +249,7 @@ public abstract class HudMixin {
     if (stack.isEmpty()) {
       return Collections.emptyList();
     } else {
-      HeldItemInfoConfig config = HeldItemInfo.getConfig();
-      TooltipBuilder builder = new TooltipBuilder(stack);
+      TooltipBuilder builder = new TooltipBuilder(stack, config);
 
       if (config.showName()) {
         appendStackName(stack, builder);
@@ -261,13 +259,13 @@ public abstract class HudMixin {
         // Item-specific tooltip
         Item item = stack.getItem();
         if (item instanceof TooltipAppender appender
-            && appender.heldItemInfo_shouldAppendTooltip()) {
+            && appender.heldItemInfo_shouldAppendTooltip(config)) {
           appender.heldItemInfo_appendTooltip(builder);
         }
 
         if (item instanceof BlockItem blockItem
             && blockItem.getBlock() instanceof TooltipAppender appender
-            && appender.heldItemInfo_shouldAppendTooltip()) {
+            && appender.heldItemInfo_shouldAppendTooltip(config)) {
           appender.heldItemInfo_appendTooltip(builder);
         }
 

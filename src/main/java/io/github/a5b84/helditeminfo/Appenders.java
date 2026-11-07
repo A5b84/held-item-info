@@ -3,7 +3,9 @@ package io.github.a5b84.helditeminfo;
 import io.github.a5b84.helditeminfo.config.HeldItemInfoConfig;
 import io.github.a5b84.helditeminfo.mixin.ItemEnchantmentsAccessor;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
@@ -63,11 +65,10 @@ public final class Appenders {
     JukeboxPlayable songComponent = builder.getComponentForDisplay(DataComponents.JUKEBOX_PLAYABLE);
 
     if (songComponent != null) {
-      builder.append(
-          () ->
-              ComponentUtils.mergeStyles(
-                  songComponent.song().value().description(),
-                  Style.EMPTY.withColor(TooltipBuilder.DEFAULT_COLOR)));
+      builder.append(() ->
+          ComponentUtils.mergeStyles(
+              songComponent.song().value().description(),
+              Style.EMPTY.withColor(TooltipBuilder.DEFAULT_COLOR)));
     }
   }
 
@@ -90,44 +91,45 @@ public final class Appenders {
               builder.getTooltipContext().registries(),
               Registries.ENCHANTMENT,
               EnchantmentTags.TOOLTIP_ORDER);
+      HeldItemInfoConfig config = builder.getConfig();
 
       for (Holder<Enchantment> enchantment : tooltipOrder) {
         int level = enchantments.getLevel(enchantment);
-        if (level > 0 && shouldShowEnchantment(enchantment)) {
+        if (level > 0 && shouldShowEnchantment(enchantment, config)) {
           builder.append(() -> Enchantment.getFullname(enchantment, level));
         }
       }
 
       for (var mapEntry : enchantments.entrySet()) {
         Holder<Enchantment> enchantment = mapEntry.getKey();
-        if (!tooltipOrder.contains(enchantment) && shouldShowEnchantment(enchantment)) {
-          builder.append(
-              () -> {
-                int level = mapEntry.getIntValue();
-                return Enchantment.getFullname(enchantment, level);
-              });
+        if (!tooltipOrder.contains(enchantment) && shouldShowEnchantment(enchantment, config)) {
+          builder.append(() -> {
+            int level = mapEntry.getIntValue();
+            return Enchantment.getFullname(enchantment, level);
+          });
         }
       }
     }
   }
 
-  private static boolean shouldShowEnchantment(Holder<Enchantment> entry) {
-    List<Identifier> filters = HeldItemInfo.getFilteredEnchantments();
+  private static boolean shouldShowEnchantment(
+      Holder<Enchantment> entry, HeldItemInfoConfig config) {
+    Set<Identifier> filters = config.filteredEnchantments();
+
     if (filters.isEmpty()) {
       return true;
     } else {
       Identifier id = entry.unwrapKey().map(ResourceKey::identifier).orElse(null);
-      return filters.contains(id) == HeldItemInfo.getConfig().showOnlyFilteredEnchantments();
+      return filters.contains(id) == config.showOnlyFilteredEnchantments();
     }
   }
 
   public static void appendStack(TooltipBuilder builder, ItemStack stack) {
     if (!stack.isEmpty()) {
-      builder.append(
-          () ->
-              Component.translatable(
-                      "item.container.item_count", stack.getHoverName(), stack.getCount())
-                  .withStyle(TooltipBuilder.DEFAULT_COLOR));
+      builder.append(() ->
+          Component.translatable(
+                  "item.container.item_count", stack.getHoverName(), stack.getCount())
+              .withStyle(TooltipBuilder.DEFAULT_COLOR));
     }
   }
 
@@ -135,12 +137,12 @@ public final class Appenders {
     ItemLore loreComponent = builder.getComponentForDisplay(DataComponents.LORE);
 
     if (loreComponent != null) {
-      HeldItemInfoConfig config = HeldItemInfo.getConfig();
+      HeldItemInfoConfig config = builder.getConfig();
       int maxRemainingLoreLines = config.maxLoreLines();
 
       for (Component line : loreComponent.lines()) {
         int maxLines = Math.min(maxRemainingLoreLines, builder.getRemainingLines());
-        List<MutableComponent> wrappedLine = Util.wrapLines(line, maxLines);
+        List<MutableComponent> wrappedLine = Util.wrapLines(line, maxLines, config);
         maxRemainingLoreLines -= wrappedLine.size();
 
         for (MutableComponent linePart : wrappedLine) {
@@ -191,7 +193,7 @@ public final class Appenders {
 
       return lines;
     } else {
-      return List.of();
+      return Collections.emptyList();
     }
   }
 }

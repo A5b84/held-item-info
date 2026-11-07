@@ -27,11 +27,10 @@ public final class ContainerContentAppender {
     builder.appendComponent(DataComponents.CONTAINER_LOOT);
 
     for (ContainerEntry innerStack : getContainerEntries(builder)) {
-      builder.append(
-          () ->
-              Component.translatable(
-                      "item.container.item_count", innerStack.getName(), innerStack.getCount())
-                  .withStyle(TooltipBuilder.DEFAULT_COLOR));
+      builder.append(() ->
+          Component.translatable(
+                  "item.container.item_count", innerStack.getName(), innerStack.getCount())
+              .withStyle(TooltipBuilder.DEFAULT_COLOR));
     }
   }
 
@@ -49,7 +48,7 @@ public final class ContainerContentAppender {
       stackTemplates = Iterables.concat(stackTemplates, bundleContents.items());
     }
 
-    if (HeldItemInfo.getConfig().mergeSimilarContainerItems()) {
+    if (builder.getConfig().mergeSimilarContainerItems()) {
       Map<Component, MergedContainerEntry> entries = new LinkedHashMap<>();
 
       for (ItemStackTemplate stackTemplate : stackTemplates) {

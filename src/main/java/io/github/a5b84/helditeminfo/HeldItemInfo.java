@@ -2,8 +2,6 @@ package io.github.a5b84.helditeminfo;
 
 import io.github.a5b84.helditeminfo.config.HeldItemInfoConfig;
 import io.github.a5b84.helditeminfo.config.HeldItemInfoConfig.HeldItemInfoAutoConfig;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigHolder;
@@ -11,8 +9,6 @@ import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.IdentifierException;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionResult;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -27,8 +23,6 @@ public class HeldItemInfo implements ClientModInitializer {
 
   @Nullable private static HeldItemInfoConfig config;
 
-  private static final List<Identifier> filteredEnchantments = new ArrayList<>();
-
   private static final ComponentVisibilityStack intangibleProjectileVisibility =
       new ComponentVisibilityStack();
 
@@ -37,21 +31,19 @@ public class HeldItemInfo implements ClientModInitializer {
     if (USE_CLOTH_CONFIG) {
       ConfigHolder<HeldItemInfoAutoConfig> holder =
           AutoConfig.register(HeldItemInfoAutoConfig.class, GsonConfigSerializer::new);
-      config = holder.getConfig();
+      HeldItemInfoAutoConfig autoConfig = holder.getConfig();
+      autoConfig.onSavedOrLoaded();
+      config = autoConfig;
 
-      holder.registerSaveListener(
-          (_, config) -> {
-            updateFilteredEnchantments(config);
-            return InteractionResult.SUCCESS;
-          });
+      holder.registerSaveListener((_, config) -> {
+        config.onSavedOrLoaded();
+        return InteractionResult.SUCCESS;
+      });
 
-      holder.registerLoadListener(
-          (_, config) -> {
-            updateFilteredEnchantments(config);
-            return InteractionResult.SUCCESS;
-          });
-
-      updateFilteredEnchantments(holder.getConfig());
+      holder.registerLoadListener((_, config) -> {
+        config.onSavedOrLoaded();
+        return InteractionResult.SUCCESS;
+      });
     } else {
       config = new HeldItemInfoConfig();
     }
@@ -64,22 +56,6 @@ public class HeldItemInfo implements ClientModInitializer {
 
   public static HeldItemInfoConfig getConfig() {
     return Objects.requireNonNull(config);
-  }
-
-  public static List<Identifier> getFilteredEnchantments() {
-    return filteredEnchantments;
-  }
-
-  private static void updateFilteredEnchantments(HeldItemInfoAutoConfig config) {
-    filteredEnchantments.clear();
-
-    for (String id : config.filteredEnchantments()) {
-      try {
-        filteredEnchantments.add(Identifier.parse(id));
-      } catch (IdentifierException e) {
-        LOGGER.error("[Held Item Info] Invalid enchantment identifier '{}'", id, e);
-      }
-    }
   }
 
   public static ComponentVisibilityStack getIntangibleProjectileVisibility() {

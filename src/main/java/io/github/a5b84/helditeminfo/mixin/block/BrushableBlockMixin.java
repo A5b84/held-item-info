@@ -4,6 +4,7 @@ import io.github.a5b84.helditeminfo.Appenders;
 import io.github.a5b84.helditeminfo.HeldItemInfo;
 import io.github.a5b84.helditeminfo.TooltipAppender;
 import io.github.a5b84.helditeminfo.TooltipBuilder;
+import io.github.a5b84.helditeminfo.config.HeldItemInfoConfig;
 import io.github.a5b84.helditeminfo.mixin.BrushableBlockEntityAccessor;
 import java.util.Optional;
 import net.minecraft.nbt.CompoundTag;
@@ -18,8 +19,8 @@ import org.spongepowered.asm.mixin.Unique;
 public abstract class BrushableBlockMixin implements TooltipAppender {
 
   @Override
-  public boolean heldItemInfo_shouldAppendTooltip() {
-    return HeldItemInfo.getConfig().showContainerContent();
+  public boolean heldItemInfo_shouldAppendTooltip(HeldItemInfoConfig config) {
+    return config.showContainerContent();
   }
 
   @Override

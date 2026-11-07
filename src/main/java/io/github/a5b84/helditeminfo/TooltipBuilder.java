@@ -1,5 +1,6 @@
 package io.github.a5b84.helditeminfo;
 
+import io.github.a5b84.helditeminfo.config.HeldItemInfoConfig;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -27,23 +28,24 @@ public class TooltipBuilder {
   private final Item.TooltipContext tooltipContext =
       Item.TooltipContext.of(Minecraft.getInstance().level);
   private final ItemStack stack;
+  private final HeldItemInfoConfig config;
   private final TooltipDisplay displayComponent;
-  private final int maxSize = HeldItemInfo.getConfig().maxLines();
   private final List<Component> lines;
 
   /**
    * Real number of lines including the ones that are hidden because they would exceed {@link
-   * #maxSize}.
+   * HeldItemInfoConfig#maxLines()}.
    */
   private int realSize = 0;
 
-  public TooltipBuilder(ItemStack stack) {
+  public TooltipBuilder(ItemStack stack, HeldItemInfoConfig config) {
     this.stack = stack;
+    this.config = config;
     this.displayComponent =
-        HeldItemInfo.getConfig().respectHideFlags()
+        config.respectHideFlags()
             ? stack.getOrDefault(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT)
             : TooltipDisplay.DEFAULT;
-    lines = new ArrayList<>(maxSize);
+    lines = new ArrayList<>(config.maxLines());
   }
 
   public Item.TooltipContext getTooltipContext() {
@@ -52,6 +54,10 @@ public class TooltipBuilder {
 
   public ItemStack getStack() {
     return stack;
+  }
+
+  public HeldItemInfoConfig getConfig() {
+    return config;
   }
 
   public TooltipDisplay getDisplayComponent() {
@@ -107,11 +113,11 @@ public class TooltipBuilder {
    * @return {@code true} if at least one more line can be added.
    */
   public boolean canAdd() {
-    return lines.size() < maxSize;
+    return getRemainingLines() > 0;
   }
 
   public int getRemainingLines() {
-    return maxSize - lines.size();
+    return config.maxLines() - lines.size();
   }
 
   public void append(Component text) {
@@ -141,9 +147,9 @@ public class TooltipBuilder {
   }
 
   public List<Component> build() {
-    if (realSize > maxSize && HeldItemInfo.getConfig().showHiddenLinesCount()) {
+    if (realSize > config.maxLines() && config.showHiddenLinesCount()) {
       Component moreText =
-          Component.translatable("item.container.more_items", realSize - maxSize + 1)
+          Component.translatable("item.container.more_items", realSize - config.maxLines() + 1)
               .withStyle(DEFAULT_COLOR, ChatFormatting.ITALIC);
       lines.set(lines.size() - 1, moreText);
     }

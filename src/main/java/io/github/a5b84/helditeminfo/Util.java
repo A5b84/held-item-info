@@ -1,5 +1,6 @@
 package io.github.a5b84.helditeminfo;
 
+import io.github.a5b84.helditeminfo.config.HeldItemInfoConfig;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,14 +43,13 @@ public final class Util {
 
   public static boolean isBlank(FormattedText visitable) {
     return visitable
-        .visit(
-            asString -> {
-              if (asString.isBlank()) {
-                return Optional.empty();
-              } else {
-                return Optional.of(0);
-              }
-            })
+        .visit(asString -> {
+          if (asString.isBlank()) {
+            return Optional.empty();
+          } else {
+            return Optional.of(0);
+          }
+        })
         .isEmpty();
   }
 
@@ -59,31 +59,37 @@ public final class Util {
    * @see ComponentRenderUtils#wrapComponents
    * @see StringSplitter#splitLines(String, int, Style)
    */
-  public static List<MutableComponent> wrapLines(String s, int maxLines) {
+  public static List<MutableComponent> wrapLines(
+      String s, int maxLines, HeldItemInfoConfig config) {
     // Shortening
-    if (maxLines <= 0) return Collections.emptyList();
+    if (maxLines <= 0) {
+      return Collections.emptyList();
+    }
 
-    double maxLength = 1.25 * maxLines * HeldItemInfo.getConfig().maxLineLength();
+    int maxLength = (int) Math.min(1.25 * maxLines * config.maxLineLength(), Integer.MAX_VALUE);
     // ^ add 25% to avoid truncating too much when using many narrow characters (e.g. 'i')
-    if (maxLength <= 0) return Collections.emptyList();
-    if (maxLength > Integer.MAX_VALUE) maxLength = Integer.MAX_VALUE;
-    // ^ In case the user messed with their config (could crash)
+    if (maxLength <= 0) {
+      return Collections.emptyList();
+    }
 
-    boolean wasShortened = s.length() > maxLength;
-    if (wasShortened) s = s.substring(0, (int) maxLength);
+    boolean wasShortened;
+    if (s.length() > maxLength) {
+      wasShortened = true;
+      s = s.substring(0, maxLength);
+    } else {
+      wasShortened = false;
+    }
 
     // Splitting
     final List<MutableComponent> lines = new ArrayList<>(maxLines);
     final String finalString = s; // final copy to refer to it in the lambda
-    double maxWidth = HeldItemInfo.getConfig().maxLineLength() * CHARACTER_WIDTH;
-    if (maxWidth > Integer.MAX_VALUE) maxWidth = Integer.MAX_VALUE;
-    //      ^ In case the user messed with their config (could crash)
+    int maxWidth = getMaxWidth(config);
     Font textRenderer = Minecraft.getInstance().font;
     textRenderer
         .getSplitter()
         .splitLines(
             s,
-            (int) maxWidth,
+            maxWidth,
             Style.EMPTY,
             false,
             (_, start, end) -> lines.add(Component.literal(finalString.substring(start, end))));
@@ -98,7 +104,6 @@ public final class Util {
       lines.getLast().append("...");
     }
 
-    // Done
     return lines;
   }
 
@@ -106,29 +111,36 @@ public final class Util {
    * @see ComponentRenderUtils#wrapComponents
    * @see StringSplitter#splitLines(String, int, Style)
    */
-  public static List<MutableComponent> wrapLines(FormattedText s, int maxLines) {
-    // TODO somehow make this not yeet styles
-    if (maxLines <= 0) return Collections.emptyList();
+  public static List<MutableComponent> wrapLines(
+      FormattedText s, int maxLines, HeldItemInfoConfig config) {
+    // TODO: somehow make this preserve styles
+    if (maxLines <= 0) {
+      return Collections.emptyList();
+    }
 
-    double maxWidth = HeldItemInfo.getConfig().maxLineLength() * CHARACTER_WIDTH;
-    if (maxWidth > Integer.MAX_VALUE) maxWidth = Integer.MAX_VALUE;
-    //      ^ In case the user messed with their config (could crash)
+    int maxWidth = getMaxWidth(config);
     Font textRenderer = Minecraft.getInstance().font;
-    List<FormattedText> strings =
-        textRenderer.getSplitter().splitLines(s, (int) maxWidth, Style.EMPTY);
+    List<FormattedText> strings = textRenderer.getSplitter().splitLines(s, maxWidth, Style.EMPTY);
 
     // Convert and truncate
     List<MutableComponent> lines = new ArrayList<>(maxLines);
     for (FormattedText visitable : strings) {
       lines.add(Component.literal(visitable.getString()));
+
       if (lines.size() >= maxLines) {
         if (strings.size() > maxLines) {
           lines.get(maxLines - 1).append("...");
         }
+
         break;
       }
     }
 
     return lines;
+  }
+
+  private static int getMaxWidth(HeldItemInfoConfig config) {
+    double maxWidth = config.maxLineLength() * CHARACTER_WIDTH;
+    return maxWidth >= Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) maxWidth;
   }
 }
