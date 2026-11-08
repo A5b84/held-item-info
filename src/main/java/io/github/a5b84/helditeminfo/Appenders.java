@@ -176,7 +176,7 @@ public final class Appenders {
     if (!stack.isEmpty()) {
       builder.append(() ->
           Component.translatable(
-                  "item.container.item_count", stack.getHoverName(), stack.getCount())
+                  "item.container.item_count", stack.getCount(), stack.getHoverName())
               .withStyle(TooltipBuilder.DEFAULT_COLOR));
     }
   }

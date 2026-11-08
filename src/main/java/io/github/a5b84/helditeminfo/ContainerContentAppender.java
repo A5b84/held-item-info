@@ -29,7 +29,7 @@ public final class ContainerContentAppender {
     for (ContainerEntry innerStack : getContainerEntries(builder)) {
       builder.append(() ->
           Component.translatable(
-                  "item.container.item_count", innerStack.getName(), innerStack.getCount())
+                  "item.container.item_count", innerStack.getCount(), innerStack.getName())
               .withStyle(TooltipBuilder.DEFAULT_COLOR));
     }
   }

@@ -4,6 +4,8 @@
 
 - Enchanted Books and similar items now always show all stored enchantments independently of the enchantment filters
   configuration option.
+- Fixed containers tooltips showing their contents in `<item> x <count>` format rather than `<count> x <item>` like
+  vanilla tooltips.
 
 ## [1.9.3](https://github.com/A5b84/dark-loading-screen/releases/tag/v1.9.3) (26.3+)
 

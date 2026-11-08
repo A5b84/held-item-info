@@ -21,7 +21,7 @@ public final class Util {
    */
   public static final int FONT_HEIGHT = 9;
 
-  private static final double CHARACTER_WIDTH = 6;
+  public static final double AVERAGE_CHARACTER_WIDTH = 6;
 
   private Util() {}
 
@@ -136,7 +136,7 @@ public final class Util {
   }
 
   private static int getMaxWidth(HeldItemInfoConfig config) {
-    double maxWidth = config.maxLineLength() * CHARACTER_WIDTH;
+    double maxWidth = config.maxLineLength() * AVERAGE_CHARACTER_WIDTH;
     return maxWidth >= Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) maxWidth;
   }
 }

@@ -7,6 +7,7 @@ import io.github.a5b84.helditeminfo.TooltipBuilder;
 import io.github.a5b84.helditeminfo.config.HeldItemInfoConfig;
 import io.github.a5b84.helditeminfo.mixin.BrushableBlockEntityAccessor;
 import java.util.Optional;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.item.ItemStack;
@@ -34,10 +35,15 @@ public abstract class BrushableBlockMixin implements TooltipAppender {
 
   @Unique
   private Optional<ItemStack> readStack(TooltipBuilder builder, CompoundTag data) {
+    HolderLookup.Provider registries = builder.getTooltipContext().registries();
+
+    if (registries == null) {
+      return Optional.empty();
+    }
+
     try (ProblemReporter.ScopedCollector reporter =
         new ProblemReporter.ScopedCollector(HeldItemInfo.LOGGER)) {
-      //noinspection DataFlowIssue
-      return TagValueInput.create(reporter, builder.getTooltipContext().registries(), data)
+      return TagValueInput.create(reporter, registries, data)
           .read(BrushableBlockEntityAccessor.getItemTagKey(), ItemStack.CODEC);
     }
   }

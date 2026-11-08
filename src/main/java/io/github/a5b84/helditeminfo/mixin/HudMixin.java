@@ -104,8 +104,9 @@ public abstract class HudMixin {
       textY -= config.itemNameSpacing();
     }
 
-    //noinspection DataFlowIssue
-    if (config.preventOverlap() && minecraft.gameMode.canHurtPlayer()) {
+    if (config.preventOverlap()
+        && minecraft.gameMode != null
+        && minecraft.gameMode.canHurtPlayer()) {
       Player player = getCameraPlayer();
       if (player != null) {
         textY -= getHealthBarsTotalHeight(player) - HudAccessor.getLineHeight();
