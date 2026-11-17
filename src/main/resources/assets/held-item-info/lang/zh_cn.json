@@ -1,4 +1,6 @@
 {
+	"modmenu.descriptionTranslation.held-item-info": "一款适用于 Fabric / Quilt 的客户端模组，可在物品名称下方显示该手持物品的相关信息（如附魔等）。"
+	"held_item_info.tooltip.sign_side_separator": "-------",
 	"text.autoconfig.held-item-info.title": "Held Item Info 设置",
 	"text.autoconfig.held-item-info.category.default": "通用设置",
 	"text.autoconfig.held-item-info.option.maxLines": "最大行数",
@@ -16,6 +18,12 @@
 	"text.autoconfig.held-item-info.option.itemNameSpacing": "物品名称间距",
 	"text.autoconfig.held-item-info.option.itemNameSpacing.@Tooltip": "物品名称与下一行之间的间距",
 	"text.autoconfig.held-item-info.option.verticalOffset": "垂直偏移量",
+	"text.autoconfig.held-item-info.option.tooltipBackgroundVisibility": "工具提示背景可见性",
+	"text.autoconfig.held-item-info.option.tooltipBackgroundVisibility.@Tooltip[0]": "何时显示工具提示的背景",
+	"text.autoconfig.held-item-info.option.tooltipBackgroundVisibility.@Tooltip[1]": "默认情况下，这使用的是“文本背景”辅助功能设置",
+	"text.autoconfig.held-item-info.option.tooltipBackgroundVisibility.VANILLA": "原版",
+	"text.autoconfig.held-item-info.option.tooltipBackgroundVisibility.ALWAYS": "始终",
+	"text.autoconfig.held-item-info.option.tooltipBackgroundVisibility.NEVER": "从不",
 	"text.autoconfig.held-item-info.option.baseFadeDuration": "基础淡化时间",
 	"text.autoconfig.held-item-info.option.baseFadeDuration.@Tooltip": "单行工具提示消失的时间（秒）",
 	"text.autoconfig.held-item-info.option.fadeDurationPerExtraLine": "每一额外行的额外淡化时间",
