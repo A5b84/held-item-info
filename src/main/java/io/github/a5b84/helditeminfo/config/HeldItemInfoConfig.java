@@ -188,7 +188,7 @@ public class HeldItemInfoConfig {
   @Config(name = HeldItemInfo.MOD_ID)
   public static class HeldItemInfoAutoConfig extends HeldItemInfoConfig implements ConfigData {
 
-    @BoundedDiscrete(min = 0, max = 40)
+    @BoundedDiscrete(min = 1, max = 40)
     @Tooltip
     private int maxLines = super.maxLines();
 
