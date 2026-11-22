@@ -1,0 +1,14 @@
+id = "held_item_info"
+name = "Held Item Info"
+version = "1.9.3"
+description = "Shows information (like enchantments) under the held item's name."
+authors = ["A5b84"]
+license = "LGPL-3.0-or-later"
+# A wasm mod: Rust in src/, built to mod.wasm by `cargo horizon-mod build --wasm` against the SDK build Cargo.toml pins, beside data/ and assets/.
+api = "0.2"
+side = "client"
+capabilities = ["registries"]
+
+[wasm]
+sha512 = "88d0f2ff685e7be6c5b1a3d11a95602827061ff81db3b6e9a4a879818f0a57c90bceddd733bc228da552d5e953db340e0344da869461942eba6879f9a78f5b6d"
+toolchain = "1.99.1 58cf8f9c35b355199727627d07ae34a4e2846d67"
